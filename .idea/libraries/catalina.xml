@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="catalina">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../BandikaWebBase/lib/catalina.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaWebBase/lib/jasper.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaWebBase/lib/jsp-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaWebBase/lib/log4j-1.2.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaWebBase/lib/servlet-api.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

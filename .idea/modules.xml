@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../BandikaBase/BandikaBase.iml" filepath="$PROJECT_DIR$/../BandikaBase/BandikaBase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BandikaCms.iml" filepath="$PROJECT_DIR$/BandikaCms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../BandikaContent/BandikaContent.iml" filepath="$PROJECT_DIR$/../BandikaContent/BandikaContent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../BandikaWebBase/BandikaWebBase.iml" filepath="$PROJECT_DIR$/../BandikaWebBase/BandikaWebBase.iml" />
+    </modules>
+  </component>
+</project>

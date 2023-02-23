@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="baselibs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/activation-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-codec-1.15.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-collections4-4.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-compress-1.21.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-crypto-1.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-io-2.11.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-lang3-3.12.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-math3-3.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/commons-text-1.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/json-simple-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/jsoup-1.11.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../BandikaBase/lib/mail.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
