@@ -57,6 +57,7 @@ public class PageController extends ContentController {
     //frontend
     @Override
     public IResponse openEditContentFrontend(RequestData rdata) {
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = ContentBean.getInstance().getContent(contentId,PageData.class);
         checkRights(data.hasUserEditRight(rdata));
@@ -69,6 +70,7 @@ public class PageController extends ContentController {
     //frontend
     @Override
     public IResponse showEditContentFrontend(RequestData rdata) {
+        assertSessionCall(rdata);
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         checkRights(data.hasUserEditRight(rdata));
         return data.getDefaultView();
@@ -77,6 +79,7 @@ public class PageController extends ContentController {
     //frontend
     @Override
     public IResponse saveContentFrontend(RequestData rdata) {
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         checkRights(data.hasUserEditRight(rdata));
@@ -95,6 +98,7 @@ public class PageController extends ContentController {
     //frontend
     @Override
     public IResponse cancelEditContentFrontend(RequestData rdata) {
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         checkRights(data.hasUserEditRight(rdata));
@@ -103,6 +107,7 @@ public class PageController extends ContentController {
     }
 
     public IResponse showDraft(RequestData rdata){
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         ContentData data = ContentCache.getContent(contentId);
         checkRights(data.hasUserReadRight(rdata));
@@ -111,6 +116,7 @@ public class PageController extends ContentController {
     }
 
     public IResponse showPublished(RequestData rdata){
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         ContentData data = ContentCache.getContent(contentId);
         checkRights(data.hasUserReadRight(rdata));
@@ -120,6 +126,7 @@ public class PageController extends ContentController {
 
     //frontend
     public IResponse publishPage(RequestData rdata){
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         Log.log("Publishing page" + contentId);
         PageData data=ContentBean.getInstance().getContent(contentId,PageData.class);
@@ -130,18 +137,21 @@ public class PageController extends ContentController {
     }
 
     public IResponse openLinkBrowser(RequestData rdata) {
+        assertSessionCall(rdata);
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
         checkRights(data.hasUserEditRight(rdata));
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseLinks.jsp");
     }
 
     public IResponse openImageBrowser(RequestData rdata) {
+        assertSessionCall(rdata);
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
         checkRights(data.hasUserEditRight(rdata));
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseImages.jsp");
     }
 
     public IResponse addImage(RequestData rdata) {
+        assertSessionCall(rdata);
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
         checkRights(data.hasUserEditRight(rdata));
         ImageData image=new ImageData();
@@ -154,6 +164,7 @@ public class PageController extends ContentController {
     }
 
     public IResponse republishPage(RequestData rdata) {
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
 
         PageData page = ContentCache.getContent(contentId, PageData.class);
@@ -183,6 +194,7 @@ public class PageController extends ContentController {
     }
 
     public IResponse addPart(RequestData rdata) {
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         checkRights(data.hasUserEditRight(rdata));
@@ -196,6 +208,7 @@ public class PageController extends ContentController {
     }
 
     public IResponse sendContact(RequestData rdata) {
+        assertSessionCall(rdata);
         String captcha = rdata.getAttributes().getString("captcha");
         String sessionCaptcha = rdata.getSessionObject(RequestKeys.KEY_CAPTCHA, String.class);
         if (!captcha.equals(sessionCaptcha)){
