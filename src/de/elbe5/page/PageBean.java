@@ -12,6 +12,7 @@ import de.elbe5.base.Log;
 import de.elbe5.content.ContentBean;
 import de.elbe5.content.ContentData;
 
+import java.lang.reflect.Constructor;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +26,18 @@ public class PageBean extends ContentBean {
             instance = new PageBean();
         }
         return instance;
+    }
+
+    PagePartData getNewPagePartData(String className){
+        try {
+            Class<? extends PagePartData> cls = Class.forName(className).asSubclass(PagePartData.class);
+            Constructor<? extends PagePartData> ctor = cls.getConstructor();
+            return ctor.newInstance();
+        }
+        catch(Exception e){
+            Log.error("could not create class " + className,  e);
+        }
+        return null;
     }
 
     private static final String GET_CONTENT_EXTRAS_SQL = "SELECT keywords, layout, publish_date, published_content FROM t_page WHERE id=?";
@@ -161,13 +174,13 @@ public class PageBean extends ContentBean {
                 while (rs.next()) {
                     int i = 1;
                     String type = rs.getString(i++);
-                    part = PagePartFactory.getNewData(type);
+                    part = getNewPagePartData(type);
                     if (part != null) {
                         part.setSectionName(rs.getString(i++));
                         part.setPosition(rs.getInt(i++));
                         part.setId(rs.getInt(i++));
                         part.setChangeDate(rs.getTimestamp(i).toLocalDateTime());
-                        PagePartBean extBean = PagePartFactory.getBean(type);
+                        PagePartBean extBean = part.getBean();
                         if (extBean != null)
                             extBean.readPartExtras(con, part);
                         contentData.addPart(part, -1, false);
@@ -212,7 +225,7 @@ public class PageBean extends ContentBean {
                     pst.setInt(i++, part.getPosition());
                     pst.setInt(i, part.getId());
                     pst.executeUpdate();
-                    PagePartBean extBean = PagePartFactory.getBean(part.getType());
+                    PagePartBean extBean = part.getBean();
                     if (extBean != null)
                         extBean.writePartExtras(con, part);
                 }

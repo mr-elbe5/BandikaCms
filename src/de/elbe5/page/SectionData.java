@@ -29,7 +29,7 @@ public class SectionData {
     public void copyData(SectionData data) {
         setName(data.getName());
         for (PagePartData srcPart : data.parts) {
-            PagePartData part = PagePartFactory.getNewData(srcPart.getClass().getSimpleName());
+            PagePartData part = PageBean.getInstance().getNewPagePartData(srcPart.getClass().getName());
             if (part == null)
                 continue;
             part.setSectionName(getName());

@@ -10,6 +10,7 @@ package de.elbe5.page;
 
 import de.elbe5.base.BaseData;
 import de.elbe5.content.ContentBean;
+import de.elbe5.content.LinkBean;
 import de.elbe5.request.RequestData;
 
 public abstract class PagePartData extends BaseData implements Comparable<PagePartData> {
@@ -25,6 +26,10 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
     public static String jspBasePath = "/WEB-INF/_jsp/_layout";
 
     public PagePartData() {
+    }
+
+    public PagePartBean getBean() {
+        return PagePartBean.getInstance();
     }
 
     public void copyData(PagePartData data) {

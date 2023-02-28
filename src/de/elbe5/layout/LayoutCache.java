@@ -16,7 +16,7 @@ public class LayoutCache {
 
     private static int version = 1;
     private static boolean dirty = true;
-    private static final Integer lockObj = 1;
+    private static final Object lockObj = new Object();
 
     private static final Map<String, LayoutData> layoutMap = new HashMap<>();
     private static final Map<String, List<LayoutData>> layoutTypeMap = new HashMap<>();

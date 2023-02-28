@@ -47,3 +47,32 @@ drop table t_section_page;
 --end change to one master page, one page type
 
 ALTER SEQUENCE s_section_part_id RENAME TO s_page_part_id;
+
+--
+ALTER TABLE t_content ALTER COLUMN type TYPE varchar(255);
+ALTER TABLE t_file ALTER COLUMN type TYPE varchar(255);
+ALTER TABLE t_page_part ALTER COLUMN type TYPE varchar(255);
+
+UPDATE t_content set type = 'de.elbe.content.ContentData' where type = 'ContentData';
+UPDATE t_content set type = 'de.elbe.content.LinkData' where type = 'LinkData';
+UPDATE t_content set type = 'de.elbe.page.PageData' where type = 'PageData';
+
+UPDATE t_file set type = 'de.elbe.file.FileData' where type = 'FileData';
+UPDATE t_file set type = 'de.elbe.file.DocumentData' where type = 'DocumentData';
+UPDATE t_file set type = 'de.elbe.file.ImageData' where type = 'ImageData';
+UPDATE t_file set type = 'de.elbe.file.MediaData' where type = 'MediaData';
+
+UPDATE t_page_part set type = 'de.elbe.page.PagePartData' where type = 'PagePartData';
+UPDATE t_page_part set type = 'de.elbe.page.LayoutPartData' where type = 'LayoutPartData';
+
+UPDATE t_content set type = 'de.elbe5.content.ContentData' where type = 'de.elbe.content.ContentData';
+UPDATE t_content set type = 'de.elbe5.content.LinkData' where type = 'de.elbe.content.LinkData';
+UPDATE t_content set type = 'de.elbe5.page.PageData' where type = 'de.elbe.page.PageData';
+
+UPDATE t_file set type = 'de.elbe5.file.FileData' where type = 'de.elbe.file.FileData';
+UPDATE t_file set type = 'de.elbe5.file.DocumentData' where type = 'de.elbe.file.DocumentData';
+UPDATE t_file set type = 'de.elbe5.file.ImageData' where type = 'de.elbe.file.ImageData';
+UPDATE t_file set type = 'de.elbe5.file.MediaData' where type = 'de.elbe.file.MediaData';
+
+UPDATE t_page_part set type = 'de.elbe5.page.PagePartData' where type = 'de.elbe.page.PagePartData';
+UPDATE t_page_part set type = 'de.elbe5.page.LayoutPartData' where type = 'de.elbe.page.LayoutPartData';

@@ -9,11 +9,12 @@
 package de.elbe5.page;
 
 import de.elbe5.base.Log;
-import de.elbe5.content.ContentCache;
-import de.elbe5.content.ContentData;
+import de.elbe5.content.*;
+import de.elbe5.file.DocumentData;
+import de.elbe5.file.ImageData;
+import de.elbe5.file.MediaData;
 import de.elbe5.request.RequestData;
 import de.elbe5.response.IResponse;
-import de.elbe5.content.ContentResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -23,12 +24,21 @@ import jakarta.servlet.jsp.PageContext;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PageData extends ContentData {
 
     public static String LAYOUT_TYPE = "Page";
+
+    public static List<Class<? extends ContentData>> childClasses = new ArrayList<>();
+    public static List<Class<? extends DocumentData>> documentClasses = new ArrayList<>();
+
+    public static List<Class<? extends ImageData>> imageClasses = new ArrayList<>();
+
+    public static List<Class<? extends MediaData>> mediaClasses = new ArrayList<>();
 
     private String keywords = "";
     protected String layout = "";
@@ -36,6 +46,27 @@ public class PageData extends ContentData {
     protected String publishedContent="";
 
     protected Map<String, SectionData> sections = new HashMap<>();
+
+    public static List<Class<? extends PagePartData>> pagePartClasses = new ArrayList<>();
+
+    public ContentBean getBean() {
+        return PageBean.getInstance();
+    }
+
+    public List<Class<? extends ContentData>> getChildClasses(){
+        return PageData.childClasses;
+    }
+    public List<Class<? extends DocumentData>> getDocumentClasses(){
+        return PageData.documentClasses;
+    }
+
+    public List<Class<? extends ImageData>> getImageClasses(){
+        return PageData.imageClasses;
+    }
+
+    public List<Class<? extends MediaData>> getMediaClasses(){
+        return PageData.mediaClasses;
+    }
 
     // base data
 

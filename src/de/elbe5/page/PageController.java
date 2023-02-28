@@ -200,7 +200,7 @@ public class PageController extends ContentController {
         checkRights(data.hasUserEditRight(rdata));
         int fromPartId = rdata.getAttributes().getInt("fromPartId", -1);
         String partType = rdata.getAttributes().getString("partType");
-        PagePartData pdata = PagePartFactory.getNewData(partType);
+        PagePartData pdata = PageBean.getInstance().getNewPagePartData(partType);
         pdata.setCreateValues(rdata);
         data.addPart(pdata, fromPartId, true);
         rdata.getAttributes().put(PagePartData.KEY_PART, pdata);

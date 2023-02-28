@@ -26,6 +26,10 @@ public class LayoutPartData extends PagePartData {
     public LayoutPartData() {
     }
 
+    public PagePartBean getBean() {
+        return LayoutPartBean.getInstance();
+    }
+
     public String getJspPath() {
         return jspBasePath + "/page";
     }
