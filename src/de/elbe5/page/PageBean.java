@@ -218,7 +218,7 @@ public class PageBean extends ContentBean {
                     part.setChangeDate(page.getChangeDate());
                     pst = part.isNew() ? pstIns : pstUpd;
                     int i = 1;
-                    pst.setString(i++, part.getClass().getSimpleName());
+                    pst.setString(i++, part.getClass().getName());
                     pst.setTimestamp(i++, Timestamp.valueOf(part.getChangeDate()));
                     pst.setInt(i++, page.getId());
                     pst.setString(i++, part.getSectionName());

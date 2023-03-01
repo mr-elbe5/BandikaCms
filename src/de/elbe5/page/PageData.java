@@ -10,9 +10,7 @@ package de.elbe5.page;
 
 import de.elbe5.base.Log;
 import de.elbe5.content.*;
-import de.elbe5.file.DocumentData;
-import de.elbe5.file.ImageData;
-import de.elbe5.file.MediaData;
+import de.elbe5.file.FileData;
 import de.elbe5.request.RequestData;
 import de.elbe5.response.IResponse;
 import org.jsoup.Jsoup;
@@ -34,11 +32,7 @@ public class PageData extends ContentData {
     public static String LAYOUT_TYPE = "Page";
 
     public static List<Class<? extends ContentData>> childClasses = new ArrayList<>();
-    public static List<Class<? extends DocumentData>> documentClasses = new ArrayList<>();
-
-    public static List<Class<? extends ImageData>> imageClasses = new ArrayList<>();
-
-    public static List<Class<? extends MediaData>> mediaClasses = new ArrayList<>();
+    public static List<Class<? extends FileData>> fileClasses = new ArrayList<>();
 
     private String keywords = "";
     protected String layout = "";
@@ -56,16 +50,8 @@ public class PageData extends ContentData {
     public List<Class<? extends ContentData>> getChildClasses(){
         return PageData.childClasses;
     }
-    public List<Class<? extends DocumentData>> getDocumentClasses(){
-        return PageData.documentClasses;
-    }
-
-    public List<Class<? extends ImageData>> getImageClasses(){
-        return PageData.imageClasses;
-    }
-
-    public List<Class<? extends MediaData>> getMediaClasses(){
-        return PageData.mediaClasses;
+    public List<Class<? extends FileData>> getFileClasses(){
+        return PageData.fileClasses;
     }
 
     // base data

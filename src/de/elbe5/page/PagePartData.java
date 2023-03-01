@@ -47,7 +47,7 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
     }
 
     public String getType() {
-        return getClass().getSimpleName();
+        return getClass().getName();
     }
 
     public String getCssClass() {
