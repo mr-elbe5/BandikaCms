@@ -34,7 +34,7 @@
                             </a>
                                     <%}
                                 } else {%>
-                            <a class="dropdown-item" href="" onclick="return addPart(<%=partData.getId()%>,'<%=$H(partData.getSectionName())%>','<%=cls.getName()%>');"><%=$SH("class."+cls.getName())%>
+                            <a class="dropdown-item" href="" onclick="return addPart(<%=partData.getId()%>,'<%=$H(partData.getSectionName())%>','<%=cls.getName()%>');"><%=$SH(cls.getName())%>
                             </a>
                             <%}
                             }%>

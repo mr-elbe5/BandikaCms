@@ -36,7 +36,7 @@
                     </a>
                     <%}
                     } else {%>
-                    <a class="dropdown-item" href="" onclick="return addPart(-1,'<%=$H(sectionData.getName())%>','<%=cls.getName()%>');"><%=$SH("class."+cls.getName())%>
+                    <a class="dropdown-item" href="" onclick="return addPart(-1,'<%=$H(sectionData.getName())%>','<%=cls.getName()%>');"><%=$SH(cls.getName())%>
                     </a>
                     <%}
                     }%>

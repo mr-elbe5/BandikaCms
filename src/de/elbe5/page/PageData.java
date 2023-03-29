@@ -170,12 +170,12 @@ public class PageData extends ContentData {
     //used in controller
     @Override
     public String getContentDataJsp() {
-        return "/WEB-INF/_jsp/page/editContentData.ajax.jsp";
+        return "/WEB-INF/_jsp/page/editData.ajax.jsp";
     }
 
     //used in jsp
     protected void displayEditContent(PageContext context, JspWriter writer, RequestData rdata) throws IOException, ServletException {
-        context.include("/WEB-INF/_jsp/page/editPageContent.inc.jsp");
+        context.include("/WEB-INF/_jsp/page/editContent.inc.jsp");
     }
 
     //used in jsp

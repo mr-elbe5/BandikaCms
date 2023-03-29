@@ -22,11 +22,13 @@
     RequestData rdata = RequestData.getRequestData(request);
     PageData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, PageData.class);
     List<LayoutData> pageLayouts = LayoutCache.getLayouts(PageData.LAYOUT_TYPE);
-    String url = "/ctrl/page/saveContentData/" + contentData.getId();%>
+    String url = "/ctrl/page/saveData/" + contentData.getId();
+    String header = contentData.isNew() ? $SH("_newContent") : $SH("_editContentData");
+%>
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title"><%=$SH("_editContentData")%>
+            <h5 class="modal-title"><%=header%>:&nbsp;<%=$SH(contentData.getType())%>
             </h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
