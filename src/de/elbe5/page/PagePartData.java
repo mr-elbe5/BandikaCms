@@ -12,6 +12,8 @@ import de.elbe5.content.ContentBean;
 import de.elbe5.data.BaseData;
 import de.elbe5.request.RequestData;
 
+import java.util.UUID;
+
 public abstract class PagePartData extends BaseData implements Comparable<PagePartData> {
 
     public static final String KEY_PART = "partData";
@@ -32,7 +34,7 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
     }
 
     public void copyData(PagePartData data) {
-        setId(ContentBean.getInstance().getNextId());
+        setId(UUID.randomUUID().toString());
         setEditable((data.isEditable()));
     }
 
@@ -103,13 +105,13 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
 
     public void prepareCopy() {
         setNew(true);
-        setId(PagePartBean.getInstance().getNextPartId());
+        setId(UUID.randomUUID().toString());
     }
 
     public void setCreateValues(RequestData rdata) {
         String sectionName = rdata.getAttributes().getString("sectionName");
         setSectionName(sectionName);
-        setId(PagePartBean.getInstance().getNextPartId());
+        setId(UUID.randomUUID().toString());
         setNew(true);
     }
 

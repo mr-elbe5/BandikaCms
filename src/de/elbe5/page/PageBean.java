@@ -50,7 +50,7 @@ public class PageBean extends ContentBean {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(GET_CONTENT_EXTRAS_SQL);
-            pst.setInt(1, data.getId());
+            pst.setString(1, data.getId());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     int i = 1;
@@ -115,7 +115,7 @@ public class PageBean extends ContentBean {
         else
             pst.setTimestamp(i++, Timestamp.valueOf(data.getPublishDate()));
         pst.setString(i++,data.getPublishedContent());
-        pst.setInt(i, data.getId());
+        pst.setString(i, data.getId());
     }
 
     public boolean publishPage(PageData data) {
@@ -140,7 +140,7 @@ public class PageBean extends ContentBean {
             int i = 1;
             pst.setTimestamp(i++, Timestamp.valueOf(data.getPublishDate()));
             pst.setString(i++,data.getPublishedContent());
-            pst.setInt(i, data.getId());
+            pst.setString(i, data.getId());
             pst.executeUpdate();
             pst.close();
         } finally {
@@ -169,7 +169,7 @@ public class PageBean extends ContentBean {
         PagePartData part;
         try {
             pst = con.prepareStatement(READ_PARTS_SQL);
-            pst.setInt(1, contentData.getId());
+            pst.setString(1, contentData.getId());
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     int i = 1;
@@ -178,12 +178,13 @@ public class PageBean extends ContentBean {
                     if (part != null) {
                         part.setSectionName(rs.getString(i++));
                         part.setPosition(rs.getInt(i++));
-                        part.setId(rs.getInt(i++));
+                        part.setId(rs.getString(i++));
                         part.setChangeDate(rs.getTimestamp(i).toLocalDateTime());
                         PagePartBean extBean = part.getBean();
                         if (extBean != null)
                             extBean.readPartExtras(con, part);
-                        contentData.addPart(part, -1, false);
+                        //todo?
+                        contentData.addPart(part, "", false);
                     }
                 }
             }
@@ -206,7 +207,7 @@ public class PageBean extends ContentBean {
         Set<Integer> ids=new HashSet<>();
         try {
             pstIds = con.prepareStatement(GET_PART_IDS_SQL);
-            pstIds.setInt(1,page.getId());
+            pstIds.setString(1,page.getId());
             ResultSet rs= pstIds.executeQuery();
             while (rs.next())
                 ids.add(rs.getInt(1));
@@ -220,10 +221,10 @@ public class PageBean extends ContentBean {
                     int i = 1;
                     pst.setString(i++, part.getClass().getName());
                     pst.setTimestamp(i++, Timestamp.valueOf(part.getChangeDate()));
-                    pst.setInt(i++, page.getId());
+                    pst.setString(i++, page.getId());
                     pst.setString(i++, part.getSectionName());
                     pst.setInt(i++, part.getPosition());
-                    pst.setInt(i, part.getId());
+                    pst.setString(i, part.getId());
                     pst.executeUpdate();
                     PagePartBean extBean = part.getBean();
                     if (extBean != null)

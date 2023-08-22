@@ -58,7 +58,7 @@ public class PageController extends ContentController {
     @Override
     public IResponse openEditContent(RequestData rdata) {
         assertSessionCall(rdata);
-        int contentId = rdata.getId();
+        String contentId = rdata.getId();
         PageData data = ContentBean.getInstance().getContent(contentId,PageData.class);
         checkRights(data.hasUserEditRight(rdata));
         data.setEditValues(ContentCache.getContent(data.getId()), rdata);
@@ -80,7 +80,7 @@ public class PageController extends ContentController {
     @Override
     public IResponse saveContent(RequestData rdata) {
         assertSessionCall(rdata);
-        int contentId = rdata.getId();
+        String contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         checkRights(data.hasUserEditRight(rdata));
         data.readFrontendRequestData(rdata);
@@ -99,7 +99,7 @@ public class PageController extends ContentController {
     @Override
     public IResponse cancelEditContent(RequestData rdata) {
         assertSessionCall(rdata);
-        int contentId = rdata.getId();
+        String contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         checkRights(data.hasUserEditRight(rdata));
         data.stopEditing();
@@ -108,7 +108,7 @@ public class PageController extends ContentController {
 
     public IResponse showDraft(RequestData rdata){
         assertSessionCall(rdata);
-        int contentId = rdata.getId();
+        String contentId = rdata.getId();
         ContentData data = ContentCache.getContent(contentId);
         checkRights(data.hasUserReadRight(rdata));
         data.setViewType(ContentData.VIEW_TYPE_SHOW);
@@ -117,7 +117,7 @@ public class PageController extends ContentController {
 
     public IResponse showPublished(RequestData rdata){
         assertSessionCall(rdata);
-        int contentId = rdata.getId();
+        String contentId = rdata.getId();
         ContentData data = ContentCache.getContent(contentId);
         checkRights(data.hasUserReadRight(rdata));
         data.setViewType(ContentData.VIEW_TYPE_SHOWPUBLISHED);
@@ -127,7 +127,7 @@ public class PageController extends ContentController {
     //frontend
     public IResponse publishPage(RequestData rdata){
         assertSessionCall(rdata);
-        int contentId = rdata.getId();
+        String contentId = rdata.getId();
         Log.log("Publishing page" + contentId);
         PageData data=ContentBean.getInstance().getContent(contentId,PageData.class);
         checkRights(data.hasUserApproveRight(rdata));
@@ -159,13 +159,13 @@ public class PageController extends ContentController {
         image.readSettingsRequestData(rdata);
         ImageBean.getInstance().saveFile(image,true);
         ContentCache.setDirty();
-        rdata.getAttributes().put("imageId", Integer.toString(image.getId()));
+        rdata.getAttributes().put("imageId", image.getId());
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/addImage.ajax.jsp");
     }
 
     public IResponse republishPage(RequestData rdata) {
         assertSessionCall(rdata);
-        int contentId = rdata.getId();
+        String contentId = rdata.getId();
 
         PageData page = ContentCache.getContent(contentId, PageData.class);
         if (page != null){
@@ -195,10 +195,11 @@ public class PageController extends ContentController {
 
     public IResponse addPart(RequestData rdata) {
         assertSessionCall(rdata);
-        int contentId = rdata.getId();
+        String contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         checkRights(data.hasUserEditRight(rdata));
-        int fromPartId = rdata.getAttributes().getInt("fromPartId", -1);
+        //todo?
+        String fromPartId = rdata.getAttributes().getString("fromPartId", "");
         String partType = rdata.getAttributes().getString("partType");
         PagePartData pdata = PageBean.getInstance().getNewPagePartData(partType);
         pdata.setCreateValues(rdata);

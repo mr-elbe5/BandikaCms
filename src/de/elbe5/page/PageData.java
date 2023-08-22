@@ -132,7 +132,7 @@ public class PageData extends ContentData {
         }
     }
 
-    public PagePartData getPart(int pid) {
+    public PagePartData getPart(String pid) {
         for (SectionData section : getSections().values()) {
             PagePartData part = section.getPart(pid);
             if (part!=null)
@@ -141,7 +141,7 @@ public class PageData extends ContentData {
         return null;
     }
 
-    public void addPart(PagePartData part, int fromPartId, boolean setRanking) {
+    public void addPart(PagePartData part, String fromPartId, boolean setRanking) {
         SectionData section = getSection(part.getSectionName());
         if (section == null) {
             section = new SectionData();
@@ -152,12 +152,12 @@ public class PageData extends ContentData {
         section.addPart(part, fromPartId, setRanking);
     }
 
-    public void movePart(String sectionName, int id, int dir) {
+    public void movePart(String sectionName, String id, int dir) {
         SectionData section = getSection(sectionName);
         section.movePart(id, dir);
     }
 
-    public void deletePart(int pid) {
+    public void deletePart(String pid) {
         for (SectionData section : getSections().values()) {
             PagePartData part = section.getPart(pid);
             if (part!=null) {

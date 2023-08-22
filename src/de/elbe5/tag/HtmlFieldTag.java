@@ -48,8 +48,8 @@ public class HtmlFieldTag extends FieldTag {
                         field.getIdentifier(),
                         StringHelper.toHtml(field.getContent()),
                         field.getIdentifier(),
-                        Integer.toString(contentData.getId()),
-                        Integer.toString(contentData.getId()));
+                        contentData.getId(),
+                        contentData.getId());
             } else {
                 try {
                     if (field.getContent().isEmpty()) {

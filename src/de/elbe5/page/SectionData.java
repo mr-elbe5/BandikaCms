@@ -19,7 +19,7 @@ public class SectionData {
     public static final String KEY_SECTION = "sectionData";
 
     protected String name = "";
-    protected int contentId = 0;
+    protected String contentId = "";
     protected String cssClass = "";
     protected List<PagePartData> parts = new ArrayList<>();
 
@@ -50,15 +50,15 @@ public class SectionData {
         return "section_"+getName();
     }
 
-    public int getContentId() {
+    public String getContentId() {
         return contentId;
     }
 
-    public void setPageId(int contentId) {
+    public void setPageId(String contentId) {
         this.contentId = contentId;
     }
 
-    public void setContentId(int contentId) {
+    public void setContentId(String contentId) {
         this.contentId = contentId;
     }
 
@@ -78,16 +78,16 @@ public class SectionData {
         Collections.sort(parts);
     }
 
-    public PagePartData getPart(int pid) {
+    public PagePartData getPart(String pid) {
         for (PagePartData pdata : parts) {
-            if (pdata.getId() == pid) {
+            if (pdata.getId().equals(pid)) {
                 return pdata;
             }
         }
         return null;
     }
 
-    public<T extends PagePartData> T getPart(int pid, Class<T> cls) {
+    public<T extends PagePartData> T getPart(String pid, Class<T> cls) {
         try{
             return cls.cast(getPart(pid));
         }
@@ -97,12 +97,13 @@ public class SectionData {
         return null;
     }
 
-    public void addPart(PagePartData part, int fromPartId, boolean setRanking) {
+    public void addPart(PagePartData part, String fromPartId, boolean setRanking) {
         boolean found = false;
-        if (fromPartId != -1) {
+        //todo?
+        if (!fromPartId.equals("")) {
             for (int i = 0; i < parts.size(); i++) {
                 PagePartData ppd = parts.get(i);
-                if (ppd.getId() == fromPartId) {
+                if (ppd.getId().equals(fromPartId)) {
                     parts.add(i + 1, part);
                     found = true;
                     break;
@@ -119,10 +120,10 @@ public class SectionData {
         }
     }
 
-    public void movePart(int id, int dir) {
+    public void movePart(String id, int dir) {
         for (int i = 0; i < parts.size(); i++) {
             PagePartData ppd = parts.get(i);
-            if (ppd.getId() == id) {
+            if (ppd.getId().equals(id)) {
                 parts.remove(i);
                 int idx = i + dir;
                 if (idx > parts.size() - 1) {
@@ -140,10 +141,10 @@ public class SectionData {
         }
     }
 
-    public void deletePart(int id) {
+    public void deletePart(String id) {
         for (int i = 0; i < parts.size(); i++) {
             PagePartData ppd = parts.get(i);
-            if (ppd.getId() == id) {
+            if (ppd.getId().equals(id)) {
                 parts.remove(i);
                 return;
             }

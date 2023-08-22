@@ -33,7 +33,7 @@ public class LayoutPartBean extends PagePartBean {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(READ_PART_EXTRAS_SQL);
-            pst.setInt(1, partData.getId());
+            pst.setString(1, partData.getId());
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     int i = 1;
@@ -54,7 +54,7 @@ public class LayoutPartBean extends PagePartBean {
         data.getFields().clear();
         try {
             pst = con.prepareStatement(READ_PART_FIELDS_SQL);
-            pst.setInt(1, data.getId());
+            pst.setString(1, data.getId());
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     int i = 1;
@@ -83,7 +83,7 @@ public class LayoutPartBean extends PagePartBean {
             pst = con.prepareStatement(data.isNew() ? INSERT_PART_EXTRAS_SQL : UPDATE_PART_EXTRAS_SQL);
             int i = 1;
             pst.setString(i++, data.getLayout());
-            pst.setInt(i, data.getId());
+            pst.setString(i, data.getId());
             pst.executeUpdate();
             writeAllPartFields(con, data);
         } finally {
@@ -99,7 +99,7 @@ public class LayoutPartBean extends PagePartBean {
         PreparedStatement pstIns = null;
         try {
             pstDelFields = con.prepareStatement(DELETE_PART_FIELDS_SQL);
-            pstDelFields.setInt(1, part.getId());
+            pstDelFields.setString(1, part.getId());
             pstDelFields.executeUpdate();
             pstDelFields.close();
             pstIns = con.prepareStatement(INSERT_PART_FIELD_SQL);
@@ -108,7 +108,7 @@ public class LayoutPartBean extends PagePartBean {
                 pstIns.setString(i++, field.getFieldType());
                 pstIns.setString(i++, field.getName());
                 pstIns.setString(i++, field.getContent());
-                pstIns.setInt(i, part.getId());
+                pstIns.setString(i, part.getId());
                 pstIns.executeUpdate();
             }
         } finally {

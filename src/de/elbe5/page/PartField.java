@@ -12,7 +12,7 @@ import de.elbe5.request.RequestData;
 
 public abstract class PartField implements Cloneable {
 
-    protected int partId = 0;
+    protected String partId = "";
     protected String name = "";
     protected String content = "";
 
@@ -21,7 +21,7 @@ public abstract class PartField implements Cloneable {
         return super.clone();
     }
 
-    public void setPartId(int partId) {
+    public void setPartId(String partId) {
         this.partId = partId;
     }
 
@@ -34,7 +34,7 @@ public abstract class PartField implements Cloneable {
     }
 
     public String getIdentifier() {
-        return Integer.toString(partId) + '_' + name;
+        return partId + '_' + name;
     }
 
     public String getContent() {
