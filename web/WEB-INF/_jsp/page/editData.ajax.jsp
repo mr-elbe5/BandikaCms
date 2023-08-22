@@ -39,7 +39,7 @@
                 <form:formerror/>
                 <h3><%=$SH("_settings")%>
                 </h3>
-                <form:line label="_idAndUrl"><%=$I(contentData.getId())%> - <%=$H(contentData.getUrl())%>
+                <form:line label="_idAndUrl"><%=contentData.getId()%> - <%=$H(contentData.getUrl())%>
                 </form:line>
                 <form:line label="_creation"><%=$DT(contentData.getCreationDate())%> - <%=$H(UserCache.getUser(contentData.getCreatorId()).getName())%>
                 </form:line>
