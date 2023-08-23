@@ -23,6 +23,15 @@ END
 $$
     LANGUAGE plpgsql;
 
+CREATE TABLE IF NOT EXISTS t_content_log
+(
+    content_id INTEGER     NOT NULL,
+    day        DATE        NOT NULL,
+    count      INTEGER 	   NOT NULL,
+    CONSTRAINT t_content_log_pk PRIMARY KEY (content_id, day),
+    CONSTRAINT t_content_log_fk1 FOREIGN KEY (content_id) REFERENCES t_content (id) ON DELETE CASCADE
+);
+
 CREATE SEQUENCE s_page_part_id START 1000;
 
 CREATE TABLE IF NOT EXISTS t_page_part
