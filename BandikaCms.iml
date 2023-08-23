@@ -20,7 +20,5 @@
     <orderEntry type="library" exported="" name="baselibs" level="project" />
     <orderEntry type="library" name="catalina" level="project" />
     <orderEntry type="module" module-name="BandikaBase" exported="" />
-    <orderEntry type="module" module-name="BandikaWebBase" exported="" />
-    <orderEntry type="module" module-name="BandikaContent" exported="" />
   </component>
 </module>
