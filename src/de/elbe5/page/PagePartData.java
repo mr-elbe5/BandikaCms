@@ -9,7 +9,7 @@
 package de.elbe5.page;
 
 import de.elbe5.content.ContentBean;
-import de.elbe5.data.BaseData;
+import de.elbe5.base.BaseData;
 import de.elbe5.request.RequestData;
 
 public abstract class PagePartData extends BaseData implements Comparable<PagePartData> {
