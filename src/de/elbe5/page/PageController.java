@@ -27,7 +27,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-public class PageController extends ContentController {
+public class PageController extends ContentLogController {
 
     public static final String KEY = "page";
 
@@ -49,14 +49,7 @@ public class PageController extends ContentController {
     @Override
     public String getKey() {
         return KEY;
-    }
-
-    @Override
-    protected void increaseViewCount(ContentData data){
-        if (Configuration.isLogContent()) {
-            ContentLogBean.getInstance().increaseViewCount(data.getId());
-        }
-    }
+    };
 
     //frontend
     @Override
