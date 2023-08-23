@@ -12,10 +12,7 @@ import de.elbe5.application.Configuration;
 import de.elbe5.application.MailHelper;
 import de.elbe5.base.LocalizedStrings;
 import de.elbe5.base.Log;
-import de.elbe5.content.ContentBean;
-import de.elbe5.content.ContentCache;
-import de.elbe5.content.ContentController;
-import de.elbe5.content.ContentData;
+import de.elbe5.content.*;
 import de.elbe5.file.ImageBean;
 import de.elbe5.file.ImageData;
 import de.elbe5.request.*;
@@ -52,6 +49,13 @@ public class PageController extends ContentController {
     @Override
     public String getKey() {
         return KEY;
+    }
+
+    @Override
+    protected void increaseViewCount(ContentData data){
+        if (Configuration.isLogContent()) {
+            ContentLogBean.getInstance().increaseViewCount(data.getId());
+        }
     }
 
     //frontend
