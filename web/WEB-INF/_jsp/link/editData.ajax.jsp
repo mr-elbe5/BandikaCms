@@ -12,7 +12,6 @@
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.user.UserCache" %>
-<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ page import="de.elbe5.user.UserData" %>
 <%@ page import="de.elbe5.link.LinkData" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>

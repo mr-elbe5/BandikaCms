@@ -195,7 +195,7 @@ public class PageData extends ContentData {
     public void displayContent(PageContext context, RequestData rdata) throws IOException, ServletException {
         JspWriter writer = context.getOut();
         switch (getViewType()) {
-            case VIEW_TYPE_PUBLISH: {
+            case VIEW_TYPE_PUBLISH -> {
                 writer.write("<div id=\"pageContent\" class=\"viewArea\">");
                 StringWriter stringWriter = new StringWriter();
                 context.pushBody(stringWriter);
@@ -212,21 +212,18 @@ public class PageData extends ContentData {
                 ContentCache.setDirty();
                 writer.write("</div>");
             }
-            break;
-            case VIEW_TYPE_EDIT: {
+            case VIEW_TYPE_EDIT -> {
                 writer.write("<div id=\"pageContent\" class=\"editArea\">");
                 displayEditContent(context, context.getOut(), rdata);
                 writer.write("</div>");
             }
-            break;
-            case VIEW_TYPE_SHOWPUBLISHED: {
+            case VIEW_TYPE_SHOWPUBLISHED -> {
                 writer.write("<div id=\"pageContent\" class=\"viewArea\">");
                 if (isPublished())
                     displayPublishedContent(context, context.getOut(), rdata);
                 writer.write("</div>");
             }
-            break;
-            default: {
+            default -> {
                 writer.write("<div id=\"pageContent\" class=\"viewArea\">");
                 if (isPublished() && !hasUserEditRight(rdata))
                     displayPublishedContent(context, context.getOut(), rdata);
@@ -234,16 +231,14 @@ public class PageData extends ContentData {
                     displayDraftContent(context, context.getOut(), rdata);
                 writer.write("</div>");
             }
-            break;
         }
     }
 
     // multiple data
 
     public void copyData(ContentData data, RequestData rdata) {
-        if (!(data instanceof PageData))
+        if (!(data instanceof PageData hcdata))
             return;
-        PageData hcdata=(PageData)data;
         super.copyData(hcdata,rdata);
         setKeywords(hcdata.getKeywords());
         setLayout(hcdata.getLayout());

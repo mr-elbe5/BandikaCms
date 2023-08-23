@@ -20,6 +20,7 @@
     ContentData contentData = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT,ContentData.class);
     int imageId=rdata.getAttributes().getInt("imageId");
     ImageData image = ContentCache.getFile(imageId,ImageData.class);
+    assert(image != null);
     if (contentData.hasUserReadRight(rdata)) {
 %>
 <li>

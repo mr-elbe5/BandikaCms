@@ -9,17 +9,14 @@
 <%response.setContentType("text/html;charset=UTF-8");%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
-<%@ page import="de.elbe5.content.ContentDayLog" %>
 <%@ page import="java.util.List" %>
-<%@ page import="de.elbe5.content.ContentBean" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.content.ContentLog" %>
-<%@ page import="de.elbe5.content.ContentCache" %>
 <%@ page import="de.elbe5.base.DateHelper" %>
+<%@ page import="de.elbe5.content.*" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    List<ContentDayLog> dayLogs = ContentBean.getInstance().getAllViewCounts();
+    List<ContentDayLog> dayLogs = ContentLogBean.getInstance().getAllViewCounts();
 %>
 <div id="pageContent">
     <form:message/>
