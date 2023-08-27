@@ -79,7 +79,7 @@ public class LinkData extends ContentData {
 
     @Override
     public String getBackendEditJsp() {
-        return "/WEB-INF/_jsp/link/backendEditContent.ajax.jsp";
+        return "/WEB-INF/_jsp/link/editBackendContent.ajax.jsp";
     }
 
     @Override

@@ -184,7 +184,7 @@ public class PageController extends ContentLogController {
                 Log.error("could not send publishing request", e);
             }
         }
-        return new ForwardResponse("/ctrl/admin/openContentAdministration");
+        return new ForwardResponse("/ctrl/admin/openContentAdministration?contentId=contentId");
     }
 
     public IResponse addPart(RequestData rdata) {
