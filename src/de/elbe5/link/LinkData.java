@@ -78,13 +78,13 @@ public class LinkData extends ContentData {
     }
 
     @Override
-    public String getContentDataJsp() {
-        return "/WEB-INF/_jsp/link/editData.ajax.jsp";
+    public String getBackendEditJsp() {
+        return "/WEB-INF/_jsp/link/backendEditContent.ajax.jsp";
     }
 
     @Override
-    public void readRequestData(RequestData rdata) {
-        super.readRequestData(rdata);
+    public void readBackendRequestData(RequestData rdata) {
+        super.readBackendRequestData(rdata);
         setLinkUrl(rdata.getAttributes().getString("linkUrl"));
         setLinkIcon(rdata.getAttributes().getString("linkIcon"));
     }

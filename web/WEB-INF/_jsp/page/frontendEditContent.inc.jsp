@@ -17,10 +17,10 @@
     RequestData rdata = RequestData.getRequestData(request);
     PageData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, PageData.class);
 %>
-    <form action="/ctrl/page/saveContent/<%=contentData.getId()%>" method="post" id="pageform" name="pageform" accept-charset="UTF-8">
+    <form action="/ctrl/page/saveFrontendContent/<%=contentData.getId()%>" method="post" id="pageform" name="pageform" accept-charset="UTF-8">
         <div class="btn-group btn-group-sm pageEditButtons">
             <button type="submit" class="btn btn-sm btn-success" onclick="updateEditors();"><%=$SH("_savePage")%></button>
-            <button class="btn btn-sm btn-secondary" onclick="return linkTo('/ctrl/page/cancelEditContent/<%=contentData.getId()%>');"><%=$SH("_cancel")%></button>
+            <button class="btn btn-sm btn-secondary" onclick="return linkTo('/ctrl/page/cancelEditFrontendContent/<%=contentData.getId()%>');"><%=$SH("_cancel")%></button>
         </div>
         <jsp:include page="<%=contentData.getLayoutUrl()%>" flush="true" />
     </form>

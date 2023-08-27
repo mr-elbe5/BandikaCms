@@ -14,7 +14,7 @@ import de.elbe5.request.RequestData;
 import de.elbe5.response.IResponse;
 import de.elbe5.rights.SystemZone;
 
-public class CmsContentAdminController extends ContentAdminController {
+public class CmsAdminController extends AdminController {
 
     public IResponse openContentLog(RequestData rdata) {
         checkRights(rdata.hasContentEditRight());

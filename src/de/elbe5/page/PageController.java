@@ -51,9 +51,8 @@ public class PageController extends ContentLogController {
         return KEY;
     };
 
-    //frontend
     @Override
-    public IResponse openEditContent(RequestData rdata) {
+    public IResponse openEditFrontendContent(RequestData rdata) {
         assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = ContentBean.getInstance().getContent(contentId,PageData.class);
@@ -64,18 +63,16 @@ public class PageController extends ContentLogController {
         return data.getDefaultView();
     }
 
-    //frontend
     @Override
-    public IResponse showEditContent(RequestData rdata) {
+    public IResponse showEditFrontendContent(RequestData rdata) {
         assertSessionCall(rdata);
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         checkRights(data.hasUserEditRight(rdata));
         return data.getDefaultView();
     }
 
-    //frontend
     @Override
-    public IResponse saveContent(RequestData rdata) {
+    public IResponse saveFrontendContent(RequestData rdata) {
         assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
@@ -92,12 +89,12 @@ public class PageController extends ContentLogController {
         return show(rdata);
     }
 
-    //frontend
     @Override
-    public IResponse cancelEditContent(RequestData rdata) {
+    public IResponse cancelEditFrontendContent(RequestData rdata) {
         assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
+        assert data.getId() == contentId;
         checkRights(data.hasUserEditRight(rdata));
         data.stopEditing();
         return data.getDefaultView();

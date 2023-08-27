@@ -10,19 +10,19 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="java.util.List" %>
 <%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.user.UserCache" %>
-<%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.layout.LayoutData" %>
-<%@ page import="de.elbe5.layout.LayoutCache" %>
-<%@ page import="de.elbe5.request.ContentRequestKeys" %>
+<%@ page import="de.elbe5.user.UserData" %>
+<%@ page import="de.elbe5.link.LinkData" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, PageData.class);
-    List<LayoutData> pageLayouts = LayoutCache.getLayouts(PageData.LAYOUT_TYPE);
-    String url = "/ctrl/page/saveData/" + contentData.getId();
+    LinkData contentData = ContentData.getSessionContent(rdata, LinkData.class);
+    String url = "/ctrl/content/saveBackendContent/" + contentData.getId();
+    UserData creator = UserCache.getUser(contentData.getCreatorId());
+    String creatorName = creator == null ? "" : creator.getName();
+    UserData changer = UserCache.getUser(contentData.getChangerId());
+    String changerName = changer == null ? "" : changer.getName();
     String header = contentData.isNew() ? $SH("_newContent") : $SH("_editContentData");
 %>
 <div class="modal-dialog modal-lg" role="document">
@@ -41,14 +41,15 @@
                 </h3>
                 <form:line label="_idAndUrl"><%=$I(contentData.getId())%> - <%=$H(contentData.getUrl())%>
                 </form:line>
-                <form:line label="_creation"><%=$DT(contentData.getCreationDate())%> - <%=$H(UserCache.getUser(contentData.getCreatorId()).getName())%>
+                <form:line label="_creation"><%=$DT(contentData.getCreationDate())%> - <%=$H(creatorName)%>
                 </form:line>
-                <form:line label="_lastChange"><%=$DT(contentData.getChangeDate())%> - <%=$H(UserCache.getUser(contentData.getChangerId()).getName())%>
+                <form:line label="_lastChange"><%=$DT(contentData.getChangeDate())%> - <%=$H(changerName)%>
                 </form:line>
 
                 <form:text name="displayName" label="_name" required="true" value="<%=$H(contentData.getDisplayName())%>"/>
+                <form:text name="linkIcon" label="_linkIcon" required="true" value="<%=$H(contentData.getLinkIcon())%>"/>
                 <form:textarea name="description" label="_description" height="5em"><%=$H(contentData.getDescription())%></form:textarea>
-                <form:text name="keywords" label="_keywords" value="<%=$H(contentData.getKeywords())%>"/>
+                <form:text name="linkUrl" label="_linkUrl" required="true" value="<%=$H(contentData.getLinkUrl())%>"/>
                 <form:select name="accessType" label="_accessType">
                     <option value="<%=ContentData.ACCESS_TYPE_OPEN%>" <%=contentData.getNavType().equals(ContentData.ACCESS_TYPE_OPEN) ? "selected" : ""%>><%=$SH("system.accessTypeOpen")%>
                     </option>
@@ -68,16 +69,6 @@
                 <form:line label="_active" padded="true">
                     <form:check name="active" value="true" checked="<%=contentData.isActive()%>"/>
                 </form:line>
-                <form:select name="layout" label="_pageLayout" required="true">
-                    <option value="" <%=contentData.getLayout().isEmpty() ? "selected" : ""%>><%=$SH("_pleaseSelect")%>
-                    </option>
-                    <% for (LayoutData layout : pageLayouts) {
-                        String layoutName=layout.getName();
-                    %>
-                    <option value="<%=$H(layoutName)%>" <%=layoutName.equals(contentData.getLayout()) ? "selected" : ""%>><%=$SH(layout.getKey())%>
-                    </option>
-                    <%}%>
-                </form:select>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"><%=$SH("_close")%>

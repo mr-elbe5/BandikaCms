@@ -169,13 +169,13 @@ public class PageData extends ContentData {
 
     //used in controller
     @Override
-    public String getContentDataJsp() {
-        return "/WEB-INF/_jsp/page/editData.ajax.jsp";
+    public String getBackendEditJsp() {
+        return "/WEB-INF/_jsp/page/backendEditContent.ajax.jsp";
     }
 
     //used in jsp
     protected void displayEditContent(PageContext context, JspWriter writer, RequestData rdata) throws IOException, ServletException {
-        context.include("/WEB-INF/_jsp/page/editContent.inc.jsp");
+        context.include("/WEB-INF/_jsp/page/frontendEditContent.inc.jsp");
     }
 
     //used in jsp
@@ -251,8 +251,8 @@ public class PageData extends ContentData {
     }
 
     @Override
-    public void readRequestData(RequestData rdata) {
-        super.readRequestData(rdata);
+    public void readBackendRequestData(RequestData rdata) {
+        super.readBackendRequestData(rdata);
         setKeywords(rdata.getAttributes().getString("keywords"));
         setLayout(rdata.getAttributes().getString("layout"));
         if (layout.isEmpty()) {
