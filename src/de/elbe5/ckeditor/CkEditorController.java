@@ -63,7 +63,7 @@ public class CkEditorController extends ContentController {
         checkRights(data.hasUserEditRight(rdata));
         ImageData image=new ImageData();
         image.setCreateValues(data,rdata);
-        image.readSettingsRequestData(rdata);
+        image.readRequestData(rdata);
         ImageBean.getInstance().saveFile(image,true);
         ContentCache.setDirty();
         rdata.getAttributes().put("imageId", Integer.toString(image.getId()));

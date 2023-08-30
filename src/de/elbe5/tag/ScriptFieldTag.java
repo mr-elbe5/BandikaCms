@@ -12,6 +12,7 @@ import de.elbe5.base.Log;
 import de.elbe5.base.StringFormatter;
 import de.elbe5.base.StringHelper;
 import de.elbe5.content.ContentData;
+import de.elbe5.content.ContentViewType;
 import de.elbe5.page.PageData;
 import de.elbe5.page.LayoutPartData;
 import de.elbe5.page.PagePartData;
@@ -35,7 +36,7 @@ public class ScriptFieldTag extends FieldTag {
 
             PartScriptField field = partData.ensureScriptField(name);
 
-            boolean editMode = contentData.getViewType().equals(ContentData.VIEW_TYPE_EDIT);
+            boolean editMode = contentData.getViewType().equals(ContentViewType.EDIT);
             String content = field.getContent();
             if (editMode) {
                 StringFormatter.write(writer, "<textarea class=\"editField\" name=\"{1}\" rows=\"5\" >{2}</textarea>", field.getIdentifier(), StringHelper.toHtml(content));

@@ -195,7 +195,7 @@ public class PageData extends ContentData {
     public void displayContent(PageContext context, RequestData rdata) throws IOException, ServletException {
         JspWriter writer = context.getOut();
         switch (getViewType()) {
-            case VIEW_TYPE_PUBLISH -> {
+            case PUBLISH -> {
                 writer.write("<div id=\"pageContent\" class=\"viewArea\">");
                 StringWriter stringWriter = new StringWriter();
                 context.pushBody(stringWriter);
@@ -208,16 +208,16 @@ public class PageData extends ContentData {
                     Log.error("error writing published content");
                 }
                 writer.write(getPublishedContent());
-                setViewType(ContentData.VIEW_TYPE_SHOW);
+                setViewType(ContentViewType.SHOW);
                 ContentCache.setDirty();
                 writer.write("</div>");
             }
-            case VIEW_TYPE_EDIT -> {
+            case EDIT -> {
                 writer.write("<div id=\"pageContent\" class=\"editArea\">");
                 displayEditContent(context, context.getOut(), rdata);
                 writer.write("</div>");
             }
-            case VIEW_TYPE_SHOWPUBLISHED -> {
+            case PUBLISHED -> {
                 writer.write("<div id=\"pageContent\" class=\"viewArea\">");
                 if (isPublished())
                     displayPublishedContent(context, context.getOut(), rdata);
@@ -235,20 +235,6 @@ public class PageData extends ContentData {
     }
 
     // multiple data
-
-    public void copyData(ContentData data, RequestData rdata) {
-        if (!(data instanceof PageData hcdata))
-            return;
-        super.copyData(hcdata,rdata);
-        setKeywords(hcdata.getKeywords());
-        setLayout(hcdata.getLayout());
-        for (String sectionName : hcdata.sections.keySet()) {
-            SectionData section = new SectionData();
-            section.setPageId(getId());
-            section.copyData(hcdata.sections.get(sectionName));
-            sections.put(sectionName, section);
-        }
-    }
 
     @Override
     public void readBackendRequestData(RequestData rdata) {

@@ -57,7 +57,7 @@ public class PageController extends ContentLogController {
         int contentId = rdata.getId();
         PageData data = ContentBean.getInstance().getContent(contentId,PageData.class);
         checkRights(data.hasUserEditRight(rdata));
-        data.setEditValues(ContentCache.getContent(data.getId()), rdata);
+        data.setUpdateValues(ContentCache.getContent(data.getId()), rdata);
         data.startEditing();
         rdata.setSessionObject(ContentRequestKeys.KEY_CONTENT, data);
         return data.getDefaultView();
@@ -83,7 +83,7 @@ public class PageController extends ContentLogController {
             setSaveError(rdata);
             return data.getDefaultView();
         }
-        data.setViewType(ContentData.VIEW_TYPE_SHOW);
+        data.setViewType(ContentViewType.SHOW);
         rdata.removeSessionObject(ContentRequestKeys.KEY_CONTENT);
         ContentCache.setDirty();
         return show(rdata);
@@ -105,7 +105,7 @@ public class PageController extends ContentLogController {
         int contentId = rdata.getId();
         ContentData data = ContentCache.getContent(contentId);
         checkRights(data.hasUserReadRight(rdata));
-        data.setViewType(ContentData.VIEW_TYPE_SHOW);
+        data.setViewType(ContentViewType.SHOW);
         return data.getDefaultView();
     }
 
@@ -114,7 +114,7 @@ public class PageController extends ContentLogController {
         int contentId = rdata.getId();
         ContentData data = ContentCache.getContent(contentId);
         checkRights(data.hasUserReadRight(rdata));
-        data.setViewType(ContentData.VIEW_TYPE_SHOWPUBLISHED);
+        data.setViewType(ContentViewType.PUBLISHED);
         return data.getDefaultView();
     }
 
@@ -125,7 +125,7 @@ public class PageController extends ContentLogController {
         Log.log("Publishing page" + contentId);
         PageData data=ContentBean.getInstance().getContent(contentId,PageData.class);
         checkRights(data.hasUserApproveRight(rdata));
-        data.setViewType(ContentData.VIEW_TYPE_PUBLISH);
+        data.setViewType(ContentViewType.PUBLISH);
         data.setPublishDate(PageBean.getInstance().getServerTime());
         return data.getDefaultView();
     }
@@ -150,7 +150,7 @@ public class PageController extends ContentLogController {
         checkRights(data.hasUserEditRight(rdata));
         ImageData image=new ImageData();
         image.setCreateValues(data,rdata);
-        image.readSettingsRequestData(rdata);
+        image.readRequestData(rdata);
         ImageBean.getInstance().saveFile(image,true);
         ContentCache.setDirty();
         rdata.getAttributes().put("imageId", Integer.toString(image.getId()));

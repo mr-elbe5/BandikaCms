@@ -43,11 +43,6 @@ public class LinkData extends ContentData {
         return LinkData.fileClasses;
     }
 
-    public void copyData(LinkData data, RequestData rdata) {
-        super.copyData(data, rdata);
-        linkUrl = data.linkUrl;
-    }
-
     public String getLinkUrl() {
         return linkUrl;
     }

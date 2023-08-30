@@ -11,12 +11,13 @@
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="java.util.List" %>
-<%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.user.UserCache" %>
 <%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="de.elbe5.layout.LayoutData" %>
 <%@ page import="de.elbe5.layout.LayoutCache" %>
 <%@ page import="de.elbe5.request.ContentRequestKeys" %>
+<%@ page import="de.elbe5.content.ContentAccessType" %>
+<%@ page import="de.elbe5.content.ContentNavType" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -50,19 +51,19 @@
                 <form:textarea name="description" label="_description" height="5em"><%=$H(contentData.getDescription())%></form:textarea>
                 <form:text name="keywords" label="_keywords" value="<%=$H(contentData.getKeywords())%>"/>
                 <form:select name="accessType" label="_accessType">
-                    <option value="<%=ContentData.ACCESS_TYPE_OPEN%>" <%=contentData.getNavType().equals(ContentData.ACCESS_TYPE_OPEN) ? "selected" : ""%>><%=$SH("system.accessTypeOpen")%>
+                    <option value="<%=ContentAccessType.OPEN%>" <%=contentData.getAccessType().equals(ContentAccessType.OPEN) ? "selected" : ""%>><%=$SH("system.accessTypeOpen")%>
                     </option>
-                    <option value="<%=ContentData.ACCESS_TYPE_INHERITS%>" <%=contentData.getNavType().equals(ContentData.ACCESS_TYPE_INHERITS) ? "selected" : ""%>><%=$SH("system.accessTypeInherits")%>
+                    <option value="<%=ContentAccessType.INHERIT%>" <%=contentData.getAccessType().equals(ContentAccessType.INHERIT) ? "selected" : ""%>><%=$SH("system.accessTypeInherits")%>
                     </option>
-                    <option value="<%=ContentData.ACCESS_TYPE_INDIVIDUAL%>" <%=contentData.getNavType().equals(ContentData.ACCESS_TYPE_INDIVIDUAL) ? "selected" : ""%>><%=$SH("system.accessTypeIndividual")%>
+                    <option value="<%=ContentAccessType.INDIVIDUAL%>" <%=contentData.getAccessType().equals(ContentAccessType.INDIVIDUAL) ? "selected" : ""%>><%=$SH("system.accessTypeIndividual")%>
                     </option>
                 </form:select>
                 <form:select name="navType" label="_navType">
-                    <option value="<%=ContentData.NAV_TYPE_NONE%>" <%=contentData.getNavType().equals(ContentData.NAV_TYPE_NONE) ? "selected" : ""%>><%=$SH("system.navTypeNone")%>
+                    <option value="<%=ContentNavType.NONE%>" <%=contentData.getNavType().equals(ContentNavType.NONE) ? "selected" : ""%>><%=$SH("system.navTypeNone")%>
                     </option>
-                    <option value="<%=ContentData.NAV_TYPE_HEADER%>" <%=contentData.getNavType().equals(ContentData.NAV_TYPE_HEADER) ? "selected" : ""%>><%=$SH("system.navTypeHeader")%>
+                    <option value="<%=ContentNavType.HEADER%>" <%=contentData.getNavType().equals(ContentNavType.HEADER) ? "selected" : ""%>><%=$SH("system.navTypeHeader")%>
                     </option>
-                    <option value="<%=ContentData.NAV_TYPE_FOOTER%>" <%=contentData.getNavType().equals(ContentData.NAV_TYPE_FOOTER) ? "selected" : ""%>><%=$SH("system.navTypeFooter")%>
+                    <option value="<%=ContentNavType.FOOTER%>" <%=contentData.getNavType().equals(ContentNavType.FOOTER) ? "selected" : ""%>><%=$SH("system.navTypeFooter")%>
                     </option>
                 </form:select>
                 <form:line label="_active" padded="true">
