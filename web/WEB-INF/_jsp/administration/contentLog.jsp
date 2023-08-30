@@ -23,7 +23,7 @@
     <section class="logSection">
         <h3><%=$SH("_clicksPerDay")%></h3>
         <a class="icon fa fa-trash-o" href="/ctrl/admin/resetContentLog" title="<%=$SH("_reset")%>"></a>
-        <% if (rdata.hasContentEditRight()) { %>
+        <% if (rdata.getLoginUser().hasGlobalContentEditRight()) { %>
         <table>
             <% for (ContentDayLog dayLog : dayLogs) {%>
             <tr>

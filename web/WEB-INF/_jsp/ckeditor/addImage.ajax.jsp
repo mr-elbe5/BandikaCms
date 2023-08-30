@@ -21,7 +21,7 @@
     int imageId=rdata.getAttributes().getInt("imageId");
     ImageData image = ContentCache.getFile(imageId,ImageData.class);
     assert(image != null);
-    if (contentData.hasUserReadRight(rdata)) {
+    if (contentData.hasUserReadRight(rdata.getLoginUser())) {
 %>
 <li>
     <div class="treeline">

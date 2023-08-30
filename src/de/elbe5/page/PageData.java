@@ -225,7 +225,7 @@ public class PageData extends ContentData {
             }
             default -> {
                 writer.write("<div id=\"pageContent\" class=\"viewArea\">");
-                if (isPublished() && !hasUserEditRight(rdata))
+                if (isPublished() && !hasUserEditRight(rdata.getLoginUser()))
                     displayPublishedContent(context, context.getOut(), rdata);
                 else
                     displayDraftContent(context, context.getOut(), rdata);

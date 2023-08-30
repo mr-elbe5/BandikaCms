@@ -24,7 +24,7 @@
     <a id="page_<%=contentData.getId()%>"><%=contentData.getName()%>
     </a>
     <ul id="page_ul_<%=contentData.getId()%>">
-        <% if (contentData.hasUserReadRight(rdata)){
+        <% if (contentData.hasUserReadRight(rdata.getLoginUser())){
             List<ImageData> images = contentData.getFiles(ImageData.class);
             for (ImageData image : images) {%>
         <li>

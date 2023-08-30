@@ -20,10 +20,10 @@
     String userClass=rdata.isLoggedIn() ? "fa-user" : "fa-user-o";
 %>
 <ul class="nav justify-content-end">
-    <%if (rdata.hasElevatedSystemRight()) {%>
+    <%if (rdata.getLoginUser().hasAnySystemRight()) {%>
     <li class="nav-item"><a class="nav-link fa fa-cog" href="/ctrl/admin/openAdministration?contentId=1" title="<%=$SH("_administration")%>"></a></li>
     <%
-    } if (contentData instanceof PageData && !contentData.isEditing() && contentData.hasUserEditRight(rdata)) {%>
+    } if (contentData instanceof PageData && !contentData.isEditing() && contentData.hasUserEditRight(rdata.getLoginUser())) {%>
         <li class="nav-item"><a class="nav-link fa fa-edit" href="/ctrl/page/openEditFrontendContent/<%=contentData.getId()%>" title="<%=$SH("_editPage")%>"></a></li>
     <%
         if (contentData.hasUnpublishedDraft()) {
@@ -34,7 +34,7 @@
         <li class="nav-item"><a class="nav-link fa fa-eye" href="/ctrl/page/showPublished/<%=contentId%>" title="<%=$SH("_showPublished")%>"></a></li>
         <%}
             }
-            if (contentData.hasUserApproveRight(rdata)) {%>
+            if (contentData.hasUserApproveRight(rdata.getLoginUser())) {%>
         <li class="nav-item"><a class="nav-link fa fa-thumbs-up" href="/ctrl/page/publishPage/<%=contentId%>" title="<%=$SH("_publish")%>"></a></li>
         <%}
         }
