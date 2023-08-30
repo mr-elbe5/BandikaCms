@@ -13,6 +13,7 @@
 <%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="de.elbe5.request.ContentRequestKeys" %>
+<%@ page import="de.elbe5.rights.GlobalRights" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
     ContentData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, ContentData.class);
@@ -20,10 +21,10 @@
     String userClass=rdata.isLoggedIn() ? "fa-user" : "fa-user-o";
 %>
 <ul class="nav justify-content-end">
-    <%if (rdata.getLoginUser().hasAnySystemRight()) {%>
+    <%if (GlobalRights.hasAnySystemRight(rdata.getLoginUser())) {%>
     <li class="nav-item"><a class="nav-link fa fa-cog" href="/ctrl/admin/openAdministration?contentId=1" title="<%=$SH("_administration")%>"></a></li>
     <%
-    } if (contentData instanceof PageData && !contentData.isEditing() && contentData.hasUserEditRight(rdata.getLoginUser())) {%>
+    } if (contentData instanceof PageData && !contentData.isEditing() && rdata.isLoggedIn() && contentData.hasUserEditRight(rdata.getLoginUser())) {%>
         <li class="nav-item"><a class="nav-link fa fa-edit" href="/ctrl/page/openEditFrontendContent/<%=contentData.getId()%>" title="<%=$SH("_editPage")%>"></a></li>
     <%
         if (contentData.hasUnpublishedDraft()) {

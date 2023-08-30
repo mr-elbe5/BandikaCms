@@ -46,21 +46,21 @@ public class CkEditorController extends ContentController {
     public IResponse openLinkBrowser(RequestData rdata) {
         assertSessionCall(rdata);
         ContentData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
-        checkRights(data.hasUserEditRight(rdata.getLoginUser()));
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseLinks.jsp");
     }
 
     public IResponse openImageBrowser(RequestData rdata) {
         assertSessionCall(rdata);
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
-        checkRights(data.hasUserEditRight(rdata.getLoginUser()));
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseImages.jsp");
     }
 
     public IResponse addImage(RequestData rdata) {
         assertSessionCall(rdata);
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
-        checkRights(data.hasUserEditRight(rdata.getLoginUser()));
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         ImageData image=new ImageData();
         image.setCreateValues(data,rdata);
         image.readRequestData(rdata);
