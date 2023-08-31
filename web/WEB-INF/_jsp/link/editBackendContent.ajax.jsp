@@ -14,8 +14,10 @@
 <%@ page import="de.elbe5.user.UserCache" %>
 <%@ page import="de.elbe5.user.UserData" %>
 <%@ page import="de.elbe5.link.LinkData" %>
-<%@ page import="de.elbe5.content.ContentAccessType" %>
 <%@ page import="de.elbe5.content.ContentNavType" %>
+<%@ page import="de.elbe5.group.GroupData" %>
+<%@ page import="de.elbe5.group.GroupBean" %>
+<%@ page import="java.util.List" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -26,6 +28,7 @@
     UserData changer = UserCache.getUser(contentData.getChangerId());
     String changerName = changer == null ? "" : changer.getName();
     String header = contentData.isNew() ? $SH("_newContent") : $SH("_editContentData");
+    List<GroupData> groups = GroupBean.getInstance().getAllGroups();
 %>
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -52,13 +55,20 @@
                 <form:text name="linkIcon" label="_linkIcon" required="true" value="<%=$H(contentData.getLinkIcon())%>"/>
                 <form:textarea name="description" label="_description" height="5em"><%=$H(contentData.getDescription())%></form:textarea>
                 <form:text name="linkUrl" label="_linkUrl" required="true" value="<%=$H(contentData.getLinkUrl())%>"/>
-                <form:select name="accessType" label="_accessType">
-                    <option value="<%=ContentAccessType.OPEN%>" <%=contentData.getAccessType().equals(ContentAccessType.OPEN) ? "selected" : ""%>><%=$SH("system.accessTypeOpen")%>
-                    </option>
-                    <option value="<%=ContentAccessType.INHERIT%>" <%=contentData.getAccessType().equals(ContentAccessType.INHERIT) ? "selected" : ""%>><%=$SH("system.accessTypeInherits")%>
-                    </option>
-                    <option value="<%=ContentAccessType.INDIVIDUAL%>" <%=contentData.getAccessType().equals(ContentAccessType.INDIVIDUAL) ? "selected" : ""%>><%=$SH("system.accessTypeIndividual")%>
-                    </option>
+                <form:line label="_openAccess" padded="true">
+                    <form:check name="openAccess" value="true" checked="<%=contentData.isOpenAccess()%>"/>
+                </form:line>
+                <form:select name="readerGroupId" label="_readerGroup">
+                    <option value="0"  <%=contentData.getReaderGroupId()==0 ? "selected" : ""%>><%=$SH("_none")%></option>
+                    <% for (GroupData group : groups){%>
+                    <option value="<%=group.getId()%>" <%=contentData.getReaderGroupId()==group.getId() ? "selected" : ""%>><%=$H(group.getName())%></option>
+                    <%}%>
+                </form:select>
+                <form:select name="editorGroupId" label="_editorGroup">
+                    <option value="0"  <%=contentData.getEditorGroupId()==0 ? "selected" : ""%>><%=$SH("_none")%></option>
+                    <% for (GroupData group : groups){%>
+                    <option value="<%=group.getId()%>" <%=contentData.getEditorGroupId()==group.getId() ? "selected" : ""%>><%=$H(group.getName())%></option>
+                    <%}%>
                 </form:select>
                 <form:select name="navType" label="_navType">
                     <option value="<%=ContentNavType.NONE%>" <%=contentData.getNavType().equals(ContentNavType.NONE) ? "selected" : ""%>><%=$SH("system.navTypeNone")%>

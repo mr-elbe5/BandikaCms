@@ -12,17 +12,17 @@ import de.elbe5.base.LocalizedStrings;
 import de.elbe5.content.ContentLogBean;
 import de.elbe5.request.RequestData;
 import de.elbe5.response.IResponse;
-import de.elbe5.rights.GlobalRights;
+import de.elbe5.rights.GlobalRight;
 
 public class CmsAdminController extends AdminController {
 
     public IResponse openContentLog(RequestData rdata) {
-        assertRights(GlobalRights.hasGlobalContentEditRight(rdata.getLoginUser()));
+        assertRights(GlobalRight.hasGlobalContentEditRight(rdata.getLoginUser()));
         return showContentLog(rdata);
     }
 
     public IResponse resetContentLog(RequestData rdata) {
-        assertRights(GlobalRights.hasGlobalContentEditRight(rdata.getLoginUser()));
+        assertRights(GlobalRight.hasGlobalContentEditRight(rdata.getLoginUser()));
         ContentLogBean.getInstance().resetContentLog();
         return showContentLog(rdata);
     }

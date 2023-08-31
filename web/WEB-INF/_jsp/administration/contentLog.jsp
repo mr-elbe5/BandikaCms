@@ -13,7 +13,7 @@
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="de.elbe5.base.DateHelper" %>
 <%@ page import="de.elbe5.content.*" %>
-<%@ page import="de.elbe5.rights.GlobalRights" %>
+<%@ page import="de.elbe5.rights.GlobalRight" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -24,7 +24,7 @@
     <section class="logSection">
         <h3><%=$SH("_clicksPerDay")%></h3>
         <a class="icon fa fa-trash-o" href="/ctrl/admin/resetContentLog" title="<%=$SH("_reset")%>"></a>
-        <% if (GlobalRights.hasGlobalContentEditRight(rdata.getLoginUser())) { %>
+        <% if (GlobalRight.hasGlobalContentEditRight(rdata.getLoginUser())) { %>
         <table>
             <% for (ContentDayLog dayLog : dayLogs) {%>
             <tr>

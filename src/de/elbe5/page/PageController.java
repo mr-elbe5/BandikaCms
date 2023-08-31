@@ -20,13 +20,6 @@ import de.elbe5.servlet.ControllerCache;
 import de.elbe5.response.IResponse;
 import de.elbe5.response.ForwardResponse;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
 public class PageController extends ContentLogController {
 
     public static final String KEY = "page";
@@ -124,7 +117,7 @@ public class PageController extends ContentLogController {
         int contentId = rdata.getId();
         Log.log("Publishing page" + contentId);
         PageData data=ContentBean.getInstance().getContent(contentId,PageData.class);
-        assertRights(data.hasUserApproveRight(rdata.getLoginUser()));
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         data.setViewType(ContentViewType.PUBLISH);
         data.setPublishDate(PageBean.getInstance().getServerTime());
         return data.getDefaultView();
@@ -157,41 +150,11 @@ public class PageController extends ContentLogController {
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/addImage.ajax.jsp");
     }
 
-    public IResponse republishPage(RequestData rdata) {
-        assertSessionCall(rdata);
-        int contentId = rdata.getId();
-
-        PageData page = ContentCache.getContent(contentId, PageData.class);
-        if (page != null){
-            String url = rdata.getRequest().getRequestURL().toString();
-            String uri = rdata.getRequest().getRequestURI();
-            int idx = url.lastIndexOf(uri);
-            url = url.substring(0, idx);
-            url +="/ctrl/page/publishPage/"+contentId;
-            try {
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .timeout(Duration.ofMinutes(2))
-                        .build();
-                HttpClient client = HttpClient.newBuilder()
-                        .version(HttpClient.Version.HTTP_1_1)
-                        .followRedirects(HttpClient.Redirect.NORMAL)
-                        .connectTimeout(Duration.ofSeconds(20))
-                        .build();
-                client.send(request, HttpResponse.BodyHandlers.ofString());
-            }
-            catch (IOException | InterruptedException e){
-                Log.error("could not send publishing request", e);
-            }
-        }
-        return new ForwardResponse("/ctrl/admin/openContentAdministration?contentId=contentId");
-    }
-
     public IResponse addPart(RequestData rdata) {
         assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
-        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
+        assertRights(data.getId() == contentId && data.hasUserEditRight(rdata.getLoginUser()));
         int fromPartId = rdata.getAttributes().getInt("fromPartId", -1);
         String partType = rdata.getAttributes().getString("partType");
         PagePartData pdata = PageBean.getInstance().getNewPagePartData(partType);

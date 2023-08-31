@@ -13,7 +13,7 @@
 <%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="de.elbe5.request.ContentRequestKeys" %>
-<%@ page import="de.elbe5.rights.GlobalRights" %>
+<%@ page import="de.elbe5.rights.GlobalRight" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
     ContentData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, ContentData.class);
@@ -21,10 +21,11 @@
     String userClass=rdata.isLoggedIn() ? "fa-user" : "fa-user-o";
 %>
 <ul class="nav justify-content-end">
-    <%if (GlobalRights.hasAnySystemRight(rdata.getLoginUser())) {%>
+    <%if (GlobalRight.hasElevatedGlobalRights(rdata.getLoginUser())) {%>
     <li class="nav-item"><a class="nav-link fa fa-cog" href="/ctrl/admin/openAdministration?contentId=1" title="<%=$SH("_administration")%>"></a></li>
     <%
-    } if (contentData instanceof PageData && !contentData.isEditing() && rdata.isLoggedIn() && contentData.hasUserEditRight(rdata.getLoginUser())) {%>
+    }
+    if (contentData instanceof PageData && !contentData.isEditing() && contentData.hasUserEditRight(rdata.getLoginUser())) {%>
         <li class="nav-item"><a class="nav-link fa fa-edit" href="/ctrl/page/openEditFrontendContent/<%=contentData.getId()%>" title="<%=$SH("_editPage")%>"></a></li>
     <%
         if (contentData.hasUnpublishedDraft()) {
@@ -35,7 +36,7 @@
         <li class="nav-item"><a class="nav-link fa fa-eye" href="/ctrl/page/showPublished/<%=contentId%>" title="<%=$SH("_showPublished")%>"></a></li>
         <%}
             }
-            if (contentData.hasUserApproveRight(rdata.getLoginUser())) {%>
+            if (contentData.hasUserEditRight(rdata.getLoginUser())) {%>
         <li class="nav-item"><a class="nav-link fa fa-thumbs-up" href="/ctrl/page/publishPage/<%=contentId%>" title="<%=$SH("_publish")%>"></a></li>
         <%}
         }
