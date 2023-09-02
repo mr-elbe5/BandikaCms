@@ -15,8 +15,8 @@ CREATE OR REPLACE FUNCTION ADDPAGE (id INTEGER,parent_id INTEGER,name VARCHAR,di
     RETURNS VOID AS
 $$
 BEGIN
-    INSERT INTO t_content (id,type,parent_id,ranking,name,display_name,description,creator_id,changer_id,access_type,nav_type)
-    VALUES (id,'PageData',parent_id,0,name,display_name,description,user_id,user_id,'OPEN','HEADER');
+    INSERT INTO t_content (id,type,parent_id,ranking,name,display_name,description,creator_id,changer_id,open_access,nav_type)
+    VALUES (id,'PageData',parent_id,0,name,display_name,description,user_id,user_id,true,'HEADER');
     INSERT INTO t_page (id, keywords, layout)
     VALUES (id, '', layout);
 END
