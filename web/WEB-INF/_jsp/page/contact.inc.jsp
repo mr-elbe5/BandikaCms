@@ -21,9 +21,8 @@
     String contactEmail = rdata.getAttributes().getString("contactEmail");
     String contactMessage = rdata.getAttributes().getString("contactMessage");
     String url = "/ctrl/page/sendContact/" + contentData.getId();
-    boolean editing = contentData.isEditing();
 %>
-<% if (!editing) {%>
+<% if (!contentData.isEditMode()) {%>
             <form:form url="<%=url%>" name="contactform" >
                 <form:formerror/>
                 <form:text name="contactName" label="_name" required="true" value="<%=$H(contactName)%>"/>

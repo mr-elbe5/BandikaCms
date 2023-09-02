@@ -25,12 +25,12 @@
     <li class="nav-item"><a class="nav-link fa fa-cog" href="/ctrl/admin/openAdministration?contentId=1" title="<%=$SH("_administration")%>"></a></li>
     <%
     }
-    if (contentData instanceof PageData && !contentData.isEditing() && contentData.hasUserEditRight(rdata.getLoginUser())) {%>
+    if (contentData instanceof PageData pageData && !pageData.isEditMode() && pageData.hasUserEditRight(rdata.getLoginUser())) {%>
         <li class="nav-item"><a class="nav-link fa fa-edit" href="/ctrl/page/openEditFrontendContent/<%=contentData.getId()%>" title="<%=$SH("_editPage")%>"></a></li>
     <%
-        if (contentData.hasUnpublishedDraft()) {
-            if (contentData.isPublished()){
-                if (contentData.isPublishedView()){%>
+        if (pageData.hasUnpublishedDraft()) {
+            if (pageData.isPublished()){
+                if (pageData.showPublished()){%>
         <li class="nav-item"><a class="nav-link fa fa-eye-slash" href="/ctrl/page/showDraft/<%=contentId%>" title="<%=$SH("_showDraft")%>" ></a></li>
         <%} else{%>
         <li class="nav-item"><a class="nav-link fa fa-eye" href="/ctrl/page/showPublished/<%=contentId%>" title="<%=$SH("_showPublished")%>"></a></li>

@@ -11,8 +11,6 @@ package de.elbe5.tag;
 import de.elbe5.base.Log;
 import de.elbe5.base.StringFormatter;
 import de.elbe5.base.StringHelper;
-import de.elbe5.content.ContentData;
-import de.elbe5.content.ContentViewType;
 import de.elbe5.page.PageData;
 import de.elbe5.page.LayoutPartData;
 import de.elbe5.page.PagePartData;
@@ -42,9 +40,8 @@ public class TextFieldTag extends FieldTag {
 
             PartTextField field = partData.ensureTextField(name);
 
-            boolean editMode = contentData.getViewType().equals(ContentViewType.EDIT);
             String content = field.getContent();
-            if (editMode) {
+            if (contentData.isEditMode()) {
                 if (rows > 1)
                     StringFormatter.write(writer, "<textarea class=\"editField\" name=\"{1}\" rows=\"{2}\">{3}</textarea>", field.getIdentifier(), Integer.toString(rows), StringHelper.toHtml(content.isEmpty() ? placeholder : content));
                 else

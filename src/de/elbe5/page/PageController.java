@@ -51,7 +51,7 @@ public class PageController extends ContentLogController {
         PageData data = ContentBean.getInstance().getContent(contentId,PageData.class);
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         data.setUpdateValues(ContentCache.getContent(data.getId()), rdata);
-        data.startEditing();
+        data.setEditMode(true);
         rdata.setSessionObject(ContentRequestKeys.KEY_CONTENT, data);
         return data.getDefaultView();
     }
@@ -69,6 +69,7 @@ public class PageController extends ContentLogController {
         assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
+        assert(contentId == data.getId());
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         data.readFrontendRequestData(rdata);
         data.setChangerId(rdata.getUserId());
@@ -76,7 +77,7 @@ public class PageController extends ContentLogController {
             setSaveError(rdata);
             return data.getDefaultView();
         }
-        data.setViewType(ContentViewType.SHOW);
+        data.setEditMode(false);
         rdata.removeSessionObject(ContentRequestKeys.KEY_CONTENT);
         ContentCache.setDirty();
         return show(rdata);
@@ -89,25 +90,26 @@ public class PageController extends ContentLogController {
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         assert data.getId() == contentId;
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
-        data.stopEditing();
+        data.setEditMode(false);
         return data.getDefaultView();
     }
 
     public IResponse showDraft(RequestData rdata){
         assertSessionCall(rdata);
         int contentId = rdata.getId();
-        ContentData data = ContentCache.getContent(contentId);
+        PageData data = ContentCache.getContent(contentId, PageData.class);
+        assert(data!=null);
         assertRights(data.hasUserReadRight(rdata.getLoginUser()));
-        data.setViewType(ContentViewType.SHOW);
         return data.getDefaultView();
     }
 
     public IResponse showPublished(RequestData rdata){
         assertSessionCall(rdata);
         int contentId = rdata.getId();
-        ContentData data = ContentCache.getContent(contentId);
+        PageData data = ContentCache.getContent(contentId, PageData.class);
+        assert(data!=null);
         assertRights(data.hasUserReadRight(rdata.getLoginUser()));
-        data.setViewType(ContentViewType.PUBLISHED);
+        data.showPublished(true);
         return data.getDefaultView();
     }
 
@@ -118,7 +120,7 @@ public class PageController extends ContentLogController {
         Log.log("Publishing page" + contentId);
         PageData data=ContentBean.getInstance().getContent(contentId,PageData.class);
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
-        data.setViewType(ContentViewType.PUBLISH);
+        data.setPublishing(true);
         data.setPublishDate(PageBean.getInstance().getServerTime());
         return data.getDefaultView();
     }

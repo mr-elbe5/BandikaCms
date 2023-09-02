@@ -11,8 +11,11 @@ package de.elbe5.page;
 import de.elbe5.base.Log;
 import de.elbe5.content.*;
 import de.elbe5.file.FileData;
+import de.elbe5.group.GroupData;
 import de.elbe5.request.RequestData;
 import de.elbe5.response.IResponse;
+import de.elbe5.rights.GlobalRight;
+import de.elbe5.user.UserData;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -53,6 +56,11 @@ public class PageData extends ContentData {
     public List<Class<? extends FileData>> getFileClasses(){
         return PageData.fileClasses;
     }
+
+    // runtime
+
+    boolean publishing = false;
+    boolean showPublished = false;
 
     // base data
 
@@ -103,6 +111,37 @@ public class PageData extends ContentData {
 
     public boolean isPublished() {
         return getPublishDate() != null;
+    }
+
+    public boolean isPublishing() {
+        return publishing;
+    }
+
+    public void setPublishing(boolean publishing) {
+        this.publishing = publishing;
+    }
+
+    public boolean showPublished() {
+        return showPublished;
+    }
+
+    public void showPublished(boolean showPublished) {
+        this.showPublished = showPublished;
+    }
+
+    public boolean hasUserReadRight(UserData user) {
+        if (isOpenAccess() && isPublished())
+            return true;
+        else if (user==null)
+            return false;
+        if (GlobalRight.hasGlobalContentReadRight(user))
+            return true;
+        if (getReaderGroupId() != 0) {
+            GroupData group = getReaderGroup();
+            if (group != null && group.getUserIds().contains(user.getId()) && isPublished())
+                return true;
+        }
+        return hasUserEditRight(user);
     }
 
     public Map<String, SectionData> getSections() {
@@ -194,43 +233,42 @@ public class PageData extends ContentData {
 
     public void displayContent(PageContext context, RequestData rdata) throws IOException, ServletException {
         JspWriter writer = context.getOut();
-        switch (getViewType()) {
-            case PUBLISH -> {
-                writer.write("<div id=\"pageContent\" class=\"viewArea\">");
-                StringWriter stringWriter = new StringWriter();
-                context.pushBody(stringWriter);
+        if (isPublishing()){
+            writer.write("<div id=\"pageContent\" class=\"viewArea\">");
+            StringWriter stringWriter = new StringWriter();
+            context.pushBody(stringWriter);
+            displayDraftContent(context, context.getOut(), rdata);
+            setPublishedContent(stringWriter.toString());
+            reformatPublishedContent();
+            context.popBody();
+            //Log.log("publishing page " + getDisplayName());
+            if (!PageBean.getInstance().publishPage(this)) {
+                Log.error("error writing published content");
+            }
+            writer.write(getPublishedContent());
+            setPublishing(false);
+            setEditMode(false);
+            ContentCache.setDirty();
+            writer.write("</div>");
+        }
+        else if (isEditMode()){
+            writer.write("<div id=\"pageContent\" class=\"editArea\">");
+            displayEditContent(context, context.getOut(), rdata);
+            writer.write("</div>");
+        }
+        else if (isPublished() && showPublished()){
+            writer.write("<div id=\"pageContent\" class=\"viewArea\">");
+            displayPublishedContent(context, context.getOut(), rdata);
+            writer.write("</div>");
+            showPublished(false);
+        }
+        else {
+            writer.write("<div id=\"pageContent\" class=\"viewArea\">");
+            if (isPublished() && !hasUserEditRight(rdata.getLoginUser()))
+                displayPublishedContent(context, context.getOut(), rdata);
+            else
                 displayDraftContent(context, context.getOut(), rdata);
-                setPublishedContent(stringWriter.toString());
-                reformatPublishedContent();
-                context.popBody();
-                //Log.log("publishing page " + getDisplayName());
-                if (!PageBean.getInstance().publishPage(this)) {
-                    Log.error("error writing published content");
-                }
-                writer.write(getPublishedContent());
-                setViewType(ContentViewType.SHOW);
-                ContentCache.setDirty();
-                writer.write("</div>");
-            }
-            case EDIT -> {
-                writer.write("<div id=\"pageContent\" class=\"editArea\">");
-                displayEditContent(context, context.getOut(), rdata);
-                writer.write("</div>");
-            }
-            case PUBLISHED -> {
-                writer.write("<div id=\"pageContent\" class=\"viewArea\">");
-                if (isPublished())
-                    displayPublishedContent(context, context.getOut(), rdata);
-                writer.write("</div>");
-            }
-            default -> {
-                writer.write("<div id=\"pageContent\" class=\"viewArea\">");
-                if (isPublished() && !hasUserEditRight(rdata.getLoginUser()))
-                    displayPublishedContent(context, context.getOut(), rdata);
-                else
-                    displayDraftContent(context, context.getOut(), rdata);
-                writer.write("</div>");
-            }
+            writer.write("</div>");
         }
     }
 

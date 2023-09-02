@@ -39,7 +39,7 @@ public class SectionTag extends BaseTag {
                 sectionData.setCssClass(cssClass);
                 rdata.getAttributes().put("sectionData", sectionData);
                 String url;
-                if (contentData.isEditing()) {
+                if (contentData.isEditMode()) {
                     url = "/WEB-INF/_jsp/page/editSection.inc.jsp";
                 } else {
                     url = "/WEB-INF/_jsp/page/section.inc.jsp";

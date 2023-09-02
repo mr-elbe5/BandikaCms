@@ -41,7 +41,7 @@ public class PartTag extends BaseTag {
             if (partData != null) {
                 partData.setCssClass(cssClass);
 
-                if (contentData.isEditing()) {
+                if (contentData.isEditMode()) {
                     StringFormatter.write(writer,editStart,
                             partData.getPartWrapperId(),
                             StringHelper.toHtml(partData.getCssClass()),

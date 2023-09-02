@@ -11,8 +11,6 @@ package de.elbe5.tag;
 import de.elbe5.base.Log;
 import de.elbe5.base.StringFormatter;
 import de.elbe5.base.StringHelper;
-import de.elbe5.content.ContentData;
-import de.elbe5.content.ContentViewType;
 import de.elbe5.page.PageData;
 import de.elbe5.page.LayoutPartData;
 import de.elbe5.page.PagePartData;
@@ -40,9 +38,7 @@ public class HtmlFieldTag extends FieldTag {
             PageData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, PageData.class);
             LayoutPartData partData = (LayoutPartData) rdata.getAttributes().get(PagePartData.KEY_PART);
             PartHtmlField field = partData.ensureHtmlField(name);
-
-            boolean editMode = contentData.getViewType().equals(ContentViewType.EDIT);
-            if (editMode) {
+            if (contentData.isEditMode()) {
                 StringFormatter.write(writer, script,
                         field.getIdentifier(),
                         field.getContent().isEmpty() ? StringHelper.toHtml(placeholder) : field.getContent(),
