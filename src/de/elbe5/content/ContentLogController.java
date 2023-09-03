@@ -14,9 +14,7 @@ public class ContentLogController extends ContentController {
 
     @Override
     protected void increaseViewCount(ContentData data){
-        if (Configuration.isLogContent()) {
-            ContentLogBean.getInstance().increaseViewCount(data.getId());
-        }
+        ContentLogBean.getInstance().increaseViewCount(data.getId());
     }
 
 }

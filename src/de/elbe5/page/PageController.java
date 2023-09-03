@@ -9,7 +9,8 @@
 package de.elbe5.page;
 
 import de.elbe5.application.Configuration;
-import de.elbe5.application.MailHelper;
+import de.elbe5.mail.MailConfiguration;
+import de.elbe5.mail.MailHelper;
 import de.elbe5.base.LocalizedStrings;
 import de.elbe5.base.Log;
 import de.elbe5.content.*;
@@ -191,7 +192,7 @@ public class PageController extends ContentLogController {
             return show(rdata);
         }
         message = String.format(LocalizedStrings.html("_contactRequestText"),name,email) + message;
-        if (!MailHelper.sendPlainMail(Configuration.getMailReceiver(), LocalizedStrings.string("_contactRequest"), message)) {
+        if (!MailHelper.sendPlainMail(MailConfiguration.getMailReceiver(), LocalizedStrings.string("_contactRequest"), message)) {
             rdata.setMessage(LocalizedStrings.string("_contactRequestError"), RequestKeys.MESSAGE_TYPE_ERROR);
             return show(rdata);
         }
