@@ -28,9 +28,8 @@ public class LinkBean extends ContentBean {
 
     @Override
     public void readContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof LinkData))
+        if (!(contentData instanceof LinkData data))
             return;
-        LinkData data = (LinkData) contentData;
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(GET_CONTENT_EXTRAS_SQL);
@@ -51,9 +50,8 @@ public class LinkBean extends ContentBean {
 
     @Override
     public void createContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof LinkData))
+        if (!(contentData instanceof LinkData data))
             return;
-        LinkData data = (LinkData) contentData;
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(INSERT_CONTENT_EXTRAS_SQL);
@@ -69,9 +67,8 @@ public class LinkBean extends ContentBean {
 
     @Override
     public void updateContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof LinkData))
+        if (!(contentData instanceof LinkData data))
             return;
-        LinkData data = (LinkData) contentData;
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(UPDATE_CONTENT_EXTRAS_SQL);

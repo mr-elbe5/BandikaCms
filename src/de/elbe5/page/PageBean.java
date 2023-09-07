@@ -44,9 +44,8 @@ public class PageBean extends ContentBean {
 
     @Override
     public void readContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof PageData))
+        if (!(contentData instanceof PageData data))
             return;
-        PageData data = (PageData) contentData;
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(GET_CONTENT_EXTRAS_SQL);
@@ -72,9 +71,8 @@ public class PageBean extends ContentBean {
 
     @Override
     public void createContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof PageData))
+        if (!(contentData instanceof PageData data))
             return;
-        PageData data = (PageData) contentData;
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(INSERT_CONTENT_EXTRAS_SQL);
@@ -91,9 +89,8 @@ public class PageBean extends ContentBean {
 
     @Override
     public void updateContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof PageData))
+        if (!(contentData instanceof PageData data))
             return;
-        PageData data = (PageData) contentData;
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(UPDATE_CONTENT_EXTRAS_SQL);
@@ -121,9 +118,6 @@ public class PageBean extends ContentBean {
     public boolean publishPage(PageData data) {
         Connection con = startTransaction();
         try {
-            if (!data.isNew() && ContentBean.getInstance().changedContent(con, data)) {
-                return rollbackTransaction(con);
-            }
             publishPage(con, data);
             return commitTransaction(con);
         } catch (Exception se) {

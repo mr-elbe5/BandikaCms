@@ -172,7 +172,7 @@ public class PageController extends ContentLogController {
         String captcha = rdata.getAttributes().getString("captcha");
         String sessionCaptcha = rdata.getSessionObject(RequestKeys.KEY_CAPTCHA, String.class);
         if (!captcha.equals(sessionCaptcha)){
-            rdata.addFormField("captcha");
+            rdata.addFormErrorField("captcha");
             rdata.addFormError(LocalizedStrings.string("_captchaError"));
             return show(rdata);
         }
