@@ -8,7 +8,6 @@
  */
 package de.elbe5.page;
 
-import de.elbe5.application.Configuration;
 import de.elbe5.mail.MailConfiguration;
 import de.elbe5.mail.MailHelper;
 import de.elbe5.base.LocalizedStrings;

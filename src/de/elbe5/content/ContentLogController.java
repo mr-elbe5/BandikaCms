@@ -8,8 +8,6 @@
  */
 package de.elbe5.content;
 
-import de.elbe5.application.Configuration;
-
 public class ContentLogController extends ContentController {
 
     @Override
