@@ -15,6 +15,7 @@ import de.elbe5.file.ImageBean;
 import de.elbe5.file.ImageData;
 import de.elbe5.request.ContentRequestKeys;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestType;
 import de.elbe5.servlet.ControllerCache;
 import de.elbe5.response.IResponse;
 import de.elbe5.response.ForwardResponse;
@@ -63,7 +64,7 @@ public class CkEditorController extends ContentController {
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         ImageData image=new ImageData();
         image.setCreateValues(data,rdata);
-        image.readRequestData(rdata);
+        image.readRequestData(rdata, RequestType.frontend);
         ImageBean.getInstance().saveFile(image,true);
         ContentCache.setDirty();
         rdata.getAttributes().put("imageId", Integer.toString(image.getId()));

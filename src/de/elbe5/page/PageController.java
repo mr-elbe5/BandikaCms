@@ -71,7 +71,7 @@ public class PageController extends ContentLogController {
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         assert(contentId == data.getId());
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
-        data.readFrontendRequestData(rdata);
+        data.readRequestData(rdata, RequestType.frontend);
         data.setChangerId(rdata.getUserId());
         if (!ContentBean.getInstance().saveContent(data)) {
             setSaveError(rdata);
@@ -145,7 +145,7 @@ public class PageController extends ContentLogController {
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         ImageData image=new ImageData();
         image.setCreateValues(data,rdata);
-        image.readRequestData(rdata);
+        image.readRequestData(rdata, RequestType.backend);
         ImageBean.getInstance().saveFile(image,true);
         ContentCache.setDirty();
         rdata.getAttributes().put("imageId", Integer.toString(image.getId()));

@@ -14,6 +14,7 @@ import de.elbe5.content.ContentBean;
 import de.elbe5.content.ContentData;
 import de.elbe5.file.FileData;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestType;
 import de.elbe5.response.IResponse;
 import de.elbe5.response.RedirectResponse;
 
@@ -77,11 +78,16 @@ public class LinkData extends ContentData {
         return "/WEB-INF/_jsp/link/editBackendContent.ajax.jsp";
     }
 
+
     @Override
-    public void readBackendRequestData(RequestData rdata) {
-        super.readBackendRequestData(rdata);
-        setLinkUrl(rdata.getAttributes().getString("linkUrl"));
-        setLinkIcon(rdata.getAttributes().getString("linkIcon"));
+    public void readRequestData(RequestData rdata, RequestType type) {
+        super.readRequestData(rdata, type);
+        switch (type){
+            case backend -> {
+                setLinkUrl(rdata.getAttributes().getString("linkUrl"));
+                setLinkIcon(rdata.getAttributes().getString("linkIcon"));
+            }
+        }
     }
 
     @Override

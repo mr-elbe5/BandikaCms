@@ -13,6 +13,7 @@ import de.elbe5.content.*;
 import de.elbe5.file.FileData;
 import de.elbe5.group.GroupData;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestType;
 import de.elbe5.response.IResponse;
 import de.elbe5.rights.GlobalRight;
 import de.elbe5.user.UserData;
@@ -275,18 +276,21 @@ public class PageData extends ContentData {
     // multiple data
 
     @Override
-    public void readBackendRequestData(RequestData rdata) {
-        super.readBackendRequestData(rdata);
-        setKeywords(rdata.getAttributes().getString("keywords"));
-        setLayout(rdata.getAttributes().getString("layout"));
-        if (layout.isEmpty()) {
-            rdata.addIncompleteField("layout");
-        }
-    }
-
-    public void readFrontendRequestData(RequestData rdata) {
-        for (SectionData section : getSections().values()) {
-            section.readFrontendRequestData(rdata);
+    public void readRequestData(RequestData rdata, RequestType type) {
+        switch (type) {
+            case backend -> {
+                super.readRequestData(rdata, type);
+                setKeywords(rdata.getAttributes().getString("keywords"));
+                setLayout(rdata.getAttributes().getString("layout"));
+                if (layout.isEmpty()) {
+                    rdata.addIncompleteField("layout");
+                }
+            }
+            case frontend -> {
+                for (SectionData section : getSections().values()) {
+                    section.readRequestData(rdata, type);
+                }
+            }
         }
     }
 
