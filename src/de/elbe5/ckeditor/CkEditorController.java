@@ -63,7 +63,8 @@ public class CkEditorController extends ContentController {
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         ImageData image=new ImageData();
-        image.setCreateValues(data,rdata);
+        image.setCreateValues(rdata, RequestType.frontend);
+        image.setParentValues(data);
         image.readRequestData(rdata, RequestType.frontend);
         ImageBean.getInstance().saveFile(image,true);
         ContentCache.setDirty();

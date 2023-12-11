@@ -144,8 +144,9 @@ public class PageController extends ContentLogController {
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         ImageData image=new ImageData();
-        image.setCreateValues(data,rdata);
-        image.readRequestData(rdata, RequestType.backend);
+        image.setCreateValues(rdata, RequestType.frontend);
+        image.setParentValues(data);
+        image.readRequestData(rdata, RequestType.frontend);
         ImageBean.getInstance().saveFile(image,true);
         ContentCache.setDirty();
         rdata.getAttributes().put("imageId", Integer.toString(image.getId()));
@@ -160,7 +161,7 @@ public class PageController extends ContentLogController {
         int fromPartId = rdata.getAttributes().getInt("fromPartId", -1);
         String partType = rdata.getAttributes().getString("partType");
         PagePartData pdata = PageBean.getInstance().getNewPagePartData(partType);
-        pdata.setCreateValues(rdata);
+        pdata.setCreateValues(rdata, RequestType.frontend);
         data.addPart(pdata, fromPartId, true);
         rdata.getAttributes().put(PagePartData.KEY_PART, pdata);
         return new ForwardResponse("/WEB-INF/_jsp/page/newPart.ajax.jsp");

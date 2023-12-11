@@ -9,10 +9,10 @@
 package de.elbe5.page;
 
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestType;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class LayoutPartData extends PagePartData {
@@ -139,16 +139,20 @@ public class LayoutPartData extends PagePartData {
     }
 
     @Override
-    public void setCreateValues(RequestData rdata) {
-        super.setCreateValues(rdata);
+    public void setCreateValues(RequestData rdata, RequestType type) {
+        super.setCreateValues(rdata, type);
         setLayout(rdata.getAttributes().getString("layout"));
     }
 
     @Override
-    public void readFrontendRequestData(RequestData rdata) {
-        super.readFrontendRequestData(rdata);
-        for (PartField field : getFields().values()) {
-            field.readFrontendRequestData(rdata);
+    public void readRequestData(RequestData rdata, RequestType type) {
+        super.readRequestData(rdata, type);
+        switch (type) {
+            case frontend -> {
+                for (PartField field : getFields().values()) {
+                    field.readFrontendRequestData(rdata);
+                }
+            }
         }
     }
 

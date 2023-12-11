@@ -11,6 +11,7 @@ package de.elbe5.page;
 import de.elbe5.content.ContentBean;
 import de.elbe5.base.BaseData;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestType;
 
 public abstract class PagePartData extends BaseData implements Comparable<PagePartData> {
 
@@ -106,16 +107,23 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
         setId(PagePartBean.getInstance().getNextPartId());
     }
 
-    public void setCreateValues(RequestData rdata) {
-        String sectionName = rdata.getAttributes().getString("sectionName");
-        setSectionName(sectionName);
-        setId(PagePartBean.getInstance().getNextPartId());
-        setNew(true);
+    public void setCreateValues(RequestData rdata, RequestType type) {
+        super.setCreateValues(rdata, type);
+        setSectionName(rdata.getAttributes().getString("sectionName"));
     }
 
-    public void readFrontendRequestData(RequestData rdata) {
-        // -1 if deleted
-        setPosition(rdata.getAttributes().getInt(getPartPositionName(),-1));
+    @Override
+    public void setNewId(){
+        setId(PagePartBean.getInstance().getNextPartId());
+    }
+
+    public void readRequestData(RequestData rdata, RequestType type) {
+        switch (type) {
+            case frontend -> {
+                // -1 if deleted
+                setPosition(rdata.getAttributes().getInt(getPartPositionName(), -1));
+            }
+        }
     }
 
 }

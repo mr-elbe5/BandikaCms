@@ -162,7 +162,7 @@ public class SectionData {
             case frontend -> {
                 for (int i=getParts().size()-1;i>=0;i--){
                     PagePartData part = getParts().get(i);
-                    part.readFrontendRequestData(rdata);
+                    part.readRequestData(rdata, RequestType.frontend);
                     if (part.getPosition()==-1) {
                         getParts().remove(i);
                     }
