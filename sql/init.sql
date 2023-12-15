@@ -18,6 +18,19 @@ CREATE TABLE IF NOT EXISTS t_page
     CONSTRAINT t_page_fk1 FOREIGN KEY (id) REFERENCES t_content (id) ON DELETE CASCADE
 );
 
+CREATE OR REPLACE FUNCTION ADDPAGE (id INTEGER,parent_id INTEGER,name VARCHAR,display_name VARCHAR,
+                                    description VARCHAR,user_id INTEGER, layout VARCHAR)
+    RETURNS VOID AS
+$$
+BEGIN
+    INSERT INTO t_content (id,type,parent_id,ranking,name,display_name,description,creator_id,changer_id,open_access,nav_type)
+    VALUES (id,'de.elbe5.page.PageData',parent_id,0,name,display_name,description,user_id,user_id,true,'HEADER');
+    INSERT INTO t_page (id, keywords, layout)
+    VALUES (id, '', layout);
+END
+$$
+    LANGUAGE plpgsql;
+
 CREATE TABLE IF NOT EXISTS t_content_log
 (
     content_id INTEGER     NOT NULL,
