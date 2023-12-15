@@ -118,7 +118,8 @@ public class PageController extends ContentLogController {
         assertSessionCall(rdata);
         int contentId = rdata.getId();
         Log.log("Publishing page" + contentId);
-        PageData data=ContentBean.getInstance().getContent(contentId,PageData.class);
+        PageData data=ContentCache.getContent(contentId,PageData.class);
+        assert(data!=null);
         assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         data.setPublishing(true);
         data.setPublishDate(PageBean.getInstance().getServerTime());
