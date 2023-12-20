@@ -16,6 +16,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="de.elbe5.page.LayoutPartData" %>
+<%@ page import="de.elbe5.layout.LocalizedLayoutNames" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -32,7 +33,7 @@
                     <% for (Class<? extends PagePartData> cls : PageData.pagePartClasses) {
                         if (cls.equals(LayoutPartData.class)){
                             for (LayoutData layout : partLayouts){%>
-                    <a class="dropdown-item" href="" onclick="return addPart(-1,'<%=$H(sectionData.getName())%>','<%=cls.getName()%>','<%=$H(layout.getName())%>');"><%=$SH(layout.getKey())%>
+                    <a class="dropdown-item" href="" onclick="return addPart(-1,'<%=$H(sectionData.getName())%>','<%=cls.getName()%>','<%=$H(layout.getName())%>');"><%=LocalizedLayoutNames.getInstance().html(layout.getKey())%>
                     </a>
                     <%}
                     } else {%>

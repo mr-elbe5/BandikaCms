@@ -18,6 +18,7 @@
 <%@ page import="de.elbe5.group.GroupData" %>
 <%@ page import="de.elbe5.group.GroupBean" %>
 <%@ page import="java.util.List" %>
+<%@ page import="de.elbe5.base.LocalizedSystemStrings" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -71,11 +72,11 @@
                     <%}%>
                 </form:select>
                 <form:select name="navType" label="_navType">
-                    <option value="<%=ContentNavType.NONE%>" <%=contentData.getNavType().equals(ContentNavType.NONE) ? "selected" : ""%>><%=$SH("system.navTypeNone")%>
+                    <option value="<%=ContentNavType.NONE%>" <%=contentData.getNavType().equals(ContentNavType.NONE) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeNone")%>
                     </option>
-                    <option value="<%=ContentNavType.HEADER%>" <%=contentData.getNavType().equals(ContentNavType.HEADER) ? "selected" : ""%>><%=$SH("system.navTypeHeader")%>
+                    <option value="<%=ContentNavType.HEADER%>" <%=contentData.getNavType().equals(ContentNavType.HEADER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("system.navTypeHeader")%>
                     </option>
-                    <option value="<%=ContentNavType.FOOTER%>" <%=contentData.getNavType().equals(ContentNavType.FOOTER) ? "selected" : ""%>><%=$SH("system.navTypeFooter")%>
+                    <option value="<%=ContentNavType.FOOTER%>" <%=contentData.getNavType().equals(ContentNavType.FOOTER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("system.navTypeFooter")%>
                     </option>
                 </form:select>
                 <form:line label="_active" padded="true">

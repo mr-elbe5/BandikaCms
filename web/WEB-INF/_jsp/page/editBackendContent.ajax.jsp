@@ -19,6 +19,8 @@
 <%@ page import="de.elbe5.content.ContentNavType" %>
 <%@ page import="de.elbe5.group.GroupBean" %>
 <%@ page import="de.elbe5.group.GroupData" %>
+<%@ page import="de.elbe5.layout.LocalizedLayoutNames" %>
+<%@ page import="de.elbe5.base.LocalizedSystemStrings" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -68,11 +70,11 @@
                     <%}%>
                 </form:select>
                 <form:select name="navType" label="_navType">
-                    <option value="<%=ContentNavType.NONE%>" <%=contentData.getNavType().equals(ContentNavType.NONE) ? "selected" : ""%>><%=$SH("system.navTypeNone")%>
+                    <option value="<%=ContentNavType.NONE%>" <%=contentData.getNavType().equals(ContentNavType.NONE) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeNone")%>
                     </option>
-                    <option value="<%=ContentNavType.HEADER%>" <%=contentData.getNavType().equals(ContentNavType.HEADER) ? "selected" : ""%>><%=$SH("system.navTypeHeader")%>
+                    <option value="<%=ContentNavType.HEADER%>" <%=contentData.getNavType().equals(ContentNavType.HEADER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeHeader")%>
                     </option>
-                    <option value="<%=ContentNavType.FOOTER%>" <%=contentData.getNavType().equals(ContentNavType.FOOTER) ? "selected" : ""%>><%=$SH("system.navTypeFooter")%>
+                    <option value="<%=ContentNavType.FOOTER%>" <%=contentData.getNavType().equals(ContentNavType.FOOTER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeFooter")%>
                     </option>
                 </form:select>
                 <form:line label="_active" padded="true">
@@ -84,7 +86,7 @@
                     <% for (LayoutData layout : pageLayouts) {
                         String layoutName=layout.getName();
                     %>
-                    <option value="<%=$H(layoutName)%>" <%=layoutName.equals(contentData.getLayout()) ? "selected" : ""%>><%=$SH(layout.getKey())%>
+                    <option value="<%=$H(layoutName)%>" <%=layoutName.equals(contentData.getLayout()) ? "selected" : ""%>><%=LocalizedLayoutNames.getInstance().html(layout.getKey())%>
                     </option>
                     <%}%>
                 </form:select>

@@ -1,6 +1,6 @@
 /*
  Bandika CMS - A Java based modular Content Management System
- Copyright (C) 2009-2021 Michael Roennau
+ Copyright (C) 2009-2018 Michael Roennau
 
  This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -8,33 +8,14 @@
  */
 package de.elbe5.layout;
 
-public class LayoutData implements Comparable<LayoutData>{
+import de.elbe5.base.StringBundle;
 
-    private String name="";
-    private String code="";
+public class LocalizedLayoutNames extends StringBundle {
 
-    public String getName() {
-        return name;
+    final private static LocalizedLayoutNames instance = new LocalizedLayoutNames();
+
+    public static LocalizedLayoutNames getInstance(){
+        return instance;
     }
 
-    public String getKey() {
-        return name.replace(":","_");
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    @Override
-    public int compareTo(LayoutData o) {
-        return getName().compareTo(o.getName());
-    }
 }

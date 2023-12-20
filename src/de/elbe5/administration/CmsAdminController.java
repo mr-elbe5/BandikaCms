@@ -8,7 +8,6 @@
  */
 package de.elbe5.administration;
 
-import de.elbe5.base.LocalizedStrings;
 import de.elbe5.content.ContentLogBean;
 import de.elbe5.request.RequestData;
 import de.elbe5.response.IResponse;
@@ -28,7 +27,7 @@ public class CmsAdminController extends AdminController {
     }
 
     protected IResponse showContentLog(RequestData rdata) {
-        return openAdminPage(rdata, "/WEB-INF/_jsp/administration/contentLog.jsp", LocalizedStrings.string("_contentLog"));
+        return openAdminPage(rdata, "/WEB-INF/_jsp/administration/contentLog.jsp", $S("_contentLog"));
     }
 
 }
