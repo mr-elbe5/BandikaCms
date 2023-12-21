@@ -192,7 +192,7 @@ public class PageController extends ContentLogController {
             return show(rdata);
         }
         message = String.format($SH("_contactRequestText"),name,email) + message;
-        if (!MailHelper.sendPlainMail(Configuration.getMailReceiver(), $S("_contactRequest"), message)) {
+        if (!MailHelper.sendPlainMail(Configuration.getInstance().getMailReceiver(), $S("_contactRequest"), message)) {
             rdata.setMessage($S("_contactRequestError"), RequestKeys.MESSAGE_TYPE_ERROR);
             return show(rdata);
         }
