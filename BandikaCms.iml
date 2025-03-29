@@ -20,5 +20,6 @@
     <orderEntry type="library" exported="" name="baselibs" level="project" />
     <orderEntry type="library" name="catalina" level="project" />
     <orderEntry type="module" module-name="BandikaBase" exported="" />
+    <orderEntry type="library" name="postgresql-42.2.18" level="project" />
   </component>
 </module>
