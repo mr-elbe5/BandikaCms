@@ -191,13 +191,6 @@ public abstract class FileData extends BaseData {
                     }
                 }
             }
-            case api -> {
-                super.readRequestData(rdata, type);
-                setDescription(rdata.getAttributes().getString("description"));
-                BinaryFile file = rdata.getAttributes().getFile("file");
-                createFromBinaryFile(file);
-                setDisplayName(file.getFileNameWithoutExtension());
-            }
         }
     }
 

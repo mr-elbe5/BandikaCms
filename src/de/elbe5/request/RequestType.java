@@ -10,7 +10,6 @@
 package de.elbe5.request;
 
 public enum RequestType {
-    api,
     backend,
     frontend
 }

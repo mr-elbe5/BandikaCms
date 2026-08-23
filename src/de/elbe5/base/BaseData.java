@@ -110,8 +110,6 @@ public class BaseData {
     public void setCreateValues(RequestData rdata, RequestType type) {
         setNew(true);
         switch (type) {
-            case api -> {
-            }
             case backend, frontend -> {
                 setCreationDate(DateHelper.getCurrentTime());
                 setChangeDate(getCreationDate());
@@ -132,16 +130,6 @@ public class BaseData {
 
     public void readRequestData(RequestData rdata, RequestType type){
         switch (type){
-            case api -> {
-                setId(rdata.getAttributes().getInt("id"));
-                setCreatorId(rdata.getAttributes().getInt("creatorId"));
-                setCreationDate(rdata.getAttributes().getIsoDateTime("creationDate"));
-                setChangerId(rdata.getAttributes().getInt("changerId"));
-                setChangeDate(rdata.getAttributes().getIsoDateTime("changeDate"));
-                if (changeDate == null){
-                    setChangeDate(creationDate);
-                }
-            }
             case backend, frontend -> {
             }
         }

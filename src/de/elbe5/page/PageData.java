@@ -11,12 +11,9 @@ package de.elbe5.page;
 import de.elbe5.base.Log;
 import de.elbe5.content.*;
 import de.elbe5.file.FileData;
-import de.elbe5.group.GroupData;
 import de.elbe5.request.RequestData;
 import de.elbe5.request.RequestType;
 import de.elbe5.response.IResponse;
-import de.elbe5.rights.GlobalRight;
-import de.elbe5.user.UserData;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -128,21 +125,6 @@ public class PageData extends ContentData {
 
     public void showPublished(boolean showPublished) {
         this.showPublished = showPublished;
-    }
-
-    public boolean hasUserReadRight(UserData user) {
-        if (isOpenAccess() && isPublished())
-            return true;
-        else if (user==null)
-            return false;
-        if (GlobalRight.hasGlobalContentReadRight(user))
-            return true;
-        if (getReaderGroupId() != 0) {
-            GroupData group = getReaderGroup();
-            if (group != null && group.getUserIds().contains(user.getId()) && isPublished())
-                return true;
-        }
-        return hasUserEditRight(user);
     }
 
     public Map<String, SectionData> getSections() {
@@ -265,7 +247,7 @@ public class PageData extends ContentData {
         }
         else {
             writer.write("<div id=\"pageContent\" class=\"viewArea\">");
-            if (isPublished() && !hasUserEditRight(rdata.getLoginUser()))
+            if (isPublished() && !rdata.isLoggedIn())
                 displayPublishedContent(context, context.getOut(), rdata);
             else
                 displayDraftContent(context, context.getOut(), rdata);

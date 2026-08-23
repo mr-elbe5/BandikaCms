@@ -20,11 +20,6 @@ public class Configuration {
     static String databaseKey = "";
     static String salt = "";
     static Locale locale = Locale.GERMAN;
-    static int timeOffset = 0;
-    static boolean showDateTime = false;
-    static boolean useReadRights = true;
-    static boolean useReadGroup = false;
-    static boolean useEditorGroup = false;
     static int maxImageSize = 2048;
 
     static{
@@ -37,11 +32,6 @@ public class Configuration {
         databaseKey = getSafeString(context, "database");
         salt = getSafeString(context, "salt");
         locale = locales.get(getSafeString(context, "locale"));
-        timeOffset = getSafeInt(context, "timeOffset");
-        showDateTime = getSafeBoolean(context, "showDateTime");
-        useReadRights = getSafeBoolean(context, "useReadRights");
-        useReadGroup = getSafeBoolean(context, "useReadGroup");
-        useEditorGroup = getSafeBoolean(context, "useEditorGroup");
         maxImageSize = getSafeInt(context,"maxImageSize");
         System.out.println("static configuration loaded");
     }
@@ -85,26 +75,6 @@ public class Configuration {
 
     public static Locale getLocale() {
         return locale;
-    }
-
-    public static int getTimeOffset() {
-        return timeOffset;
-    }
-
-    public static boolean showDateTime() {
-        return showDateTime;
-    }
-
-    public static boolean useReadRights() {
-        return useReadRights;
-    }
-
-    public static boolean useReadGroup() {
-        return useReadGroup;
-    }
-
-    public static boolean useEditorGroup() {
-        return useEditorGroup;
     }
 
     public static int getMaxImageSize() {

@@ -11,12 +11,10 @@ package de.elbe5.user;
 import de.elbe5.base.*;
 import de.elbe5.base.BaseData;
 import de.elbe5.request.*;
-import de.elbe5.rights.GlobalRight;
 import de.elbe5.servlet.Controller;
 import de.elbe5.servlet.ControllerCache;
 import de.elbe5.response.*;
 
-import de.elbe5.servlet.ResponseException;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class UserController extends Controller {
@@ -48,11 +46,10 @@ public class UserController extends Controller {
     }
 
     public IResponse login(RequestData rdata) {
-        assertSessionCall(rdata);
-        assertRights(rdata.isPostback());
+        assertPostback(rdata);
         String login = rdata.getAttributes().getString("login");
         String pwd = rdata.getAttributes().getString("password");
-        if (login.length() == 0 || pwd.length() == 0) {
+        if (login.isEmpty() || pwd.isEmpty()) {
             rdata.setMessage($S("_notComplete"), RequestKeys.MESSAGE_TYPE_ERROR);
             return openLogin(rdata);
         }
@@ -63,7 +60,6 @@ public class UserController extends Controller {
             return openLogin(rdata);
         }
         rdata.setSessionUser(data);
-        initWebUser(data, rdata);
         String next = rdata.getAttributes().getString("next");
         if (!next.isEmpty())
                 return new ForwardResponse(next);
@@ -74,25 +70,8 @@ public class UserController extends Controller {
         return showHome();
     }
 
-    protected void initWebUser(UserData data, RequestData rdata){
-
-    }
-
-    protected void initApiUser(UserData data, RequestData rdata){
-
-    }
-
-    public IResponse checkTokenLogin(RequestData rdata) {
-        assertApiCall(rdata);
-        if (!rdata.isPostback())
-            throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
-        if (!rdata.isLoggedIn())
-            return new StatusResponse(HttpServletResponse.SC_UNAUTHORIZED);
-        return new StatusResponse(HttpServletResponse.SC_OK);
-    }
-
     public IResponse showCaptcha(RequestData rdata) {
-        assertSessionCall(rdata);
+        assertLoggedIn(rdata);
         String captcha = UserSecurity.generateCaptchaString();
         rdata.setSessionObject(RequestKeys.KEY_CAPTCHA, captcha);
         BinaryFile data = UserSecurity.getCaptcha(captcha);
@@ -103,7 +82,7 @@ public class UserController extends Controller {
     }
 
     public IResponse logout(RequestData rdata) {
-        assertSessionCall(rdata);
+        assertLoggedIn(rdata);
         rdata.setSessionUser(null);
         rdata.resetSession();
         rdata.setMessage($S("_loggedOut"), RequestKeys.MESSAGE_TYPE_SUCCESS);
@@ -118,8 +97,7 @@ public class UserController extends Controller {
     }
 
     public IResponse openCreateUser(RequestData rdata) {
-        assertLoggedInSessionCall(rdata);
-        assertRights(GlobalRight.hasGlobalUserEditRight(rdata.getLoginUser()));
+        assertLoggedIn(rdata);
         UserData data = getNewUserData();
         data.setCreateValues(rdata, RequestType.backend);
         data.setId(UserBean.getInstance().getNextId());
@@ -128,8 +106,7 @@ public class UserController extends Controller {
     }
 
     public IResponse openEditUser(RequestData rdata) {
-        assertLoggedInSessionCall(rdata);
-        assertRights(GlobalRight.hasGlobalUserEditRight(rdata.getLoginUser()));
+        assertLoggedIn(rdata);
         int userId = rdata.getId();
         UserData data = UserBean.getInstance().getUser(userId);
         data.setUpdateValues(rdata);
@@ -142,8 +119,7 @@ public class UserController extends Controller {
     }
 
     public IResponse saveUser(RequestData rdata) {
-        assertLoggedInSessionCall(rdata);
-        assertRights(GlobalRight.hasGlobalUserEditRight(rdata.getLoginUser()));
+        assertLoggedIn(rdata);
         UserData data = (UserData) rdata.getSessionObject("userData");
         data.readBackendRequestData(rdata);
         if (!rdata.checkFormErrors()) {
@@ -159,8 +135,7 @@ public class UserController extends Controller {
     }
 
     public IResponse deleteUser(RequestData rdata) {
-        assertLoggedInSessionCall(rdata);
-        assertRights(GlobalRight.hasGlobalUserEditRight(rdata.getLoginUser()));
+        assertLoggedIn(rdata);
         int id = rdata.getId();
         if (id < BaseData.ID_MIN) {
             rdata.setMessage($S("_notDeletable"), RequestKeys.MESSAGE_TYPE_ERROR);
@@ -175,21 +150,13 @@ public class UserController extends Controller {
         return new ForwardResponse("/ctrl/admin/openPersonAdministration");
     }
 
-    public IResponse openProfile(RequestData rdata) {
-        assertSessionCall(rdata);
-        assertRights(rdata.isLoggedIn());
-        return showProfile(rdata.getLoginUser());
-    }
-
     public IResponse openChangePassword(RequestData rdata) {
-        assertSessionCall(rdata);
-        assertRights(rdata.isLoggedIn());
+        assertLoggedIn(rdata);
         return showChangePassword();
     }
 
     public IResponse changePassword(RequestData rdata) {
-        assertLoggedInSessionCall(rdata);
-        assertRights(rdata.isLoggedIn() && rdata.getUserId() == rdata.getId());
+        assertLoggedIn(rdata);
         UserData user = UserBean.getInstance().getUser(rdata.getLoginUser().getId());
         if (user==null){
             return new StatusResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -221,39 +188,8 @@ public class UserController extends Controller {
         return new CloseDialogResponse("/ctrl/user/openProfile");
     }
 
-    public IResponse openChangeProfile(RequestData rdata) {
-        assertSessionCall(rdata);
-        assertRights(rdata.isLoggedIn());
-        return showChangeProfile(rdata.getLoginUser());
-    }
-
-    public IResponse changeProfile(RequestData rdata) {
-        assertSessionCall(rdata);
-        int userId = rdata.getId();
-        assertRights(rdata.isLoggedIn() && rdata.getUserId() == userId);
-        UserData data = UserBean.getInstance().getUser(userId);
-        data.readProfileRequestData(rdata);
-        if (!rdata.checkFormErrors()) {
-            return showChangeProfile(data);
-        }
-        UserBean.getInstance().saveUserProfile(data);
-        rdata.setSessionUser(data);
-        UserCache.setDirty();
-        rdata.setMessage($S("_userSaved"), RequestKeys.MESSAGE_TYPE_SUCCESS);
-        return new CloseDialogResponse("/ctrl/user/openProfile");
-    }
-
-    protected IResponse showProfile(UserData data) {
-        JspInclude jsp = new JspInclude(data.getProfileJsp());
-        return new MasterResponse(MasterResponse.DEFAULT_MASTER, jsp);
-    }
-
     protected IResponse showChangePassword() {
         return new ForwardResponse("/WEB-INF/_jsp/user/changePassword.ajax.jsp");
-    }
-
-    protected IResponse showChangeProfile(UserData data) {
-        return new ForwardResponse(data.getProfileEditJsp());
     }
 
     protected IResponse showLogin() {
