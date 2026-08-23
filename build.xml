@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BandikaCms" default="deployProject" basedir=".">
+
+    <!-- use a properties file 'build.properties' with an entry like 'deploy.dir=/Users/myself/tomcat/bandika' -->
+
+    <property file="build.properties"/>
+    <property environment="env"/>
+
+    <property name="build.dir" location="build" />
+    <property name="buildSrc.dir" location="${build.dir}/src" />
+    <property name="buildClasses.dir" location="${build.dir}/classes" />
+    <property name="buildLibs.dir" location="${build.dir}/libs" />
+    <property name="buildScss.dir" location="${build.dir}/scss" />
+
+    <path id="classpath">
+        <fileset dir="${buildLibs.dir}"/>
+        <fileset dir="lib">
+            <include name="catalina.jar"/>
+            <include name="jasper.jar"/>
+            <include name="jsp-api.jar"/>
+            <include name="servlet-api.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Target for deleting the existing directories-->
+    <target name="clean">
+        <delete dir="${buildSrc.dir}" />
+        <delete dir="${buildClasses.dir}" />
+        <delete dir="${buildLibs.dir}" />
+        <delete dir="${buildScss.dir}" />
+    </target>
+
+    <target name="makeDirs">
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${buildSrc.dir}" />
+        <mkdir dir="${buildClasses.dir}" />
+        <mkdir dir="${buildLibs.dir}" />
+        <mkdir dir="${buildScss.dir}" />
+    </target>
+
+    <target name="collectSassFiles">
+        <copy todir="${buildScss.dir}" overwrite="true">
+            <fileset dir="scss" />
+        </copy>
+    </target>
+
+    <target name="createCss" depends="collectSassFiles">
+        <apply executable="sass" dest="web/static-content/css" verbose="true" force="true" failonerror="true">
+            <srcfile />
+            <targetfile />
+            <file name="${buildScss.dir}/bootstrap.scss" />
+            <mapper type="glob" from="*.scss" to="*.css"/>
+        </apply>
+        <apply executable="sass" dest="web/static-content/css" verbose="true" force="true" failonerror="true">
+            <srcfile />
+            <targetfile />
+            <file name="${buildScss.dir}/bandika.scss" />
+            <mapper type="glob" from="*.scss" to="*.css"/>
+        </apply>
+        <apply executable="sass" dest="web/static-content/css" verbose="true" force="true" failonerror="true">
+            <srcfile />
+            <targetfile />
+            <file name="${buildScss.dir}/admin.scss" />
+            <mapper type="glob" from="*.scss" to="*.css"/>
+        </apply>
+        <apply executable="sass" dest="web/static-content/css" verbose="true" force="true" failonerror="true">
+            <srcfile />
+            <targetfile />
+            <file name="${buildScss.dir}/layout.scss" />
+            <mapper type="glob" from="*.scss" to="*.css"/>
+        </apply>
+    </target>
+
+    <target name="collectFiles" depends="createCss">
+        <copy todir="${buildLibs.dir}">
+            <fileset dir="lib" />
+        </copy>
+        <copy todir="${buildSrc.dir}" overwrite="true">
+            <fileset dir="src" />
+        </copy>
+    </target>
+
+    <target name="compile" depends="makeDirs">
+        <javac srcdir="${buildSrc.dir}" destdir="${buildClasses.dir}" includeantruntime="false" debug="true" source="16" target="16">
+            <classpath>
+                <path refid="classpath"/>
+            </classpath>
+        </javac>
+        <copy todir="${buildClasses.dir}" overwrite="true">
+            <fileset dir="${buildSrc.dir}" >
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="createProjectWar" depends="collectFiles, compile">
+        <war destfile="${build.dir}/ROOT.war"
+             webxml="web/WEB-INF/web.xml">
+            <classes dir="${buildClasses.dir}"/>
+            <fileset dir="web" >
+                <exclude name="WEB-INF/web.xml"/>
+            </fileset>
+            <lib dir="${buildLibs.dir}"/>
+        </war>
+    </target>
+
+    <target name="deployProject" depends="createProjectWar">
+        <copy todir="${deploy.dir}" overwrite="true">
+            <file name="${build.dir}/ROOT.war"/>
+        </copy>
+    </target>
+
+    <target name="undeployProject">
+        <delete file="${deploy.dir}/ROOT.war" />
+    </target>
+
+</project>

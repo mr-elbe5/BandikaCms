@@ -1,0 +1,256 @@
+@charset "UTF-8";
+body {
+  font-family: MPlus1p, Helvetica, sans-serif;
+  background: #e5e8eb url("../img/papier.jpg");
+  color: #343a40;
+}
+
+a, a:active, a:hover, a:visited {
+  color: #343a40;
+}
+
+.spacer1 {
+  height: 1rem;
+}
+
+.spacer2 {
+  height: 2rem;
+}
+
+.underlined {
+  border-bottom: 1px solid #343a40;
+}
+
+.padded {
+  padding: 10px;
+}
+
+.center {
+  text-align: center;
+}
+
+button:focus, a:focus, .btn:focus {
+  outline: 0 !important;
+  box-shadow: none;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  background: #e5e8eb url("../img/papier.jpg");
+}
+header .header {
+  display: table;
+  width: 100%;
+  border-bottom: solid 1px #6c757d;
+  padding-bottom: 5px;
+}
+header .header .logo-area {
+  display: table-cell;
+  height: 6.5rem;
+}
+header .header .nav-area {
+  display: table-cell;
+  vertical-align: top;
+  height: 6.5rem;
+}
+header .header .nav-area .sysnav {
+  font-size: 0.8rem;
+  height: 1rem;
+  margin: 0.5rem 0.25rem 3.5rem 0;
+  text-align: right;
+  vertical-align: top;
+}
+header .header .nav-area .sysnav a {
+  cursor: pointer;
+}
+header .header .nav-area .sysnav .nav-link {
+  padding: 0 0 0 1rem;
+}
+header .header .nav-area .sysnav .dropdown-menu {
+  padding: 0;
+}
+header .header .nav-area .sysnav .dropdown-menu .dropdown-item {
+  color: #343a40;
+  font-size: 0.8rem;
+}
+header .header .nav-area .menu-area {
+  text-align: right;
+  vertical-align: bottom;
+}
+header .header .nav-area .menu-area a {
+  cursor: pointer;
+}
+header .header .nav-area .menu-area .menu-link.mainLink {
+  font-size: 1.2rem;
+}
+header .header .nav-area .menu-area .navIcon.linkNav {
+  height: 1rem;
+  padding-bottom: 0.2rem;
+  margin-right: 1rem;
+}
+header .header .nav-area .menu-area .dropdown-item {
+  color: #343a40;
+  padding: 0.25rem 0.5rem;
+}
+header .header .nav-area .menu-area .dropdown-item.level2 {
+  padding-left: 1rem;
+  font-size: 95%;
+}
+header .header .nav-area .menu-area .dropdown-item.level3 {
+  padding-left: 1.5rem;
+  font-size: 90%;
+}
+header .header .nav-area .menu-area .dropdown-item.level4 {
+  padding-left: 2rem;
+  font-size: 85%;
+}
+header .header .nav-area .menu-area .dropdown-item.active, header .header .nav-area .menu-area .dropdown-item:active {
+  color: #343a40;
+}
+
+.breadcrumb {
+  background: transparent;
+  font-size: 0.8rem;
+  margin: 0.25rem 0;
+  padding: 0 1rem;
+}
+
+.navbar {
+  padding: 0;
+}
+
+main {
+  padding-bottom: 1rem;
+}
+main div#pageContent h1, main div#pageContent h2, main div#pageContent h3, main div#pageContent h4 {
+  margin: 0;
+}
+main div#pageContent h1.title {
+  text-align: center;
+}
+main div#pageContent .partWrapper .paragraph {
+  background: rgba(255, 255, 255, 0.33);
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  padding: 1rem;
+  height: 100%;
+  overflow: hidden;
+}
+main div#pageContent .partWrapper .paragraph h2 {
+  border-bottom: 1px solid;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+main div#pageContent .partWrapper .paragraph h3 {
+  border-width: 1px 0;
+  border-style: solid;
+  padding: 0.5rem 0;
+  margin: 0.5rem 0;
+}
+main div#pageContent .partWrapper .paragraph img {
+  max-width: 100%;
+}
+main div#pageContent .partWrapper .paragraph img[style*="float: left;"], main div#pageContent .partWrapper .paragraph img[style*="float:left;"] {
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+}
+main div#pageContent .partWrapper .paragraph img[style*="float: right;"], main div#pageContent .partWrapper .paragraph img[style*="float:right;"] {
+  margin-left: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 500;
+  background: #e5e8eb url("../img/papier.jpg");
+  border-top: solid 1px #6c757d;
+  font-size: 0.8rem;
+}
+
+#searchboxform {
+  padding: 1rem 0;
+}
+#searchboxform .form-control {
+  height: auto;
+  padding: 0 0.75rem;
+}
+
+div.searchResults {
+  padding-top: 1rem;
+}
+div.searchResults div.searchResult {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #343a40;
+}
+div.searchResults div.searchResult div.searchTitle {
+  font-size: 1.2em;
+}
+div.searchResults div.searchResult div.searchDescription {
+  padding-top: 0.5em;
+  font-style: italic;
+}
+div.searchResults div.searchResult div.searchContent {
+  padding-top: 0.5em;
+}
+
+.searchHighlight {
+  background: yellow;
+}
+
+body.admin main {
+  top: 6.5rem;
+}
+body.admin div#pageContainer {
+  background: white;
+}
+
+/* admin */
+body.admin div#pageContainer {
+  margin-top: 1rem;
+  background: white;
+  min-height: 500px;
+}
+body.admin .header .nav-area .sysnav {
+  margin: 0.5rem 0.25rem 2.5rem 0;
+}
+
+/* login */
+body.login {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+body.login #main .loginSection .form {
+  width: 100%;
+  max-width: 360px;
+  padding: 30px;
+  margin: 20% auto;
+}
+body.login #main .loginSection .form .form-control:focus {
+  z-index: 2;
+}
+body.login #main .loginSection .form input[type=text] {
+  margin-bottom: 0.5rem;
+}
+body.login #main .loginSection .form input[type=password] {
+  margin-bottom: 2rem;
+}
+
+a.link::before {
+  content: "›";
+  padding-right: 0.25em;
+}
+
+a.mail::before {
+  content: "\f003";
+  font-family: FontAwesome;
+  padding-right: 0.25em;
+}
+
+/*# sourceMappingURL=layout.css.map */

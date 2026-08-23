@@ -9,7 +9,6 @@
 package de.elbe5.page;
 
 import de.elbe5.application.Configuration;
-import de.elbe5.mail.MailHelper;
 import de.elbe5.base.Log;
 import de.elbe5.content.*;
 import de.elbe5.file.ImageBean;
@@ -165,40 +164,6 @@ public class PageController extends ContentLogController {
         data.addPart(pdata, fromPartId, true);
         rdata.getAttributes().put(PagePartData.KEY_PART, pdata);
         return new ForwardResponse("/WEB-INF/_jsp/page/newPart.ajax.jsp");
-    }
-
-    public IResponse sendContact(RequestData rdata) {
-        assertSessionCall(rdata);
-        String captcha = rdata.getAttributes().getString("captcha");
-        String sessionCaptcha = rdata.getSessionObject(RequestKeys.KEY_CAPTCHA, String.class);
-        if (!captcha.equals(sessionCaptcha)){
-            rdata.addFormErrorField("captcha");
-            rdata.addFormError($S("_captchaError"));
-            return show(rdata);
-        }
-        String name = rdata.getAttributes().getString("contactName");
-        String email = rdata.getAttributes().getString("contactEmail");
-        String message = rdata.getAttributes().getString("contactMessage");
-        if (name.isEmpty()) {
-            rdata.addIncompleteField("contactName");
-        }
-        if (email.isEmpty()) {
-            rdata.addIncompleteField("contactEmail");
-        }
-        if (message.isEmpty()) {
-            rdata.addIncompleteField("contactMessage");
-        }
-        if (!rdata.checkFormErrors()){
-            return show(rdata);
-        }
-        message = String.format($SH("_contactRequestText"),name,email) + message;
-        if (!MailHelper.sendPlainMail(Configuration.getMailReceiver(), $S("_contactRequest"), message)) {
-            rdata.setMessage($S("_contactRequestError"), RequestKeys.MESSAGE_TYPE_ERROR);
-            return show(rdata);
-        }
-        rdata.setMessage($S("_contactRequestSent"), RequestKeys.MESSAGE_TYPE_SUCCESS);
-        rdata.removeSessionObject(RequestKeys.KEY_CAPTCHA);
-        return show(rdata);
     }
 
 }

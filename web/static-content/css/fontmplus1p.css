@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "MPlus1p";
+    src: url("../fonts/mplus1p-light-webfont.eot");
+    src: url("../fonts/mplus1p-light-webfont.eot") format("embedded-opentype"), url("../fonts/mplus1p-light-webfont.woff2") format("woff2"), url("../fonts/mplus1p-light-webfont.woff") format("woff"), url("../fonts/mplus1p-light-webfont.ttf") format("truetype"), url("../fonts/mplus1p-light-webfont.svg") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "MPlus1p";
+    src: url("../fonts/mplus1p-medium-webfont.eot");
+    src: url("../fonts/mplus1p-medium-webfont.eot") format("embedded-opentype"), url("../fonts/mplus1p-medium-webfont.woff2") format("woff2"), url("../fonts/mplus1p-medium-webfont.woff") format("woff"), url("../fonts/mplus1p-medium-webfont.ttf") format("truetype"), url("../fonts/mplus1p-medium-webfont.svg") format("svg");
+    font-weight: bold;
+    font-style: normal;
+}

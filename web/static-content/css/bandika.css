@@ -1,0 +1,281 @@
+button:focus, a:focus, .btn:focus {
+  outline: 0 !important;
+  box-shadow: none;
+}
+
+th, td {
+  text-align: left;
+}
+
+pre {
+  font-family: Courier New, Monospaced, serif;
+  color: black;
+  border: 1px solid darkgray;
+  padding: 0.5em;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+.padded {
+  padding-top: calc(0.375rem + 1px);
+  padding-bottom: calc(0.375rem + 1px);
+}
+
+.htmlBox {
+  padding: 1rem;
+}
+
+.imageBox {
+  padding: 0;
+}
+.imageBox img {
+  width: 100%;
+}
+
+.imageScrollBox {
+  padding: 0;
+  overflow-x: auto;
+}
+
+div.tableWrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.alert, .alert-dismissible .close {
+  padding: 0.5rem 1.25rem;
+}
+
+.formError {
+  color: #dc3545;
+}
+
+form .tab-content > .tab-pane {
+  padding: 1rem 1rem 0 1rem;
+}
+form .form-control-file, form .form-control-range {
+  padding: 0.375rem 0;
+}
+
+.form-group {
+  margin-bottom: 0.5rem;
+}
+
+.form-group.error label {
+  color: red;
+}
+.form-group.error input {
+  border-color: red;
+}
+
+.modal-backdrop {
+  z-index: 11040;
+}
+
+.modal {
+  z-index: 11050;
+}
+
+.popover {
+  z-index: 11060;
+}
+
+.tooltip {
+  z-index: 11070;
+}
+
+.modal-dialog-wide {
+  max-width: none;
+  margin: 3rem;
+}
+
+.modal-dialog-full {
+  max-width: none;
+  position: fixed;
+  left: 3rem;
+  top: 3rem;
+  right: 3rem;
+  bottom: 3rem;
+}
+.modal-dialog-full .modal-content {
+  height: 100%;
+}
+.modal-dialog-full .modal-body {
+  overflow: auto;
+}
+
+.dropdown-menu a.dropdown-item {
+  cursor: pointer;
+}
+
+.treeSection {
+  padding: 2rem;
+}
+.treeSection .treeRoot {
+  font-size: 1.2em;
+}
+.treeSection ul.tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.treeSection ul.tree li {
+  margin: 0;
+  padding: 0 1em;
+  line-height: 2em;
+  position: relative;
+}
+.treeSection ul.tree li a.fa {
+  margin-left: 0.375rem;
+  cursor: pointer;
+  position: relative;
+  top: 1px;
+}
+.treeSection ul.tree li button, .treeSection ul.tree li button:active, .treeSection ul.tree li button:focus {
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  outline: 0;
+}
+.treeSection ul.tree ul {
+  position: relative;
+  margin-left: 0.33em;
+  padding: 0;
+  list-style: none;
+}
+.treeSection ul.tree ul li:before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 0;
+  border-top: 1px dotted;
+  margin-top: -1px;
+  position: absolute;
+  top: 1em;
+  left: 0;
+}
+.treeSection ul.tree ul li:last-child:before {
+  background: #fff;
+  height: auto;
+  top: 1em;
+  bottom: 0;
+}
+.treeSection ul.tree ul:before {
+  content: "";
+  display: block;
+  width: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-left: 1px dotted;
+}
+.treeSection ul.tree div.icons {
+  display: inline-block;
+  line-height: 1.2em;
+  margin-left: 0.5em;
+  padding: 0 0.5em 1px 0.25em;
+  position: relative;
+  top: 1px;
+}
+.treeSection ul.tree li.documents, .treeSection ul.tree li.images, .treeSection ul.tree li.media {
+  font-size: 0.75rem;
+  font-style: italic;
+}
+.treeSection ul.tree li.parts {
+  font-size: 0.75rem;
+}
+.treeSection ul.tree.filetree ul li:before {
+  top: 20px;
+}
+.treeSection ul.tree.filetree i.treeindicator {
+  position: relative;
+  top: 5px;
+}
+.treeSection ul.tree.filetree div.treeline {
+  display: inline-block;
+  padding: 1px;
+  vertical-align: middle;
+}
+.treeSection ul.tree.filetree div.treeline img {
+  max-height: 48px;
+  border: 1px solid #343a40;
+  border-radius: 3px;
+}
+.treeSection span.hoverLine span.hoverImage {
+  position: absolute;
+  z-index: 11070;
+  left: 200px;
+  display: none;
+}
+.treeSection span.hoverLine:hover span.hoverImage {
+  display: inline-block;
+}
+.treeSection .dropdown-menu {
+  padding: 0.2em 0;
+}
+.treeSection .dropdown-menu .dropdown-item {
+  font-size: 90%;
+  padding: 0.2em 1em;
+}
+.treeSection .dropdown-toggle {
+  cursor: context-menu;
+}
+
+.logSection {
+  padding: 1rem;
+}
+.logSection h3 {
+  display: inline-block;
+  padding-bottom: 1rem;
+  padding-right: 1rem;
+}
+.logSection table td:first-child {
+  padding-right: 2rem;
+}
+
+/* like button-group */
+div.buttonLine {
+  padding: 0.5em 0;
+}
+
+/* ace editor */
+.form-group .ace_editor {
+  border: 1px solid #ddd;
+}
+
+/* page editing */
+#pageContainer div.pageEditButtons {
+  padding-bottom: 0.5em;
+}
+#pageContainer .editArea .section {
+  min-height: 2rem;
+}
+#pageContainer .editArea .partEditButtons {
+  position: absolute;
+  margin-left: -75px;
+}
+#pageContainer .editArea .sectionEditButtons {
+  position: absolute;
+  margin-top: -2.2em;
+  margin-left: -68px;
+}
+#pageContainer .editArea .dropdown-menu {
+  padding: 0;
+}
+#pageContainer .editArea .dropdown-menu .dropdown-item {
+  padding: 0.25rem 0.5rem;
+}
+#pageContainer .editArea input.editField, #pageContainer .editArea textarea.editField,
+#pageContainer .editArea .textBox input[type=text], #pageContainer .editArea .textBox textarea {
+  width: 100%;
+  color: inherit;
+  background-color: inherit;
+  text-align: inherit;
+}
+
+/*# sourceMappingURL=bandika.css.map */
