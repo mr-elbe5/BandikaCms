@@ -11,8 +11,7 @@ package de.elbe5.request;
 import de.elbe5.base.*;
 import de.elbe5.base.BaseData;
 import de.elbe5.application.Configuration;
-import de.elbe5.content.ContentData;
-import de.elbe5.user.UserBean;
+import de.elbe5.page.PageData;
 import de.elbe5.user.UserData;
 
 import jakarta.servlet.http.*;
@@ -64,7 +63,7 @@ public class RequestData {
     }
 
     public int getSafeId(){
-        return id !=0 ? id : ContentData.ID_ROOT;
+        return id !=0 ? id : PageData.ID_ROOT;
     }
 
     public void setId(int id) {
@@ -104,6 +103,16 @@ public class RequestData {
     public boolean isLoggedIn() {
         UserData user = getLoginUser();
         return user != null;
+    }
+
+    public boolean isEditor() {
+        UserData user = getLoginUser();
+        return user != null && user.isEditor();
+    }
+
+    public boolean isAdmin() {
+        UserData user = getLoginUser();
+        return user != null && user.isAdmin();
     }
 
     /************ form error *************/
@@ -400,12 +409,16 @@ public class RequestData {
             if (obj==null){
                 return null;
             }
-            //Log.log("current request data is: " + obj.getClass().getSimpleName());
+            //Log.log("current request page is: " + obj.getClass().getSimpleName());
             return cls.cast(obj);
         }
         catch (ClassCastException e){
             return null;
         }
+    }
+
+    public PageData getCurrentPageInRequestOrSession(String key) {
+        return getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
     }
 
     public void setClipboardData(String key, BaseData data){

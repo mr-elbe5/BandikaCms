@@ -11,9 +11,9 @@ package de.elbe5.tag;
 import de.elbe5.base.Log;
 import de.elbe5.page.PageData;
 import de.elbe5.page.SectionData;
-import de.elbe5.request.ContentRequestKeys;
 import de.elbe5.request.RequestData;
 
+import de.elbe5.request.RequestKeys;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class SectionTag extends BaseTag {
@@ -33,7 +33,7 @@ public class SectionTag extends BaseTag {
         try {
             HttpServletRequest request = (HttpServletRequest) getContext().getRequest();
             RequestData rdata = RequestData.getRequestData(request);
-            PageData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, PageData.class);
+            PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
             SectionData sectionData = contentData.ensureSection(name);
             if (sectionData != null) {
                 sectionData.setCssClass(cssClass);

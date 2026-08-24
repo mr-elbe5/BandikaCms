@@ -9,9 +9,9 @@
 <%response.setContentType("text/html;charset=UTF-8");%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
-<%@ page import="de.elbe5.content.ContentCache" %>
+<%@ page import="de.elbe5.page.PageCache" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.rights.GlobalRight" %>
+<%@ page import="de.elbe5.page.PageCache" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -51,7 +51,7 @@
                 <div class="tab-pane fade show active" id="pages" role="tabpanel" aria-labelledby="pages-tab">
                     <section class="treeSection">
                         <ul class="tree filetree">
-                            <%rdata.setRequestObject("treePage", ContentCache.getContentRoot());%>
+                            <%rdata.setRequestObject("treePage", PageCache.getContentRoot());%>
                             <jsp:include page="/WEB-INF/_jsp/ckeditor/pageLinkBrowserFolder.inc.jsp" flush="true"/>
                             <%rdata.removeRequestObject("treePage");%>
                         </ul>
@@ -61,7 +61,7 @@
                     <section class="treeSection">
                         <% if (GlobalRight.hasGlobalContentReadRight(rdata.getLoginUser())) { %>
                         <ul class="tree filetree">
-                            <%rdata.setRequestObject("treePage", ContentCache.getContentRoot());%>
+                            <%rdata.setRequestObject("treePage", PageCache.getContentRoot());%>
                             <jsp:include page="/WEB-INF/_jsp/ckeditor/documentLinkBrowserFolder.inc.jsp" flush="true"/>
                         </ul>
                         <%rdata.removeRequestObject("treePage"); }%>
@@ -71,7 +71,7 @@
                     <section class="treeSection">
                         <% if (GlobalRight.hasGlobalContentReadRight(rdata.getLoginUser())) { %>
                         <ul class="tree filetree">
-                            <%rdata.setRequestObject("treePage", ContentCache.getContentRoot());%>
+                            <%rdata.setRequestObject("treePage", PageCache.getContentRoot());%>
                             <jsp:include page="/WEB-INF/_jsp/ckeditor/imageLinkBrowserFolder.inc.jsp" flush="true"/>
                         </ul>
                         <%rdata.removeRequestObject("treePage"); }%>
@@ -81,7 +81,7 @@
                     <section class="treeSection">
                         <% if (GlobalRight.hasGlobalContentReadRight(rdata.getLoginUser())) { %>
                         <ul class="tree filetree">
-                            <%rdata.setRequestObject("treePage", ContentCache.getContentRoot());%>
+                            <%rdata.setRequestObject("treePage", PageCache.getContentRoot());%>
                             <jsp:include page="/WEB-INF/_jsp/ckeditor/mediaLinkBrowserFolder.inc.jsp" flush="true"/>
                         </ul>
                         <%rdata.removeRequestObject("treePage");

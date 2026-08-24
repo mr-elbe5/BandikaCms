@@ -9,11 +9,9 @@
 package de.elbe5.file;
 
 import de.elbe5.application.ApplicationPath;
-import de.elbe5.base.BinaryFile;
-import de.elbe5.content.ContentCache;
-import de.elbe5.content.ContentData;
+import de.elbe5.page.PageCache;
+import de.elbe5.page.PageData;
 import de.elbe5.request.*;
-import de.elbe5.response.MemoryFileResponse;
 import de.elbe5.response.StatusResponse;
 import de.elbe5.servlet.Controller;
 import de.elbe5.response.IResponse;
@@ -50,14 +48,14 @@ public class FileController extends Controller {
     public IResponse download(RequestData rdata) {
         assertLoggedIn(rdata);
         int id = rdata.getId();
-        FileData data = ContentCache.getFile(id);
+        FileData data = PageCache.getFile(id);
         rdata.getAttributes().put("download", "true");
         return show(data, rdata);
     }
 
     private IResponse show(FileData data, RequestData rdata){
         assertLoggedIn(rdata);
-        ContentData parent=ContentCache.getContent(data.getParentId());
+        PageData parent= PageCache.getContent(data.getParentId());
         File file = new File(ApplicationPath.getAppFilePath(), data.getStaticFileName());
         // if not exists, create from database
         if (!file.exists() && !FileBean.getInstance().createTempFile(file)) {
@@ -74,12 +72,12 @@ public class FileController extends Controller {
     public IResponse openCreateFile(RequestData rdata) {
         assertLoggedIn(rdata);
         int parentId = rdata.getAttributes().getInt("parentId");
-        ContentData parentData = ContentCache.getContent(parentId);
+        PageData parentData = PageCache.getContent(parentId);
         String type=rdata.getAttributes().getString("type");
         FileData data = FileBean.getInstance().getNewFileData(type);
         data.setCreateValues(rdata, RequestType.backend);
         data.setParentValues(parentData);
-        rdata.setSessionObject(ContentRequestKeys.KEY_FILE, data);
+        rdata.setSessionObject(RequestKeys.KEY_FILE, data);
         return new ForwardResponse(data.getEditURL());
     }
 
@@ -87,8 +85,8 @@ public class FileController extends Controller {
         assertLoggedIn(rdata);
         int fileId = rdata.getId();
         FileData data = FileBean.getInstance().getFile(fileId,true);
-        ContentData parent=ContentCache.getContent(data.getParentId());
-        rdata.setClipboardData(ContentRequestKeys.KEY_FILE, data);
+        PageData parent= PageCache.getContent(data.getParentId());
+        rdata.setClipboardData(RequestKeys.KEY_FILE, data);
         return showContentAdministration(rdata,parent.getId());
     }
 
@@ -96,20 +94,20 @@ public class FileController extends Controller {
         assertLoggedIn(rdata);
         int fileId = rdata.getId();
         FileData data = FileBean.getInstance().getFile(fileId,true);
-        ContentData parent=ContentCache.getContent(data.getParentId());
+        PageData parent= PageCache.getContent(data.getParentId());
         data.setNew(true);
         data.setId(FileBean.getInstance().getNextId());
         data.setCreatorId(rdata.getUserId());
         data.setChangerId(rdata.getUserId());
-        rdata.setClipboardData(ContentRequestKeys.KEY_FILE, data);
+        rdata.setClipboardData(RequestKeys.KEY_FILE, data);
         return showContentAdministration(rdata,parent.getId());
     }
 
     public IResponse pasteFile(RequestData rdata) {
         assertLoggedIn(rdata);
         int parentId = rdata.getAttributes().getInt("parentId");
-        FileData data=rdata.getClipboardData(ContentRequestKeys.KEY_FILE, FileData.class);
-        ContentData parent=ContentCache.getContent(parentId);
+        FileData data=rdata.getClipboardData(RequestKeys.KEY_FILE, FileData.class);
+        PageData parent= PageCache.getContent(parentId);
         if (parent == null){
             rdata.setMessage($S("_actionNotExcecuted"), RequestKeys.MESSAGE_TYPE_ERROR);
             return showContentAdministration(rdata, parentId);
@@ -118,8 +116,8 @@ public class FileController extends Controller {
         data.setParent(parent);
         data.setChangerId(rdata.getUserId());
         FileBean.getInstance().saveFile(data, true);
-        rdata.clearClipboardData(ContentRequestKeys.KEY_FILE);
-        ContentCache.setDirty();
+        rdata.clearClipboardData(RequestKeys.KEY_FILE);
+        PageCache.setDirty();
         rdata.setMessage($S("_filePasted"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return showContentAdministration(rdata,data.getId());
     }
@@ -127,11 +125,11 @@ public class FileController extends Controller {
     public IResponse deleteFile(RequestData rdata) {
         assertLoggedIn(rdata);
         int fileId = rdata.getId();
-        int parentId = ContentCache.getFileParentId(fileId);
-        ContentData parent=ContentCache.getContent(parentId);
-        FileData data = ContentCache.getFile(fileId);
+        int parentId = PageCache.getFileParentId(fileId);
+        PageData parent= PageCache.getContent(parentId);
+        FileData data = PageCache.getFile(fileId);
         FileBean.getInstance().deleteFile(data);
-        ContentCache.setDirty();
+        PageCache.setDirty();
         rdata.getAttributes().put("contentId", Integer.toString(parentId));
         rdata.setMessage($S("_fileDeleted"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return showContentAdministration(rdata,parentId);

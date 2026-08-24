@@ -33,6 +33,10 @@ public abstract class Controller {
         return openAdminPage(rdata, "/WEB-INF/_jsp/administration/personAdministration.jsp", $S("_personAdministration"));
     }
 
+    protected IResponse showContentAdministration(RequestData rdata) {
+        return openAdminPage(rdata, "/WEB-INF/_jsp/administration/contentAdministration.jsp", $S("_contentAdministration"));
+    }
+
     protected void assertPostback(RequestData rdata){
         if (!rdata.isPostback())
             throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
@@ -40,6 +44,16 @@ public abstract class Controller {
 
     protected void assertLoggedIn(RequestData rdata){
         if (!rdata.isLoggedIn())
+            throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    protected void assertIsEditor(RequestData rdata){
+        if (!rdata.isEditor())
+            throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    protected void assertIsAdmin(RequestData rdata){
+        if (!rdata.isAdmin())
             throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
     }
 

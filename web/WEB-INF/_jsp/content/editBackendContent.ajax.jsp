@@ -10,10 +10,10 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.content.ContentData" %>
+<%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="de.elbe5.user.UserCache" %>
 <%@ page import="de.elbe5.user.UserData" %>
-<%@ page import="de.elbe5.content.ContentNavType" %>
+<%@ page import="de.elbe5.page.PageNavType" %>
 <%@ page import="de.elbe5.group.GroupData" %>
 <%@ page import="java.util.List" %>
 <%@ page import="de.elbe5.group.GroupCache" %>
@@ -23,7 +23,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    ContentData contentData = ContentData.getSessionContent(rdata, ContentData.class);
+    PageData contentData = PageData.getSessionContent(rdata, PageData.class);
     String url = "/ctrl/content/saveBackendData/" + contentData.getId();
     UserData creator = UserCache.getUser(contentData.getCreatorId());
     String creatorName = creator == null ? "" : creator.getName();
@@ -77,11 +77,11 @@
                 </form:select>
                 <%}%>
                 <form:select name="navType" label="_navType">
-                    <option value="<%=ContentNavType.NONE%>" <%=contentData.getNavType().equals(ContentNavType.NONE) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeNone")%>
+                    <option value="<%=PageNavType.NONE%>" <%=contentData.getNavType().equals(PageNavType.NONE) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeNone")%>
                     </option>
-                    <option value="<%=ContentNavType.HEADER%>" <%=contentData.getNavType().equals(ContentNavType.HEADER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeHeader")%>
+                    <option value="<%=PageNavType.HEADER%>" <%=contentData.getNavType().equals(PageNavType.HEADER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeHeader")%>
                     </option>
-                    <option value="<%=ContentNavType.FOOTER%>" <%=contentData.getNavType().equals(ContentNavType.FOOTER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeFooter")%>
+                    <option value="<%=PageNavType.FOOTER%>" <%=contentData.getNavType().equals(PageNavType.FOOTER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeFooter")%>
                     </option>
                 </form:select>
                 <form:line label="_active" padded="true">

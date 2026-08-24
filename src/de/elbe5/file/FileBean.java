@@ -12,7 +12,6 @@ import de.elbe5.application.ApplicationPath;
 import de.elbe5.base.BinaryFile;
 import de.elbe5.base.Log;
 import de.elbe5.base.FileHelper;
-import de.elbe5.content.ContentData;
 import de.elbe5.database.DbBean;
 
 import java.io.File;

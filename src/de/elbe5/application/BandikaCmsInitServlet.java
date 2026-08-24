@@ -13,11 +13,8 @@ import de.elbe5.base.LocalizedStrings;
 import de.elbe5.base.LocalizedSystemStrings;
 import de.elbe5.base.Log;
 import de.elbe5.ckeditor.CkEditorController;
-import de.elbe5.content.*;
 import de.elbe5.database.DbConnector;
 import de.elbe5.layout.LocalizedLayoutNames;
-import de.elbe5.link.LinkData;
-import de.elbe5.page.LayoutPartData;
 import de.elbe5.file.*;
 import de.elbe5.layout.LayoutCache;
 import de.elbe5.page.*;
@@ -45,24 +42,15 @@ public class BandikaCmsInitServlet extends InitServlet {
         LocalizedSystemStrings.getInstance().addBundle("systemStrings", Configuration.getLocale());
         LocalizedLayoutNames.getInstance().addBundle("layoutNames", Configuration.getLocale());
         AdminController.register(new AdminController());
-        ContentController.register(new ContentController());
+        PageController.register(new PageController());
         DocumentController.register(new DocumentController());
         ImageController.register(new ImageController());
         MediaController.register(new MediaController());
-        PageController.register(new PageController());
         CkEditorController.register(new CkEditorController());
         UserController.register(new UserController());
-        LayoutCache.addType(PageData.LAYOUT_TYPE);
         LayoutCache.addType(PagePartData.LAYOUT_TYPE);
 
-        PageData.childClasses.add(PageData.class);
-        PageData.childClasses.add(LinkData.class);
-        PageData.fileClasses.add(DocumentData.class);
-        PageData.fileClasses.add(ImageData.class);
-        PageData.fileClasses.add(MediaData.class);
-        PageData.pagePartClasses.add(LayoutPartData.class);
-
-        ContentCache.load();
+        PageCache.load();
         UserCache.load();
         LayoutCache.load();
         if (!FileBean.getInstance().assertFileDirectory()){

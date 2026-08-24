@@ -8,16 +8,15 @@
  */
 package de.elbe5.page;
 
+import de.elbe5.base.DateHelper;
 import de.elbe5.base.Log;
-import de.elbe5.content.ContentBean;
-import de.elbe5.content.ContentData;
+import de.elbe5.database.DbBean;
 
 import java.lang.reflect.Constructor;
 import java.sql.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-public class PageBean extends ContentBean {
+public class PageBean extends DbBean {
 
     private static PageBean instance = null;
 
@@ -26,6 +25,208 @@ public class PageBean extends ContentBean {
             instance = new PageBean();
         }
         return instance;
+    }
+
+    public int getNextId() {
+        return getNextId("s_content_id");
+    }
+
+    private static final String GET_ALL_CONTENT_SQL = "SELECT id,creator_id,changer_id,creation_date,change_date,parent_id,ranking,name,display_name,nav_type,active,keywords,layout,publish_date,published_content FROM t_page";
+
+    public List<PageData> getAllPages() {
+        List<PageData> list = new ArrayList<>();
+        Connection con = getConnection();
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(GET_ALL_CONTENT_SQL);
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    PageData data= readPageData(rs);
+                    readParts(con, data);
+                    data.sortParts();
+                    list.add(data);
+                }
+            }
+        } catch (SQLException se) {
+            Log.error("sql error", se);
+        } finally {
+            closeStatement(pst);
+            closeConnection(con);
+        }
+        return list;
+    }
+
+    public PageData getPage(int id) {
+        PageData data = null;
+        Connection con = getConnection();
+        try {
+            data = readPage(con, id);
+        } catch (SQLException se) {
+            Log.error("sql error", se);
+        } finally {
+            closeConnection(con);
+        }
+        return data;
+    }
+
+    private static final String GET_PAGE_SQL = "SELECT id,creator_id,changer_id,creation_date,change_date,parent_id,ranking,name,display_name,nav_type,active,keywords,layout,publish_date,published_content FROM t_page WHERE id=?";
+
+    public PageData readPage(Connection con, int id) throws SQLException {
+        PageData data = null;
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(GET_PAGE_SQL);
+            pst.setInt(1, id);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    data = readPageData(rs);
+                    readParts(con, data);
+                    data.sortParts();
+                }
+            }
+        } finally {
+            closeStatement(pst);
+        }
+        return data;
+    }
+
+    private PageData readPageData(ResultSet rs) throws SQLException{
+        int i = 1;
+        PageData data = new PageData();
+        data.setId(rs.getInt(i++));
+        data.setCreatorId(rs.getInt(i++));
+        data.setChangerId(rs.getInt(i++));
+        data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
+        data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
+        data.setParentId(rs.getInt(i++));
+        data.setRanking(rs.getInt(i++));
+        data.setName(rs.getString(i++));
+        data.setDisplayName(rs.getString(i++));
+        data.setNavType(rs.getString(i++));
+        data.setActive(rs.getBoolean(i));
+        data.setKeywords(rs.getString(i++));
+        data.setLayout(rs.getString(i++));
+        Timestamp ts = rs.getTimestamp(i++);
+        data.setPublishDate(ts == null ? null : ts.toLocalDateTime());
+        data.setPublishedContent(rs.getString(i));
+        return data;
+    }
+
+    public boolean savePage(PageData data) {
+        Connection con = startTransaction();
+        try {
+            data.setChangeDate(DateHelper.getCurrentTime());
+            if (data.isNew()){
+                data.setCreationDate(data.getChangeDate());
+                createContent(con,data);
+            }
+            else{
+                updateContent(con,data);
+            }
+            return commitTransaction(con);
+        } catch (Exception se) {
+            return rollbackTransaction(con, se);
+        }
+    }
+
+    private static final String INSERT_PAGE_SQL = "insert into t_page (creator_id,changer_id,creation_date,change_date,parent_id,ranking,name,display_name,nav_type,active,keywords,layout,publish_date,published_content,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    protected void createContent(Connection con, PageData data) throws SQLException {
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(INSERT_PAGE_SQL);
+            int i = 1;
+            pst.setString(i++, data.getClass().getName());
+            pst.setInt(i++, data.getCreatorId());
+            pst.setInt(i++, data.getChangerId());
+            pst.setTimestamp(i++, Timestamp.valueOf(data.getCreationDate()));
+            pst.setTimestamp(i++, Timestamp.valueOf(data.getChangeDate()));
+            if (data.getParentId() == 0) {
+                pst.setNull(i++, Types.INTEGER);
+            } else {
+                pst.setInt(i++, data.getParentId());
+            }
+            pst.setInt(i++, data.getRanking());
+            pst.setString(i++, data.getName());
+            pst.setString(i++, data.getDisplayName());
+            pst.setString(i++, data.getNavTypeString());
+            pst.setBoolean(i++,data.isActive());
+            pst.setString(i++, data.getKeywords());
+            pst.setString(i++, data.getLayout());
+            if (data.getPublishDate()==null)
+                pst.setNull(i++,Types.TIMESTAMP);
+            else
+                pst.setTimestamp(i++, Timestamp.valueOf(data.getPublishDate()));
+            pst.setString(i++,data.getPublishedContent());
+            pst.setInt(i, data.getId());
+            pst.executeUpdate();
+            pst.close();
+        } finally {
+            closeStatement(pst);
+        }
+    }
+
+    private static final String UPDATE_CONTENT_SQL = "update t_page set changer_id=?,change_date=?,parent_id=?,ranking=?,name=?,display_name=?,nav_type=?,active=?,keywords=?,layout=?,publish_date=?,published_content=? where id=?";
+
+    protected void updateContent(Connection con, PageData data) throws SQLException {
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(UPDATE_CONTENT_SQL);
+            int i = 1;
+            pst.setInt(i++, data.getChangerId());
+            pst.setTimestamp(i++, Timestamp.valueOf(data.getChangeDate()));
+            if (data.getParentId() == 0){
+                pst.setNull(i++, Types.INTEGER);
+            }
+            else{
+                pst.setInt(i++, data.getParentId());
+            }
+            pst.setInt(i++, data.getRanking());
+            pst.setString(i++, data.getName());
+            pst.setString(i++, data.getDisplayName());
+            pst.setString(i++, data.getNavTypeString());
+            pst.setBoolean(i++,data.isActive());
+            pst.setString(i++, data.getKeywords());
+            pst.setString(i++, data.getLayout());
+            if (data.getPublishDate()==null)
+                pst.setNull(i++,Types.TIMESTAMP);
+            else
+                pst.setTimestamp(i++, Timestamp.valueOf(data.getPublishDate()));
+            pst.setString(i++,data.getPublishedContent());
+            pst.setInt(i, data.getId());
+            pst.executeUpdate();
+            pst.close();
+        } finally {
+            closeStatement(pst);
+        }
+    }
+
+    private static final String UPDATE_RANKING_SQL = "UPDATE t_page SET ranking=? WHERE id=?";
+
+    public void updateChildRankings(PageData data) {
+        Connection con = startTransaction();
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(UPDATE_RANKING_SQL);
+            for (int i = 0; i < data.getChildren().size(); i++) {
+                int id = data.getChildren().get(i).getId();
+                pst.setInt(1, i + 1);
+                pst.setInt(2, id);
+                pst.executeUpdate();
+            }
+            commitTransaction(con);
+        } catch (Exception e){
+            rollbackTransaction(con);
+        } finally {
+            closeStatement(pst);
+            closeConnection(con);
+        }
+    }
+
+    private static final String DELETE_SQL = "DELETE FROM t_page WHERE id=?";
+
+    public boolean deletePage(int id) {
+        return deleteItem(DELETE_SQL, id);
     }
 
     PagePartData getNewPagePartData(String className){
@@ -38,81 +239,6 @@ public class PageBean extends ContentBean {
             Log.error("could not create class " + className,  e);
         }
         return null;
-    }
-
-    private static final String GET_CONTENT_EXTRAS_SQL = "SELECT keywords, layout, publish_date, published_content FROM t_page WHERE id=?";
-
-    @Override
-    public void readContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof PageData data))
-            return;
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement(GET_CONTENT_EXTRAS_SQL);
-            pst.setInt(1, data.getId());
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    int i = 1;
-                    data.setKeywords(rs.getString(i++));
-                    data.setLayout(rs.getString(i++));
-                    Timestamp ts = rs.getTimestamp(i++);
-                    data.setPublishDate(ts == null ? null : ts.toLocalDateTime());
-                    data.setPublishedContent(rs.getString(i));
-                    readParts(con, data);
-                    data.sortParts();
-                }
-            }
-        } finally {
-            closeStatement(pst);
-        }
-    }
-
-    private static final String INSERT_CONTENT_EXTRAS_SQL = "insert into t_page (keywords,layout,publish_date,published_content,id) values(?,?,?,?,?)";
-
-    @Override
-    public void createContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof PageData data))
-            return;
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement(INSERT_CONTENT_EXTRAS_SQL);
-            setExtraValues(pst,data);
-            pst.executeUpdate();
-            pst.close();
-        } finally {
-            closeStatement(pst);
-        }
-        writeAllParts(con, data);
-    }
-
-    private static final String UPDATE_CONTENT_EXTRAS_SQL = "update t_page set keywords=?,layout=?,publish_date=?,published_content=? where id=?";
-
-    @Override
-    public void updateContentExtras(Connection con, ContentData contentData) throws SQLException {
-        if (!(contentData instanceof PageData data))
-            return;
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement(UPDATE_CONTENT_EXTRAS_SQL);
-            setExtraValues(pst,data);
-            pst.executeUpdate();
-            pst.close();
-        } finally {
-            closeStatement(pst);
-        }
-        writeAllParts(con, data);
-    }
-
-    private void setExtraValues(PreparedStatement pst, PageData data) throws SQLException{
-        int i = 1;
-        pst.setString(i++, data.getKeywords());
-        pst.setString(i++, data.getLayout());
-        if (data.getPublishDate()==null)
-            pst.setNull(i++,Types.TIMESTAMP);
-        else
-            pst.setTimestamp(i++, Timestamp.valueOf(data.getPublishDate()));
-        pst.setString(i++,data.getPublishedContent());
-        pst.setInt(i, data.getId());
     }
 
     public boolean publishPage(PageData data) {
@@ -144,7 +270,7 @@ public class PageBean extends ContentBean {
 
     private static final String REPLACE_IN_PAGE_SQL = "UPDATE t_page set published_content = REPLACE(published_content,?,?)";
 
-    public void replaceStringInContent(Connection con, String current, String replacement) throws SQLException {
+    public void replaceStringInPage(Connection con, String current, String replacement) throws SQLException {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(REPLACE_IN_PAGE_SQL);
@@ -156,7 +282,7 @@ public class PageBean extends ContentBean {
         }
     }
 
-    private static final String READ_PARTS_SQL = "SELECT type,section,position,id,change_date FROM t_page_part WHERE page_id=? ORDER BY position";
+    private static final String READ_PARTS_SQL = "SELECT section,position,id,change_date,layout FROM t_page_part WHERE page_id=? ORDER BY position";
 
     public void readParts(Connection con, PageData contentData) throws SQLException {
         PreparedStatement pst = null;
@@ -174,9 +300,8 @@ public class PageBean extends ContentBean {
                         part.setPosition(rs.getInt(i++));
                         part.setId(rs.getInt(i++));
                         part.setChangeDate(rs.getTimestamp(i).toLocalDateTime());
-                        PagePartBean extBean = part.getBean();
-                        if (extBean != null)
-                            extBean.readPartExtras(con, part);
+                        part.setLayout(rs.getString(i));
+                        readAllPartFields(con, part);
                         contentData.addPart(part, -1, false);
                     }
                 }
@@ -186,9 +311,34 @@ public class PageBean extends ContentBean {
         }
     }
 
-    private static final String GET_PART_IDS_SQL = "SELECT id FROM t_page_part where page_id=?";
-    private static final String INSERT_PART_SQL = "INSERT INTO t_page_part (type,change_date,page_id,section,position,id) VALUES(?,?,?,?,?,?)";
-    private static final String UPDATE_PART_SQL = "UPDATE t_page_part SET type=?,change_date=?,page_id=?,section=?,position=? WHERE id=?";
+    private static final String READ_PART_FIELDS_SQL = "SELECT field_type, name, content FROM t_part_field WHERE part_id=?";
+
+    public void readAllPartFields(Connection con, PagePartData data) throws SQLException {
+        PreparedStatement pst = null;
+        PartField field;
+        data.getFields().clear();
+        try {
+            pst = con.prepareStatement(READ_PART_FIELDS_SQL);
+            pst.setInt(1, data.getId());
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    int i = 1;
+                    String fieldType = rs.getString(i++);
+                    field = new PartField();
+                    field.setPartId(data.getId());
+                    field.setName(rs.getString(i++));
+                    field.setContent(rs.getString(i));
+                    data.getFields().put(field.getName(), field);
+                }
+            }
+        } finally {
+            closeStatement(pst);
+        }
+    }
+
+    private static final String GET_PART_IDS_SQL = "SELECT id,layout FROM t_page_part where page_id=?";
+    private static final String INSERT_PART_SQL = "INSERT INTO t_page_part (change_date,page_id,section,position,layout,id) VALUES(?,?,?,?,?,?)";
+    private static final String UPDATE_PART_SQL = "UPDATE t_page_part SET change_date=?,page_id=?,section=?,position=?,layout=? WHERE id=?";
     private static final String DELETE_PART_SQL = "DELETE FROM t_page_part WHERE id=?";
 
     public void writeAllParts(Connection con, PageData page) throws SQLException {
@@ -217,11 +367,10 @@ public class PageBean extends ContentBean {
                     pst.setInt(i++, page.getId());
                     pst.setString(i++, part.getSectionName());
                     pst.setInt(i++, part.getPosition());
+                    pst.setString(i++, part.getLayout());
                     pst.setInt(i, part.getId());
                     pst.executeUpdate();
-                    PagePartBean extBean = part.getBean();
-                    if (extBean != null)
-                        extBean.writePartExtras(con, part);
+                    writeAllPartFields(con, part);
                 }
             }
             pstDel = con.prepareStatement(DELETE_PART_SQL);
@@ -234,6 +383,45 @@ public class PageBean extends ContentBean {
             closeStatement(pstIns);
             closeStatement(pstUpd);
             closeStatement(pstDel);
+        }
+    }
+
+    private static final String DELETE_PART_FIELDS_SQL = "DELETE FROM t_part_field WHERE part_id=?";
+    private static final String INSERT_PART_FIELD_SQL = "INSERT INTO t_part_field (field_type,name,content,part_id) VALUES(?,?,?,?)";
+
+    public void writeAllPartFields(Connection con, PagePartData part) throws SQLException {
+        PreparedStatement pstDelFields = null;
+        PreparedStatement pstIns = null;
+        try {
+            pstDelFields = con.prepareStatement(DELETE_PART_FIELDS_SQL);
+            pstDelFields.setInt(1, part.getId());
+            pstDelFields.executeUpdate();
+            pstDelFields.close();
+            pstIns = con.prepareStatement(INSERT_PART_FIELD_SQL);
+            for (PartField field : part.getFields().values()) {
+                int i = 1;
+                pstIns.setString(i++, field.getName());
+                pstIns.setString(i++, field.getContent());
+                pstIns.setInt(i, part.getId());
+                pstIns.executeUpdate();
+            }
+        } finally {
+            closeStatement(pstDelFields);
+            closeStatement(pstIns);
+        }
+    }
+
+    private static final String REPLACE_IN_FIELD_SQL = "UPDATE t_part_field set content = REPLACE(content,?,?)";
+
+    public void replaceStringInPart(Connection con, String current, String replacement) throws SQLException {
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(REPLACE_IN_FIELD_SQL);
+            pst.setString(1, current);
+            pst.setString(2, replacement);
+            pst.executeUpdate();
+        } finally {
+            closeStatement(pst);
         }
     }
 
@@ -253,4 +441,5 @@ public class PageBean extends ContentBean {
             closeConnection(con);
         }
     }
+
 }

@@ -8,9 +8,8 @@
  */
 package de.elbe5.file;
 
-import de.elbe5.content.ContentCache;
-import de.elbe5.content.ContentData;
-import de.elbe5.request.ContentRequestKeys;
+import de.elbe5.page.PageCache;
+import de.elbe5.page.PageData;
 import de.elbe5.request.RequestData;
 import de.elbe5.request.RequestKeys;
 import de.elbe5.request.RequestType;
@@ -46,17 +45,17 @@ public class DocumentController extends FileController {
     public IResponse openEditFile(RequestData rdata) {
         assertLoggedIn(rdata);
         FileData data = FileBean.getInstance().getFile(rdata.getId(),true);
-        ContentData parent=ContentCache.getContent(data.getParentId());
-        rdata.setSessionObject(ContentRequestKeys.KEY_FILE,data);
+        PageData parent= PageCache.getContent(data.getParentId());
+        rdata.setSessionObject(RequestKeys.KEY_FILE,data);
         return showEditFile();
     }
 
     public IResponse saveFile(RequestData rdata) {
         assertLoggedIn(rdata);
         int fileId = rdata.getId();
-        DocumentData data = rdata.getSessionObject(ContentRequestKeys.KEY_FILE,DocumentData.class);
+        DocumentData data = rdata.getSessionObject(RequestKeys.KEY_FILE,DocumentData.class);
         assert fileId == data.getId();
-        ContentData parent=ContentCache.getContent(data.getParentId());
+        PageData parent= PageCache.getContent(data.getParentId());
         data.readRequestData(rdata, RequestType.backend);
         if (!rdata.checkFormErrors()) {
             return showEditFile();
@@ -68,7 +67,7 @@ public class DocumentController extends FileController {
             return showEditFile();
         }
         data.setNew(false);
-        ContentCache.setDirty();
+        PageCache.setDirty();
         rdata.setMessage($S("_fileSaved"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return new CloseDialogResponse("/ctrl/admin/openContentAdministration?contentId=" + parent.getId());
     }

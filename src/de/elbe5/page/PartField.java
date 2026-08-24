@@ -10,7 +10,7 @@ package de.elbe5.page;
 
 import de.elbe5.request.RequestData;
 
-public abstract class PartField implements Cloneable {
+public class PartField implements Cloneable {
 
     protected int partId = 0;
     protected String name = "";
@@ -45,12 +45,13 @@ public abstract class PartField implements Cloneable {
         this.content = content;
     }
 
-    public abstract String getFieldType();
+    public void readRequestData(RequestData rdata) {
+        setContent(rdata.getAttributes().getString(getIdentifier()));
+    }
 
-    public abstract void readRequestData(RequestData rdata);
-
-    public abstract void readFrontendRequestData(RequestData rdata);
-
+    public void readFrontendRequestData(RequestData rdata){
+        setContent(rdata.getAttributes().getString(getIdentifier()));
+    }
     /******************* search part *********************************/
 
     public void appendSearchText(StringBuilder sb) {

@@ -9,14 +9,15 @@
 <%response.setContentType("text/html;charset=UTF-8");%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
-<%@ page import="de.elbe5.content.ContentData" %>
+<%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="java.util.List" %>
+<%@ page import="de.elbe5.page.PageData" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    ContentData contentData = rdata.getRequestObject("treePage", ContentData.class);
+    PageData contentData = rdata.getRequestObject("treePage", PageData.class);
 %>
 <li class="open">
     <a id="<%=contentData.getId()%>" href="" onclick="return ckLinkCallback('/ctrl/content/show/<%=contentData.getId()%>');"><%=contentData.getName()%>
@@ -24,7 +25,7 @@
     <ul>
         <% if (!contentData.getChildren().isEmpty()) {
             List<PageData> children = contentData.getChildren(PageData.class);
-            for (ContentData subPage : children) {
+            for (PageData subPage : children) {
                 rdata.setRequestObject("treePage", subPage); %>
                 <jsp:include page="/WEB-INF/_jsp/ckeditor/pageLinkBrowserFolder.inc.jsp" flush="true"/>
             <%}

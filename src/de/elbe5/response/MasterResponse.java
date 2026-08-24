@@ -8,6 +8,7 @@
  */
 package de.elbe5.response;
 
+import de.elbe5.page.PageData;
 import de.elbe5.request.RequestData;
 import de.elbe5.request.RequestKeys;
 
@@ -22,7 +23,7 @@ public class MasterResponse implements IResponse {
     public static String DEFAULT_MASTER = "defaultMaster";
 
     protected String master=DEFAULT_MASTER;
-    protected IMasterInclude includeObject = null;
+    protected PageData page = null;
 
     public MasterResponse() {
     }
@@ -31,16 +32,16 @@ public class MasterResponse implements IResponse {
         this.master=master;
     }
 
-    public MasterResponse(String master, IMasterInclude include) {
+    public MasterResponse(String master, PageData page) {
         this.master=master;
-        this.includeObject = include;
+        this.page = page;
     }
 
     @Override
     public void processResponse(ServletContext context, RequestData rdata, HttpServletResponse response)  {
         RequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/_jsp/_layout/"+master+".jsp");
-        if (includeObject != null){
-            rdata.setRequestObject(RequestKeys.KEY_MASTERINCLUDE, includeObject);
+        if (page != null){
+            rdata.setRequestObject(RequestKeys.KEY_PAGE, page);
         }
         try {
             rd.forward(rdata.getRequest(), response);

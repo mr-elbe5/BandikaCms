@@ -9,11 +9,9 @@
 package de.elbe5.user;
 
 import de.elbe5.base.Log;
-import de.elbe5.base.StringFormatter;
 import de.elbe5.application.Configuration;
 import de.elbe5.database.DbBean;
 
-import java.lang.reflect.Constructor;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,25 +31,11 @@ public class UserBean extends DbBean {
         return instance;
     }
 
-    UserData getNewUserData(String className){
-        try {
-            Class<? extends UserData> cls = Class.forName(className).asSubclass(UserData.class);
-            Constructor<? extends UserData> ctor = cls.getConstructor();
-            return ctor.newInstance();
-        }
-        catch(Exception e){
-            Log.error("could not create class " + className,  e);
-        }
-        return null;
-    }
-
     public int getNextId() {
         return getNextId("s_user_id");
     }
 
-    private static final String CHANGED_SQL = "SELECT change_date FROM t_user WHERE id=?";
-
-    private static final String GET_ALL_USERS_SQL = "SELECT type,id,creator_id,changer_id,creation_date,change_date,name,login,active FROM t_user";
+    private static final String GET_ALL_USERS_SQL = "SELECT id,creator_id,changer_id,creation_date,change_date,name,login,editor,admin,active FROM t_user";
 
     public List<UserData> getAllUsers() {
         List<UserData> list = new ArrayList<>();
@@ -62,9 +46,7 @@ public class UserBean extends DbBean {
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
                     UserData data = readUserData(rs);
-                    if (data != null) {
-                        list.add(data);
-                    }
+                    list.add(data);
                 }
             }
         } catch (SQLException se) {
@@ -98,7 +80,7 @@ public class UserBean extends DbBean {
         }
     }
 
-    private static final String GET_USER_SQL = "SELECT type,id,creator_id,changer_id,creation_date,change_date,name,login,active FROM t_user WHERE id=?";
+    private static final String GET_USER_SQL = "SELECT id,creator_id,changer_id,creation_date,change_date,name,login,editor,admin,active FROM t_user WHERE id=?";
 
     public UserData readUser(Connection con, int id) throws SQLException {
         UserData data = null;
@@ -117,28 +99,24 @@ public class UserBean extends DbBean {
         return data;
     }
 
-    public void readUserExtras(Connection con, UserData userData) throws SQLException{
-    }
-
     private UserData readUserData(ResultSet rs) throws SQLException {
         int i = 1;
-        String type = rs.getString(i++);
-        UserData data = getNewUserData(type);
-        if (data!=null) {
-            data.setId(rs.getInt(i++));
-            data.setCreatorId(rs.getInt(i++));
-            data.setChangerId(rs.getInt(i++));
-            data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
-            data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
-            data.setName(rs.getString(i++));
-            data.setLogin(rs.getString(i++));
-            data.setPassword("");
-            data.setActive(rs.getBoolean(i));
-        }
+        UserData data = new UserData();
+        data.setId(rs.getInt(i++));
+        data.setCreatorId(rs.getInt(i++));
+        data.setChangerId(rs.getInt(i++));
+        data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
+        data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
+        data.setName(rs.getString(i++));
+        data.setLogin(rs.getString(i++));
+        data.setPassword("");
+        data.setActive(rs.getBoolean(i++));
+        data.setAdmin(rs.getBoolean(i++));
+        data.setActive(rs.getBoolean(i));
         return data;
     }
 
-    private static final String LOGIN_SQL = "SELECT pwd,type,id,creator_id,changer_id,creation_date,change_date,name FROM t_user WHERE login=? AND active=TRUE";
+    private static final String LOGIN_SQL = "SELECT pwd,id,creator_id,changer_id,creation_date,change_date,name,editor,admin FROM t_user WHERE login=? AND active=TRUE";
 
     public UserData loginUser(String login, String pwd) {
         Connection con = getConnection();
@@ -151,19 +129,19 @@ public class UserBean extends DbBean {
                 if (rs.next()) {
                     int i = 1;
                     String encrypted = rs.getString(i++);
-                    if (UserSecurity.encryptPassword(pwd, Configuration.getSalt()).equals(encrypted)){
-                        String type = rs.getString(i++);
-                        data = getNewUserData(type);
-                        if (data!=null) {
-                            data.setId(rs.getInt(i++));
-                            data.setLogin(login);
-                            data.setCreatorId(rs.getInt(i++));
-                            data.setChangerId(rs.getInt(i++));
-                            data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
-                            data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
-                            data.setName(rs.getString(i));
-                            data.setActive(true);
-                        }
+                    String test = UserSecurity.encryptPassword(pwd, Configuration.getSalt());
+                    if (test != null && test.equals(encrypted)){
+                        data = new UserData();
+                        data.setId(rs.getInt(i++));
+                        data.setLogin(login);
+                        data.setCreatorId(rs.getInt(i++));
+                        data.setChangerId(rs.getInt(i++));
+                        data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
+                        data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
+                        data.setName(rs.getString(i++));
+                        data.setEditor(rs.getBoolean(i++));
+                        data.setAdmin(rs.getBoolean(i));
+                        data.setActive(true);
                     }
                 }
             }
@@ -199,29 +177,6 @@ public class UserBean extends DbBean {
         return exists;
     }
 
-    private static final String GET_X_EMAIL_SQL = "SELECT 'x' FROM t_user WHERE email=?";
-
-    public boolean doesEmailExist(String login) {
-        Connection con = getConnection();
-        PreparedStatement pst = null;
-        boolean exists = false;
-        try {
-            pst = con.prepareStatement(GET_X_EMAIL_SQL);
-            pst.setString(1, login);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    exists = true;
-                }
-            }
-        } catch (SQLException se) {
-            Log.error("sql error", se);
-        } finally {
-            closeStatement(pst);
-            closeConnection(con);
-        }
-        return exists;
-    }
-
     public boolean saveUser(UserData data) {
         Connection con = startTransaction();
         try {
@@ -237,7 +192,7 @@ public class UserBean extends DbBean {
         }
     }
 
-    private static final String INSERT_USER_SQL = "insert into t_user (type,creator_id,changer_id,creation_date,change_date,name,login,pwd,active,id) values(?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String INSERT_USER_SQL = "insert into t_user (type,creator_id,changer_id,creation_date,change_date,name,login,pwd,editor,admin,active,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     protected void createUser(Connection con, UserData data) throws SQLException {
         PreparedStatement pst = null;
@@ -254,6 +209,8 @@ public class UserBean extends DbBean {
             if (data.hasPassword()) {
                 pst.setString(i++, data.getPasswordHash());
             }
+            pst.setBoolean(i++, data.isEditor());
+            pst.setBoolean(i++, data.isAdmin());
             pst.setBoolean(i++, data.isActive());
             pst.setInt(i, data.getId());
             pst.executeUpdate();
@@ -262,8 +219,8 @@ public class UserBean extends DbBean {
             closeStatement(pst);
         }
     }
-    private static final String UPDATE_USER_PWD_SQL = "update t_user set changer_id=?,change_date=?,name=?,login=?,pwd=?,active=? where id=?";
-    private static final String UPDATE_USER_NOPWD_SQL = "update t_user set changer_id=?,change_date=?,name=?,login=?,active=? where id=?";
+    private static final String UPDATE_USER_PWD_SQL = "update t_user set changer_id=?,change_date=?,name=?,login=?,pwd=?,editor=?,admin=?,active=? where id=?";
+    private static final String UPDATE_USER_NOPWD_SQL = "update t_user set changer_id=?,change_date=?,name=?,login=?,editor=?,admin=?,active=? where id=?";
 
     protected void updateUser(Connection con, UserData data) throws SQLException {
         PreparedStatement pst = null;
@@ -277,6 +234,8 @@ public class UserBean extends DbBean {
             if (data.hasPassword()) {
                 pst.setString(i++, data.getPasswordHash());
             }
+            pst.setBoolean(i++, data.isEditor());
+            pst.setBoolean(i++, data.isAdmin());
             pst.setBoolean(i++, data.isActive());
             pst.setInt(i, data.getId());
             pst.executeUpdate();

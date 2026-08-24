@@ -12,19 +12,19 @@ import de.elbe5.base.BaseData;
 import de.elbe5.base.BinaryFile;
 import de.elbe5.base.FileHelper;
 import de.elbe5.base.StringHelper;
-import de.elbe5.content.ContentData;
-import de.elbe5.request.ContentRequestKeys;
+import de.elbe5.page.PageData;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestKeys;
 import de.elbe5.request.RequestType;
 
 public abstract class FileData extends BaseData {
 
     public static <T extends FileData> T getCurrentFile(RequestData rdata,Class<T> cls) {
-        return rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_FILE, cls);
+        return rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_FILE, cls);
     }
 
     public static FileData getCurrentFile(RequestData rdata) {
-        return rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_FILE, FileData.class);
+        return rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_FILE, FileData.class);
     }
 
     private String fileName = "";
@@ -36,7 +36,7 @@ public abstract class FileData extends BaseData {
     protected byte[] bytes = null;
 
     protected int parentId = 0;
-    protected ContentData parent = null;
+    protected PageData parent = null;
 
     public FileData() {
     }
@@ -149,11 +149,11 @@ public abstract class FileData extends BaseData {
         this.parentId = parentId;
     }
 
-    public ContentData getParent() {
+    public PageData getParent() {
         return parent;
     }
 
-    public void setParent(ContentData parent) {
+    public void setParent(PageData parent) {
         this.parent = parent;
     }
 
@@ -164,7 +164,7 @@ public abstract class FileData extends BaseData {
         setId(FileBean.getInstance().getNextId());
     }
 
-    public void setParentValues(ContentData parent){
+    public void setParentValues(PageData parent){
         setParentId(parent.getId());
         setParent(parent);
     }

@@ -8,23 +8,14 @@
  */
 package de.elbe5.administration;
 
-import de.elbe5.application.ApplicationPath;
-import de.elbe5.base.Log;
-import de.elbe5.base.FileHelper;
-import de.elbe5.content.ContentCache;
+import de.elbe5.page.PageCache;
 import de.elbe5.file.PreviewCache;
 import de.elbe5.request.RequestKeys;
-import de.elbe5.response.StatusResponse;
 import de.elbe5.servlet.ControllerCache;
-import de.elbe5.servlet.ResponseException;
 import de.elbe5.user.UserCache;
 import de.elbe5.request.RequestData;
 import de.elbe5.servlet.Controller;
 import de.elbe5.response.IResponse;
-
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 
 public class AdminController extends Controller {
 
@@ -52,28 +43,29 @@ public class AdminController extends Controller {
 
     public IResponse openAdministration(RequestData rdata){
         assertLoggedIn(rdata);
-        return openContentAdministration(rdata);
+        if (rdata.isEditor())
+            return openContentAdministration(rdata);
+        assertIsAdmin(rdata);
+        return openPersonAdministration(rdata);
     }
 
     public IResponse openSystemAdministration(RequestData rdata) {
-        if (!rdata.isLoggedIn())
-            return new StatusResponse(HttpServletResponse.SC_UNAUTHORIZED);
-        assertLoggedIn(rdata);
+        assertIsAdmin(rdata);
         return showSystemAdministration(rdata);
     }
 
     public IResponse openPersonAdministration(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertIsAdmin(rdata);
         return showPersonAdministration(rdata);
     }
 
     public IResponse openContentAdministration(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertIsEditor(rdata);
         return showContentAdministration(rdata);
     }
 
     public IResponse reloadUserCache(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertIsAdmin(rdata);
         UserCache.setDirty();
         UserCache.checkDirty();
         rdata.setMessage($S("_cacheReloaded"), RequestKeys.MESSAGE_TYPE_SUCCESS);
@@ -81,22 +73,18 @@ public class AdminController extends Controller {
     }
 
     public IResponse clearPreviewCache(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertIsAdmin(rdata);
         PreviewCache.clear();
         rdata.setMessage($S("_cacheCleared"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return openSystemAdministration(rdata);
     }
 
     public IResponse reloadContentCache(RequestData rdata) {
-        assertLoggedIn(rdata);
-        ContentCache.setDirty();
-        ContentCache.checkDirty();
+        assertIsAdmin(rdata);
+        PageCache.setDirty();
+        PageCache.checkDirty();
         rdata.setMessage($S("_cacheReloaded"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return openSystemAdministration(rdata);
-    }
-
-    protected IResponse showContentAdministration(RequestData rdata) {
-        return openAdminPage(rdata, "/WEB-INF/_jsp/administration/contentAdministration.jsp", $S("_contentAdministration"));
     }
 
 }

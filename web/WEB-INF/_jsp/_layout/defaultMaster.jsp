@@ -10,19 +10,20 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.content.ContentData" %>
-<%@ page import="de.elbe5.content.ContentCache" %>
+<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.page.PageCache" %>
 <%@ page import="java.util.List" %>
-<%@ page import="de.elbe5.request.ContentRequestKeys" %>
+<%@ page import="de.elbe5.request.RequestKeys" %>
 <%@ page import="de.elbe5.request.RequestKeys" %>
 <%@ page import="de.elbe5.response.IMasterInclude" %>
 <%@ page import="de.elbe5.base.LocalizedSystemStrings" %>
 <%@ page import="de.elbe5.application.Configuration" %>
+<%@ page import="de.elbe5.page.PageData" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
     IMasterInclude masterInclude = rdata.getRequestObject(RequestKeys.KEY_MASTERINCLUDE, IMasterInclude.class);
-    ContentData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, ContentData.class);
-    List<Integer> parentIds = ContentCache.getParentContentIds(contentData);
+    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
+    List<Integer> parentIds = PageCache.getParentContentIds(contentData);
     String title = rdata.getAttributes().getString(RequestKeys.KEY_TITLE, Configuration.getAppTitle()) + (contentData != null ? " | " + contentData.getDisplayName() : "");
     String keywords = contentData != null ? contentData.getKeywords() : title;
     String description = contentData != null ? contentData.getDescription() : "";
@@ -73,7 +74,7 @@
                 <ol class="nav">
                     <%
                         for (int i = parentIds.size() - 1; i >= 0; i--) {
-                            ContentData content = ContentCache.getContent(parentIds.get(i));
+                            PageData content = PageCache.getContent(parentIds.get(i));
                             if (content != null) {
                     %>
                     <li class="breadcrumb-item">
@@ -106,7 +107,7 @@
                 <a class="nav-link">&copy; <%=LocalizedSystemStrings.getInstance().html("copyright")%>
                 </a>
             </li>
-            <% for (ContentData data : ContentCache.getFooterList()) {
+            <% for (PageData data : PageCache.getFooterList()) {
                 if (data.isActive() && data.hasUserReadRight(rdata.getLoginUser())) {%>
             <li class="nav-item">
                 <a class="nav-link" href="<%=data.getUrl()%>"><%=$H(data.getDisplayName())%>

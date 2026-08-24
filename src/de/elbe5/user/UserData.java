@@ -25,6 +25,8 @@ public class UserData extends BaseData {
     protected String login = "";
     protected String passwordHash = "";
 
+    protected boolean editor = false;
+    protected boolean admin = false;
     protected boolean active = true;
 
     public UserData(){
@@ -68,6 +70,21 @@ public class UserData extends BaseData {
         }
     }
 
+    public boolean isEditor() {
+        return editor;
+    }
+    public void setEditor(boolean editor) {
+        this.editor = editor;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -91,6 +108,8 @@ public class UserData extends BaseData {
         setLogin(rdata.getAttributes().getString("login"));
         String pwd = rdata.getAttributes().getString("password");
         String pwd2 = rdata.getAttributes().getString("password2");
+        setEditor(rdata.getAttributes().getBoolean("editor"));
+        setAdmin(rdata.getAttributes().getBoolean("admin"));
         setActive(rdata.getAttributes().getBoolean("active"));
         if (pwd.equals(pwd2))
             setPassword(pwd);

@@ -8,12 +8,15 @@
  */
 package de.elbe5.page;
 
-import de.elbe5.content.ContentBean;
 import de.elbe5.base.BaseData;
 import de.elbe5.request.RequestData;
 import de.elbe5.request.RequestType;
 
-public abstract class PagePartData extends BaseData implements Comparable<PagePartData> {
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+public class PagePartData extends BaseData implements Comparable<PagePartData> {
 
     public static final String KEY_PART = "partData";
     public static String LAYOUT_TYPE = "Part";
@@ -21,6 +24,10 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
     protected String cssClass = "";
     protected String sectionName = "";
     protected int position = 0;
+    protected String layout="";
+    protected Map<String, PartField> fields = new HashMap<>();
+    protected LocalDateTime publishDate = null;
+    protected String publishedContent = "";
     protected boolean editable = true;
 
     public static String jspBasePath = "/WEB-INF/_jsp/_layout";
@@ -33,7 +40,15 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
     }
 
     public void copyData(PagePartData data) {
-        setId(ContentBean.getInstance().getNextId());
+        setId(PageBean.getInstance().getNextId());
+        setLayout(data.getLayout());
+        getFields().clear();
+        for (PartField f : data.getFields().values()) {
+            try {
+                getFields().put(f.getName(), (PartField) f.clone());
+            } catch (CloneNotSupportedException ignore) {
+            }
+        }
         setEditable((data.isEditable()));
     }
 
@@ -75,11 +90,15 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
     }
 
     public String getPartInclude() {
-        return getJspPath() + "/show.jsp";
+        return getTemplateUrl();
     }
 
     public String getEditPartInclude() {
-        return getJspPath() + "/edit.jsp";
+        return getTemplateUrl();
+    }
+
+    public String getEditTitle() {
+        return getLayout() + ", ID=" + getId();
     }
 
     public String getPartWrapperId() {
@@ -98,10 +117,6 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
         this.editable = editable;
     }
 
-    public String getEditTitle() {
-        return "Section Part, ID=" + getId();
-    }
-
     public void prepareCopy() {
         setNew(true);
         setId(PagePartBean.getInstance().getNextPartId());
@@ -110,6 +125,7 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
     public void setCreateValues(RequestData rdata, RequestType type) {
         super.setCreateValues(rdata, type);
         setSectionName(rdata.getAttributes().getString("sectionName"));
+        setLayout(rdata.getAttributes().getString("layout"));
     }
 
     @Override
@@ -122,8 +138,67 @@ public abstract class PagePartData extends BaseData implements Comparable<PagePa
             case frontend -> {
                 // -1 if deleted
                 setPosition(rdata.getAttributes().getInt(getPartPositionName(), -1));
+                for (PartField field : getFields().values()) {
+                    field.readFrontendRequestData(rdata);
+                }
             }
         }
     }
+
+    public String getLayout() {
+        return layout;
+    }
+
+    public void setLayout(String layout) {
+        this.layout = layout;
+    }
+
+    public String getTemplateUrl() {
+        return "/WEB-INF/_jsp/_layout/"+ layout +".jsp";
+    }
+
+    public LocalDateTime getPublishDate() {
+        return publishDate;
+    }
+
+    public boolean hasUnpublishedDraft() {
+        return publishDate == null || publishDate.isBefore(getChangeDate());
+    }
+
+    public boolean isPublished() {
+        return publishDate != null;
+    }
+
+    public void setPublishDate(LocalDateTime publishDate) {
+        this.publishDate = publishDate;
+    }
+
+    public String getPublishedContent() {
+        return publishedContent;
+    }
+
+    public void setPublishedContent(String publishedContent) {
+        this.publishedContent = publishedContent;
+    }
+
+    public Map<String, PartField> getFields() {
+        return fields;
+    }
+
+    public PartField getField(String name) {
+        return fields.get(name);
+    }
+
+    public PartField ensureHtmlField(String name) {
+        PartField field = fields.get(name);
+        if (field instanceof PartField)
+            return field;
+        PartField htmlfield = new PartField();
+        htmlfield.setName(name);
+        htmlfield.setPartId(getId());
+        fields.put(name, htmlfield);
+        return htmlfield;
+    }
+
 
 }
