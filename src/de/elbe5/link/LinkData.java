@@ -8,6 +8,7 @@
  */
 package de.elbe5.link;
 
+import de.elbe5.base.JsonObject;
 import de.elbe5.base.StringHelper;
 import de.elbe5.content.ContentBean;
 import de.elbe5.content.ContentData;
@@ -87,6 +88,13 @@ public class LinkData extends ContentData {
                 setLinkIcon(rdata.getAttributes().getString("linkIcon"));
             }
         }
+    }
+
+    @Override
+    public JsonObject getJson() {
+        return super.getJson()
+                .add("linkURL", getLinkUrl())
+                .add("linkIcon", getLinkIcon());
     }
 
 }
