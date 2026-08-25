@@ -13,6 +13,7 @@ import de.elbe5.page.PageCache;
 import de.elbe5.page.PageController;
 import de.elbe5.page.PageData;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestKeys;
 import de.elbe5.response.IResponse;
 
 import de.elbe5.response.RedirectResponse;
@@ -25,7 +26,7 @@ public class ContentServlet extends WebServlet {
     protected void processRequest(String method, HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding(Configuration.ENCODING);
         RequestData rdata = new RequestData(method, request);
-        request.setAttribute(RequestData.KEY_REQUESTDATA, rdata);
+        request.setAttribute(RequestKeys.KEY_REQUESTDATA, rdata);
         rdata.readRequestParams();
         rdata.initSession();
         String url=request.getRequestURI().toLowerCase();

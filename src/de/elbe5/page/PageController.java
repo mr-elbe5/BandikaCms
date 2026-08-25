@@ -13,6 +13,8 @@ import de.elbe5.base.Log;
 import de.elbe5.file.ImageBean;
 import de.elbe5.file.ImageData;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestKeys;
+import de.elbe5.request.RequestType;
 import de.elbe5.servlet.Controller;
 import de.elbe5.servlet.ControllerCache;
 import de.elbe5.response.CloseDialogResponse;
@@ -66,29 +68,29 @@ public class PageController extends Controller {
         PageData data = PageBean.getInstance().getPage(contentId);
         data.setUpdateValues(PageCache.getContent(data.getId()), rdata);
         data.setEditMode(true);
-        rdata.setSessionPage(data);
+        rdata.setSessionObject(RequestKeys.KEY_PAGE, data);
         return data.getDefaultView();
     }
 
     public IResponse showEditFrontendContent(RequestData rdata) {
         assertLoggedIn(rdata);
-        PageData data = rdata.getSessionPage();
+        PageData data = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         return data.getDefaultView();
     }
 
     public IResponse saveFrontendContent(RequestData rdata) {
         assertLoggedIn(rdata);
         int contentId = rdata.getId();
-        PageData data = rdata.getSessionPage();
+        PageData data = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         assert(contentId == data.getId());
-        data.readFrontendRequestData(rdata);
+        data.readRequestData(rdata, RequestType.frontend);
         data.setChangerId(rdata.getUserId());
         if (!PageBean.getInstance().savePage(data)) {
             setSaveError(rdata);
             return data.getDefaultView();
         }
         data.setEditMode(false);
-        rdata.removeSessionObject(RequestData.KEY_PAGE);
+        rdata.removeSessionObject(RequestKeys.KEY_PAGE);
         PageCache.setDirty();
         return show(rdata);
     }
@@ -96,7 +98,7 @@ public class PageController extends Controller {
     public IResponse cancelEditFrontendContent(RequestData rdata) {
         assertLoggedIn(rdata);
         int contentId = rdata.getId();
-        PageData data = rdata.getSessionPage();
+        PageData data = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         assert data.getId() == contentId;
         data.setEditMode(false);
         return data.getDefaultView();
@@ -118,9 +120,9 @@ public class PageController extends Controller {
         PageData parentData = PageCache.getContent(parentId);
         String type = rdata.getAttributes().getString("type");
         PageData data = new PageData();
-        data.setCreateValues(rdata);
+        data.setCreateValues(rdata, RequestType.backend);
         data.setParentValues(parentData);
-        rdata.setSessionPage(data);
+        rdata.setSessionObject(RequestKeys.KEY_PAGE, data);
         return showEditBackendContent(data);
     }
 
@@ -129,14 +131,14 @@ public class PageController extends Controller {
         int contentId = rdata.getId();
         PageData data = PageBean.getInstance().getPage(contentId);
         data.setUpdateValues(PageCache.getContent(data.getId()), rdata);
-        rdata.setSessionPage(data);
+        rdata.setSessionObject(RequestKeys.KEY_PAGE, data);
         return showEditBackendContent(data);
     }
 
     public IResponse saveBackendContent(RequestData rdata) {
         assertLoggedIn(rdata);
         PageData data = PageData.getSessionPage(rdata);
-        data.readBackendRequestData(rdata);
+        data.readRequestData(rdata, RequestType.backend);
         if (!rdata.checkFormErrors()) {
             return showEditBackendContent(data);
         }
@@ -146,9 +148,9 @@ public class PageController extends Controller {
             return showEditBackendContent(data);
         }
         data.setNew(false);
-        rdata.removeSessionObject(RequestData.KEY_PAGE);
+        rdata.removeSessionObject(RequestKeys.KEY_PAGE);
         PageCache.setDirty();
-        rdata.setMessage($S("_contentSaved"), RequestData.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_contentSaved"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return new CloseDialogResponse("/ctrl/admin/openContentAdministration?contentId=" + data.getId());
     }
 
@@ -157,7 +159,7 @@ public class PageController extends Controller {
         int contentId = rdata.getId();
         PageData data= PageCache.getContent(contentId);
         if (contentId < BaseData.ID_MIN) {
-            rdata.setMessage($S("_notDeletable"), RequestData.MESSAGE_TYPE_ERROR);
+            rdata.setMessage($S("_notDeletable"), RequestKeys.MESSAGE_TYPE_ERROR);
             return showContentAdministration(rdata, contentId);
         }
         int parentId = PageCache.getParentContentId(contentId);
@@ -165,7 +167,7 @@ public class PageController extends Controller {
         PageCache.setDirty();
         rdata.getAttributes().put("contentId", Integer.toString(parentId));
         PageCache.setDirty();
-        rdata.setMessage($S("_contentDeleted"), RequestData.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_contentDeleted"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return showContentAdministration(rdata,parentId);
     }
 
@@ -173,27 +175,27 @@ public class PageController extends Controller {
         assertLoggedIn(rdata);
         int contentId = rdata.getId();
         PageData data = PageBean.getInstance().getPage(contentId);
-        rdata.setClipboardData(RequestData.KEY_PAGE, data);
+        rdata.setClipboardData(RequestKeys.KEY_PAGE, data);
         return showContentAdministration(rdata,data.getId());
     }
 
     public IResponse pasteContent(RequestData rdata) {
         assertLoggedIn(rdata);
         int parentId = rdata.getAttributes().getInt("parentId");
-        PageData data=rdata.getClipboardData(RequestData.KEY_PAGE, PageData.class);
+        PageData data=rdata.getClipboardData(RequestKeys.KEY_PAGE, PageData.class);
         if (data==null){
-            rdata.setMessage($S("_actionNotExcecuted"), RequestData.MESSAGE_TYPE_ERROR);
+            rdata.setMessage($S("_actionNotExcecuted"), RequestKeys.MESSAGE_TYPE_ERROR);
             return showContentAdministration(rdata, parentId);
         }
         PageData parent = PageCache.getContent(parentId);
         if (parent == null){
-            rdata.setMessage($S("_actionNotExcecuted"), RequestData.MESSAGE_TYPE_ERROR);
+            rdata.setMessage($S("_actionNotExcecuted"), RequestKeys.MESSAGE_TYPE_ERROR);
             return showContentAdministration(rdata, parentId);
         }
         Set<Integer> parentIds=new HashSet<>();
         parent.collectParentIds(parentIds);
         if (parentIds.contains(data.getId())){
-            rdata.setMessage($S("_actionNotExcecuted"), RequestData.MESSAGE_TYPE_ERROR);
+            rdata.setMessage($S("_actionNotExcecuted"), RequestKeys.MESSAGE_TYPE_ERROR);
             return showContentAdministration(rdata, parentId);
         }
         data.setParentId(parentId);
@@ -201,9 +203,9 @@ public class PageController extends Controller {
         data.generatePath();
         data.setChangerId(rdata.getUserId());
         PageBean.getInstance().savePage(data);
-        rdata.clearClipboardData(RequestData.KEY_PAGE);
+        rdata.clearClipboardData(RequestKeys.KEY_PAGE);
         PageCache.setDirty();
-        rdata.setMessage($S("_contentPasted"), RequestData.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_contentPasted"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return showContentAdministration(rdata,data.getId());
     }
 
@@ -219,7 +221,7 @@ public class PageController extends Controller {
         assertLoggedIn(rdata);
         int contentId = rdata.getId();
         PageData data = PageCache.getContent(contentId);
-        rdata.setSessionPage(data);
+        rdata.setSessionObject(RequestKeys.KEY_PAGE, data);
         return showSortChildContents();
     }
 
@@ -237,9 +239,9 @@ public class PageController extends Controller {
         }
         Collections.sort(data.getChildren());
         PageBean.getInstance().updateChildRankings(data);
-        rdata.removeSessionObject(RequestData.KEY_PAGE);
+        rdata.removeSessionObject(RequestKeys.KEY_PAGE);
         PageCache.setDirty();
-        rdata.setMessage($S("_newRankingSaved"), RequestData.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_newRankingSaved"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return new CloseDialogResponse("/ctrl/admin/openContentAdministration?contentId=" + contentId);
     }
 
@@ -299,21 +301,23 @@ public class PageController extends Controller {
 
     public IResponse openLinkBrowser(RequestData rdata) {
         assertLoggedIn(rdata);
+        PageData data=rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseLinks.jsp");
     }
 
     public IResponse openImageBrowser(RequestData rdata) {
         assertLoggedIn(rdata);
+        PageData data=rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseImages.jsp");
     }
 
     public IResponse addImage(RequestData rdata) {
         assertLoggedIn(rdata);
-        PageData data=rdata.getSessionPage();
+        PageData data=rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         ImageData image=new ImageData();
-        image.setCreateValues(rdata);
+        image.setCreateValues(rdata, RequestType.frontend);
         image.setParentValues(data);
-        image.readFrontendRequestData(rdata);
+        image.readRequestData(rdata, RequestType.frontend);
         ImageBean.getInstance().saveFile(image,true);
         PageCache.setDirty();
         rdata.getAttributes().put("imageId", Integer.toString(image.getId()));
@@ -323,11 +327,11 @@ public class PageController extends Controller {
     public IResponse addPart(RequestData rdata) {
         assertLoggedIn(rdata);
         int contentId = rdata.getId();
-        PageData data = rdata.getSessionPage();
+        PageData data = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         int fromPartId = rdata.getAttributes().getInt("fromPartId", -1);
         String partType = rdata.getAttributes().getString("partType");
         PagePartData pdata = PageBean.getInstance().getNewPagePartData(partType);
-        pdata.setCreateValues(rdata);
+        pdata.setCreateValues(rdata, RequestType.frontend);
         data.addPart(pdata, fromPartId, true);
         rdata.getAttributes().put(PagePartData.KEY_PART, pdata);
         return new ForwardResponse("/WEB-INF/_jsp/page/newPart.ajax.jsp");

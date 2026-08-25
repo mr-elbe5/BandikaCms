@@ -9,6 +9,7 @@
 package de.elbe5.base;
 
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestType;
 import de.elbe5.user.UserCache;
 import de.elbe5.user.UserData;
 
@@ -106,13 +107,17 @@ public class BaseData {
         return getId() != 0;
     }
 
-    public void setCreateValues(RequestData rdata) {
+    public void setCreateValues(RequestData rdata, RequestType type) {
         setNew(true);
-        setCreationDate(DateHelper.getCurrentTime());
-        setChangeDate(getCreationDate());
-        setCreatorId(rdata.getUserId());
-        setChangerId(getCreatorId());
-        setNewId();
+        switch (type) {
+            case backend, frontend -> {
+                setCreationDate(DateHelper.getCurrentTime());
+                setChangeDate(getCreationDate());
+                setCreatorId(rdata.getUserId());
+                setChangerId(getCreatorId());
+                setNewId();
+            }
+        }
     }
 
     public void setNewId(){
@@ -123,15 +128,11 @@ public class BaseData {
         setChangerId(rdata.getUserId());
     }
 
-    public void readBackendRequestData(RequestData rdata){
-        readRequestData(rdata);
-    }
-
-    public void readFrontendRequestData(RequestData rdata){
-        readRequestData(rdata);
-    }
-
-    public void readRequestData(RequestData rdata){
+    public void readRequestData(RequestData rdata, RequestType type){
+        switch (type){
+            case backend, frontend -> {
+            }
+        }
     }
 
     public String getClassDisplayName(){

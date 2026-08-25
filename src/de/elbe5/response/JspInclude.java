@@ -23,6 +23,7 @@ public class JspInclude implements IMasterInclude {
         this.jsp=jsp;
     }
 
+    @Override
     public void displayContent(PageContext context, RequestData rdata) throws IOException, ServletException {
         JspWriter writer = context.getOut();
         writer.write("<div id=\"pageContent\" class=\"viewArea\">");
@@ -30,6 +31,7 @@ public class JspInclude implements IMasterInclude {
         writer.write("</div>");
     }
 
+    @Override
     public void appendContent(StringBuilder sb, RequestData rdata) {
     }
 }

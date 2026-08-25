@@ -19,7 +19,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getSessionObject(RequestData.KEY_PAGE, PageData.class);
+    PageData contentData = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
     int imageId=rdata.getAttributes().getInt("imageId");
     ImageData image = PageCache.getFile(imageId,ImageData.class);
     assert(image != null);

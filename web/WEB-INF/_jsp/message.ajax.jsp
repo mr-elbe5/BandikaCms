@@ -14,12 +14,12 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    String msg = rdata.getAttributes().getString(RequestData.KEY_MESSAGE);
-    String msgType = rdata.getAttributes().getString(RequestData.KEY_MESSAGETYPE);
+    String msg = rdata.getAttributes().getString(RequestKeys.KEY_MESSAGE);
+    String msgType = rdata.getAttributes().getString(RequestKeys.KEY_MESSAGETYPE);
     String msgKey = switch (msgType) {
-        case RequestData.MESSAGE_TYPE_INFO -> "_info";
-        case RequestData.MESSAGE_TYPE_SUCCESS -> "_success";
-        case RequestData.MESSAGE_TYPE_ERROR -> "_error";
+        case RequestKeys.MESSAGE_TYPE_INFO -> "_info";
+        case RequestKeys.MESSAGE_TYPE_SUCCESS -> "_success";
+        case RequestKeys.MESSAGE_TYPE_ERROR -> "_error";
         default -> "";
     };
 %>

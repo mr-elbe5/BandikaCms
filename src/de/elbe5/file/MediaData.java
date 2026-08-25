@@ -10,6 +10,7 @@ package de.elbe5.file;
 
 import de.elbe5.base.BinaryFile;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestType;
 
 public class MediaData extends FileData {
 
@@ -31,8 +32,8 @@ public class MediaData extends FileData {
     // multiple data
 
     @Override
-    public void readRequestData(RequestData rdata) {
-        super.readRequestData(rdata);
+    public void readRequestData(RequestData rdata, RequestType type) {
+        super.readRequestData(rdata, type);
         if (!isNew()){
             return;
         }

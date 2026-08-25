@@ -10,6 +10,7 @@ package de.elbe5.administration;
 
 import de.elbe5.page.PageCache;
 import de.elbe5.file.PreviewCache;
+import de.elbe5.request.RequestKeys;
 import de.elbe5.servlet.ControllerCache;
 import de.elbe5.user.UserCache;
 import de.elbe5.request.RequestData;
@@ -67,14 +68,14 @@ public class AdminController extends Controller {
         assertIsAdmin(rdata);
         UserCache.setDirty();
         UserCache.checkDirty();
-        rdata.setMessage($S("_cacheReloaded"), RequestData.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_cacheReloaded"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return openSystemAdministration(rdata);
     }
 
     public IResponse clearPreviewCache(RequestData rdata) {
         assertIsAdmin(rdata);
         PreviewCache.clear();
-        rdata.setMessage($S("_cacheCleared"), RequestData.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_cacheCleared"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return openSystemAdministration(rdata);
     }
 
@@ -82,7 +83,7 @@ public class AdminController extends Controller {
         assertIsAdmin(rdata);
         PageCache.setDirty();
         PageCache.checkDirty();
-        rdata.setMessage($S("_cacheReloaded"), RequestData.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_cacheReloaded"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return openSystemAdministration(rdata);
     }
 

@@ -22,7 +22,7 @@
     PageData rootContent = PageCache.getContentRoot();
 %>
             <section class="treeSection">
-                <% if (GlobalRight.hasGlobalContentEditRight(rdata.getCurrentUser())) { %>
+                <% if (GlobalRight.hasGlobalContentEditRight(rdata.getLoginUser())) { %>
                 <div class = "">
                     <a class = "btn btn-sm btn-outline-light" href="/ctrl/content/clearClipboard"><%=$SH("_clearClipboard")%></a>
                 </div>

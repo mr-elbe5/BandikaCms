@@ -23,7 +23,7 @@
     <a id="<%=contentData.getId()%>"><%=contentData.getName()%>
     </a>
     <ul>
-        <% if (contentData.hasUserReadRight(rdata.getCurrentUser())){
+        <% if (contentData.hasUserReadRight(rdata.getLoginUser())){
             List<DocumentData> documents = contentData.getFiles(DocumentData.class);
             for (DocumentData document : documents) {
         %>

@@ -18,7 +18,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData data = rdata.getSessionObject(RequestData.KEY_PAGE, PageData.class);
+    PageData data = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
     List<Integer> parentIds= PageCache.getParentContentIds(data.getId());
     parentIds.add(data.getId());
     rdata.setRequestObject("parentIds",parentIds);

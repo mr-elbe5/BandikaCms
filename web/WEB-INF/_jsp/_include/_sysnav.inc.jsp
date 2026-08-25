@@ -11,19 +11,23 @@
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.request.RequestKeys" %>
+<%@ page import="de.elbe5.rights.GlobalRight" %>
+<%@ page import="de.elbe5.page.PageData" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData pageData = rdata.getCurrentPageInRequestOrSession();
-    int contentId = pageData ==null ? 0 : pageData.getId();
+    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
+    int contentId = contentData==null ? 0 : contentData.getId();
     String userClass=rdata.isLoggedIn() ? "fa-user" : "fa-user-o";
 %>
 <ul class="nav justify-content-end">
-    <%if (GlobalRight.hasElevatedGlobalRights(rdata.getCurrentUser())) {%>
+    <%if (GlobalRight.hasElevatedGlobalRights(rdata.getLoginUser())) {%>
     <li class="nav-item"><a class="nav-link fa fa-cog" href="/ctrl/admin/openAdministration?contentId=1" title="<%=$SH("_administration")%>"></a></li>
     <%
     }
-    if (!pageData.isEditMode() && pageData.hasUserEditRight(rdata.getCurrentUser())) {%>
-        <li class="nav-item"><a class="nav-link fa fa-edit" href="/ctrl/page/openEditFrontendContent/<%=pageData.getId()%>" title="<%=$SH("_editPage")%>"></a></li>
+    if (contentData instanceof PageData pageData && !pageData.isEditMode() && pageData.hasUserEditRight(rdata.getLoginUser())) {%>
+        <li class="nav-item"><a class="nav-link fa fa-edit" href="/ctrl/page/openEditFrontendContent/<%=contentData.getId()%>" title="<%=$SH("_editPage")%>"></a></li>
     <%
         if (pageData.hasUnpublishedDraft()) {
             if (pageData.isPublished()){
@@ -33,7 +37,7 @@
         <li class="nav-item"><a class="nav-link fa fa-eye" href="/ctrl/page/showPublished/<%=contentId%>" title="<%=$SH("_showPublished")%>"></a></li>
         <%}
             }
-            if (pageData.hasUserEditRight(rdata.getCurrentUser())) {%>
+            if (contentData.hasUserEditRight(rdata.getLoginUser())) {%>
         <li class="nav-item"><a class="nav-link fa fa-thumbs-up" href="/ctrl/page/publishPage/<%=contentId%>" title="<%=$SH("_publish")%>"></a></li>
         <%}
         }

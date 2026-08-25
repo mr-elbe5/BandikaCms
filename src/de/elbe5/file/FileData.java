@@ -14,8 +14,18 @@ import de.elbe5.base.FileHelper;
 import de.elbe5.base.StringHelper;
 import de.elbe5.page.PageData;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestKeys;
+import de.elbe5.request.RequestType;
 
 public abstract class FileData extends BaseData {
+
+    public static <T extends FileData> T getCurrentFile(RequestData rdata,Class<T> cls) {
+        return rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_FILE, cls);
+    }
+
+    public static FileData getCurrentFile(RequestData rdata) {
+        return rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_FILE, FileData.class);
+    }
 
     private String fileName = "";
     private String extension = "";
@@ -165,16 +175,21 @@ public abstract class FileData extends BaseData {
 
     // helper
 
-    public void readRequestData(RequestData rdata){
-        setDescription(rdata.getAttributes().getString("description"));
-        if (isNew()){
-            BinaryFile file = rdata.getAttributes().getFile("file");
-            createFromBinaryFile(file);
-            if (getDisplayName().isEmpty()) {
-                setDisplayName(file.getFileNameWithoutExtension());
-            }
-            else{
-                adjustFileNameToDisplayName();
+    @Override
+    public void readRequestData(RequestData rdata, RequestType type) {
+        switch (type) {
+            case backend, frontend -> {
+                setDescription(rdata.getAttributes().getString("description"));
+                if (isNew()){
+                    BinaryFile file = rdata.getAttributes().getFile("file");
+                    createFromBinaryFile(file);
+                    if (getDisplayName().isEmpty()) {
+                        setDisplayName(file.getFileNameWithoutExtension());
+                    }
+                    else{
+                        adjustFileNameToDisplayName();
+                    }
+                }
             }
         }
     }

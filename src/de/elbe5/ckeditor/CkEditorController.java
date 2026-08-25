@@ -14,6 +14,8 @@ import de.elbe5.page.PageData;
 import de.elbe5.file.ImageBean;
 import de.elbe5.file.ImageData;
 import de.elbe5.request.RequestData;
+import de.elbe5.request.RequestKeys;
+import de.elbe5.request.RequestType;
 import de.elbe5.servlet.ControllerCache;
 import de.elbe5.response.IResponse;
 import de.elbe5.response.ForwardResponse;
@@ -44,23 +46,23 @@ public class CkEditorController extends PageController {
 
     public IResponse openLinkBrowser(RequestData rdata) {
         assertLoggedIn(rdata);
-        PageData data = rdata.getSessionPage();
+        PageData data = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseLinks.jsp");
     }
 
     public IResponse openImageBrowser(RequestData rdata) {
         assertLoggedIn(rdata);
-        PageData data=rdata.getSessionPage();
+        PageData data=rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseImages.jsp");
     }
 
     public IResponse addImage(RequestData rdata) {
         assertLoggedIn(rdata);
-        PageData data=rdata.getSessionPage();
+        PageData data=rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
         ImageData image=new ImageData();
-        image.setCreateValues(rdata);
+        image.setCreateValues(rdata, RequestType.frontend);
         image.setParentValues(data);
-        image.readFrontendRequestData(rdata);
+        image.readRequestData(rdata, RequestType.frontend);
         ImageBean.getInstance().saveFile(image,true);
         PageCache.setDirty();
         rdata.getAttributes().put("imageId", Integer.toString(image.getId()));

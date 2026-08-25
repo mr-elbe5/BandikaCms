@@ -15,17 +15,17 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    String url = rdata.getAttributes().getString(RequestData.KEY_URL);
-    String targetId = rdata.getAttributes().getString(RequestData.KEY_TARGETID);
-    String msg = rdata.getAttributes().getString(RequestData.KEY_MESSAGE);
-    String msgType = rdata.getAttributes().getString(RequestData.KEY_MESSAGETYPE);
+    String url = rdata.getAttributes().getString(RequestKeys.KEY_URL);
+    String targetId = rdata.getAttributes().getString(RequestKeys.KEY_TARGETID);
+    String msg = rdata.getAttributes().getString(RequestKeys.KEY_MESSAGE);
+    String msgType = rdata.getAttributes().getString(RequestKeys.KEY_MESSAGETYPE);
     if (targetId.isEmpty()) {%>
 <div id="pageContent">
 
     <form action="<%=url%>" method="POST" id="forwardform" accept-charset="UTF-8">
         <%if (!msg.isEmpty()) {%>
-        <input type="hidden" name="<%=RequestData.KEY_MESSAGE%>" value="<%=$H(msg)%>"/>
-        <input type="hidden" name="<%=RequestData.KEY_MESSAGETYPE%>" value="<%=$H(msgType)%>"/>
+        <input type="hidden" name="<%=RequestKeys.KEY_MESSAGE%>" value="<%=$H(msg)%>"/>
+        <input type="hidden" name="<%=RequestKeys.KEY_MESSAGETYPE%>" value="<%=$H(msgType)%>"/>
         <%}%>
     </form>
 
@@ -36,8 +36,8 @@
 <%} else {
     StringBuilder sb = new StringBuilder("{");
     if (!msg.isEmpty()) {
-        sb.append(RequestData.KEY_MESSAGE).append(" : '").append($JS(msg)).append("',");
-        sb.append(RequestData.KEY_MESSAGETYPE).append(" : '").append($JS(msgType)).append("'");
+        sb.append(RequestKeys.KEY_MESSAGE).append(" : '").append($JS(msg)).append("',");
+        sb.append(RequestKeys.KEY_MESSAGETYPE).append(" : '").append($JS(msgType)).append("'");
     }
     sb.append("}");%>
 <div id="pageContent"></div>

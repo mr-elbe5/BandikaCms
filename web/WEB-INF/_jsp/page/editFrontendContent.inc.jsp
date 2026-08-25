@@ -15,7 +15,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestData.KEY_PAGE, PageData.class);
+    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
 %>
     <form action="/ctrl/page/saveFrontendContent/<%=contentData.getId()%>" method="post" id="pageform" name="pageform" accept-charset="UTF-8">
         <div class="btn-group btn-group-sm pageEditButtons">

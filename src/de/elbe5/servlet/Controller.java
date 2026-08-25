@@ -16,12 +16,12 @@ public abstract class Controller {
     }
 
     protected void setSaveError(RequestData rdata) {
-        rdata.setMessage($S("_saveError"), RequestData.MESSAGE_TYPE_ERROR);
+        rdata.setMessage($S("_saveError"), RequestKeys.MESSAGE_TYPE_ERROR);
     }
 
     protected IResponse openAdminPage(RequestData rdata, String jsp, String title) {
-        rdata.getAttributes().put(RequestData.KEY_JSP, jsp);
-        rdata.getAttributes().put(RequestData.KEY_TITLE, title);
+        rdata.getAttributes().put(RequestKeys.KEY_JSP, jsp);
+        rdata.getAttributes().put(RequestKeys.KEY_TITLE, title);
         return new ForwardResponse("/WEB-INF/_jsp/administration/adminMaster.jsp");
     }
 
