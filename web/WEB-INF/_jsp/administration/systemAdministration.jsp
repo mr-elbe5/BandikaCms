@@ -9,7 +9,9 @@
 <%response.setContentType("text/html;charset=UTF-8");%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
+<%@ page import="de.elbe5.rights.GlobalRight" %>
 <%@ page import="de.elbe5.request.RequestData" %>
+<%@ page import="de.elbe5.rights.GlobalRight" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -50,6 +52,8 @@
                             </li>
                         </ul>
                     </li>
+                    <jsp:include page="../timer/timerAdministration.inc.jsp" flush="true"/>
+                    <jsp:include page="../configuration/configAdministration.inc.jsp" flush="true"/>
                     <%}%>
                 </ul>
             </li>

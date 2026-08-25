@@ -11,12 +11,11 @@
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.page.PageCache" %>
-<%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.page.PageCache" %>
+<%@ page import="de.elbe5.content.ContentCache" %>
+<%@ page import="de.elbe5.content.ContentData" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData rootContent = PageCache.getContentRoot();
+    ContentData rootContent = ContentCache.getContentRoot();
 %>
 <div id="pageContent">
     <form:message/>

@@ -12,12 +12,12 @@
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="de.elbe5.user.UserCache" %>
 <%@ page import="de.elbe5.file.ImageData" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ page import="de.elbe5.user.UserData" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    ImageData imageData = rdata.getSessionObject(RequestKeys.KEY_FILE,ImageData.class);
+    ImageData imageData = rdata.getSessionObject(ContentRequestKeys.KEY_FILE,ImageData.class);
     String url = "/ctrl/image/saveFile/" + imageData.getId();
     UserData creator = UserCache.getUser(imageData.getCreatorId());
     String creatorName = creator == null ? "" : creator.getName();

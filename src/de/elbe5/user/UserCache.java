@@ -9,6 +9,7 @@
 package de.elbe5.user;
 
 import de.elbe5.base.Log;
+import de.elbe5.content.ContentData;
 
 import java.util.*;
 

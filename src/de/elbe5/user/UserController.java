@@ -70,6 +70,17 @@ public class UserController extends Controller {
         return showHome();
     }
 
+    public IResponse showCaptcha(RequestData rdata) {
+        assertLoggedIn(rdata);
+        String captcha = UserSecurity.generateCaptchaString();
+        rdata.setSessionObject(RequestKeys.KEY_CAPTCHA, captcha);
+        BinaryFile data = UserSecurity.getCaptcha(captcha);
+        if (data==null){
+            return new StatusResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        return new MemoryFileResponse(data);
+    }
+
     public IResponse logout(RequestData rdata) {
         assertLoggedIn(rdata);
         rdata.setSessionUser(null);
@@ -114,14 +125,7 @@ public class UserController extends Controller {
         if (!rdata.checkFormErrors()) {
             return showEditUser(data);
         }
-        if (UserBean.getInstance().doesLoginExist(data.getLogin())) {
-            rdata.setMessage($S("_loginExists"), RequestKeys.MESSAGE_TYPE_ERROR);
-            return showEditUser(data);
-        }
-        if (!UserBean.getInstance().saveUser(data)){
-            rdata.setMessage($S("_userNotSaved"), RequestKeys.MESSAGE_TYPE_ERROR);
-            return showEditUser(data);
-        }
+        UserBean.getInstance().saveUser(data);
         UserCache.setDirty();
         if (rdata.getUserId() == data.getId()) {
             rdata.setSessionUser(data);
@@ -179,10 +183,7 @@ public class UserController extends Controller {
         }
         data.setPassword(newPassword);
         data.setUpdateValues(rdata);
-        if (!UserBean.getInstance().saveUserPassword(data)){
-            rdata.setMessage($S("_passwordNotChanged"), RequestKeys.MESSAGE_TYPE_ERROR);
-            return showChangePassword();
-        }
+        UserBean.getInstance().saveUserPassword(data);
         rdata.setMessage($S("_passwordChanged"), RequestKeys.MESSAGE_TYPE_SUCCESS);
         return new CloseDialogResponse("/ctrl/user/openProfile");
     }

@@ -9,17 +9,15 @@
 <%response.setContentType("text/html;charset=UTF-8");%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
-<%@ page import="de.elbe5.page.PageCache" %>
+<%@ page import="de.elbe5.content.ContentCache" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.rights.GlobalRight" %>
 <%@ page import="de.elbe5.rights.GlobalRight" %>
-<%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.page.PageCache" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData rootContent = PageCache.getContentRoot();
+    ContentData rootContent = ContentCache.getContentRoot();
 %>
             <section class="treeSection">
                 <% if (GlobalRight.hasGlobalContentEditRight(rdata.getLoginUser())) { %>

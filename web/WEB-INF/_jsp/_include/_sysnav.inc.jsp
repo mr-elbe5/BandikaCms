@@ -10,14 +10,13 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
+<%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ page import="de.elbe5.rights.GlobalRight" %>
-<%@ page import="de.elbe5.page.PageData" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
+    ContentData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, ContentData.class);
     int contentId = contentData==null ? 0 : contentData.getId();
     String userClass=rdata.isLoggedIn() ? "fa-user" : "fa-user-o";
 %>

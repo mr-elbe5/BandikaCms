@@ -9,9 +9,9 @@
 package de.elbe5.servlet;
 
 import de.elbe5.application.Configuration;
-import de.elbe5.page.PageCache;
-import de.elbe5.page.PageController;
-import de.elbe5.page.PageData;
+import de.elbe5.content.ContentCache;
+import de.elbe5.content.ContentController;
+import de.elbe5.content.ContentData;
 import de.elbe5.request.RequestData;
 import de.elbe5.request.RequestKeys;
 import de.elbe5.response.IResponse;
@@ -33,7 +33,7 @@ public class ContentServlet extends WebServlet {
         try {
             IResponse result;
             if (url.endsWith(".html")) {
-                result = PageController.getInstance().show(request.getRequestURI(), rdata);
+                result = ContentController.getInstance().show(request.getRequestURI(), rdata);
             }
             else{
                 result=new RedirectResponse(getDefaultRoute(rdata));
@@ -49,7 +49,7 @@ public class ContentServlet extends WebServlet {
     }
 
     protected String getDefaultRoute(RequestData rdata){
-        PageData contentData = PageCache.getContentRoot();
+        ContentData contentData = ContentCache.getContentRoot();
         String url;
         if (contentData!=null)
             url=contentData.getUrl();

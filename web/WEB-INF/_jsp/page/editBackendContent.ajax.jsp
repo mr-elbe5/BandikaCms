@@ -15,8 +15,8 @@
 <%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="de.elbe5.layout.LayoutData" %>
 <%@ page import="de.elbe5.layout.LayoutCache" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
-<%@ page import="de.elbe5.page.PageNavType" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
+<%@ page import="de.elbe5.content.ContentNavType" %>
 <%@ page import="de.elbe5.group.GroupBean" %>
 <%@ page import="de.elbe5.group.GroupData" %>
 <%@ page import="de.elbe5.layout.LocalizedLayoutNames" %>
@@ -24,7 +24,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
+    PageData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, PageData.class);
     List<LayoutData> pageLayouts = LayoutCache.getLayouts(PageData.LAYOUT_TYPE);
     String url = "/ctrl/page/saveBackendContent/" + contentData.getId();
     String header = contentData.isNew() ? $SH("_newContent") : $SH("_editContentData");
@@ -70,11 +70,11 @@
                     <%}%>
                 </form:select>
                 <form:select name="navType" label="_navType">
-                    <option value="<%=PageNavType.NONE%>" <%=contentData.getNavType().equals(PageNavType.NONE) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeNone")%>
+                    <option value="<%=ContentNavType.NONE%>" <%=contentData.getNavType().equals(ContentNavType.NONE) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeNone")%>
                     </option>
-                    <option value="<%=PageNavType.HEADER%>" <%=contentData.getNavType().equals(PageNavType.HEADER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeHeader")%>
+                    <option value="<%=ContentNavType.HEADER%>" <%=contentData.getNavType().equals(ContentNavType.HEADER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeHeader")%>
                     </option>
-                    <option value="<%=PageNavType.FOOTER%>" <%=contentData.getNavType().equals(PageNavType.FOOTER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeFooter")%>
+                    <option value="<%=ContentNavType.FOOTER%>" <%=contentData.getNavType().equals(ContentNavType.FOOTER) ? "selected" : ""%>><%=LocalizedSystemStrings.getInstance().html("navTypeFooter")%>
                     </option>
                 </form:select>
                 <form:line label="_active" padded="true">

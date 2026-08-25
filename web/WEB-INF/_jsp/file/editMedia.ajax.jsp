@@ -12,11 +12,11 @@
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="de.elbe5.user.UserCache" %>
 <%@ page import="de.elbe5.file.MediaData" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    MediaData mediaData = rdata.getSessionObject(RequestKeys.KEY_FILE,MediaData.class);
+    MediaData mediaData = rdata.getSessionObject(ContentRequestKeys.KEY_FILE,MediaData.class);
     String url = "/ctrl/media/saveFile/" + mediaData.getId();
 %>
 <div class="modal-dialog modal-lg" role="document">

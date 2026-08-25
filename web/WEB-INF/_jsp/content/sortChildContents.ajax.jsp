@@ -9,18 +9,16 @@
 <%response.setContentType("text/html;charset=UTF-8");%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
-<%@ page import="de.elbe5.page.PageCache" %>
+<%@ page import="de.elbe5.content.ContentCache" %>
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="java.util.List" %>
-<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.base.Pair" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.page.PageCache" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = PageData.getSessionContent(rdata,  PageData.class);
+    ContentData contentData = ContentData.getSessionContent(rdata,  ContentData.class);
     String url = "/ctrl/content/saveChildRankings/" + contentData.getId();%>
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -40,7 +38,7 @@
                 </form:line>
                 <%
                     List<Pair<Integer, String>> childSortList = new ArrayList<>();
-                    for (PageData subpage : PageCache.getContent(contentData.getId()).getChildren()) {
+                    for (ContentData subpage : ContentCache.getContent(contentData.getId()).getChildren()) {
                         childSortList.add(new Pair<>(subpage.getId(), subpage.getName()));
                     }
                     String name, onchange;%>

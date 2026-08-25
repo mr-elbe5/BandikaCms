@@ -10,19 +10,18 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.file.ImageData" %>
-<%@ page import="de.elbe5.page.PageCache" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
-<%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.page.PageCache" %>
+<%@ page import="de.elbe5.content.ContentCache" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
+    ContentData contentData = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT,ContentData.class);
     int imageId=rdata.getAttributes().getInt("imageId");
-    ImageData image = PageCache.getFile(imageId,ImageData.class);
+    ImageData image = ContentCache.getFile(imageId,ImageData.class);
     assert(image != null);
+    if (contentData.hasUserReadRight(rdata.getLoginUser())) {
 %>
 <li>
     <div class="treeline">
@@ -33,3 +32,4 @@
         <a class="fa fa-eye" title="<%=$SH("_view")%>" href="<%=image.getStaticURL()%>" target="_blank"> </a>
     </div>
 </li>
+<%}%>

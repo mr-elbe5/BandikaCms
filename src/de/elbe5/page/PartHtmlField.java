@@ -9,22 +9,34 @@
 package de.elbe5.page;
 
 import de.elbe5.request.RequestData;
-import de.elbe5.request.RequestKeys;
-import de.elbe5.response.MasterResponse;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletResponse;
+public class PartHtmlField extends PartField {
 
-public class PageResponse extends MasterResponse {
+    public static final String FIELDTYPE = "html";
 
-    public PageResponse(PageData data) {
-        super("defaultMaster", data);
+    @Override
+    public String getFieldType() {
+        return FIELDTYPE;
+    }
+
+    /******************* HTML part *********************************/
+
+    @Override
+    public void readRequestData(RequestData rdata) {
+        setContent(rdata.getAttributes().getString(getIdentifier()));
     }
 
     @Override
-    public void processResponse(ServletContext context, RequestData rdata, HttpServletResponse response)  {
-        //Log.log("process view");
-        rdata.setRequestObject(RequestKeys.KEY_PAGE, page);
-        super.processResponse(context, rdata, response);
+    public void readFrontendRequestData(RequestData rdata){
+        setContent(rdata.getAttributes().getString(getIdentifier()));
     }
+
+
+    /******************* search part *********************************/
+
+    public void appendSearchText(StringBuilder sb) {
+        //todo
+        //sb.append(" ").append(SearchHelper.getSearchContentFromHtml(getContent()));
+    }
+
 }

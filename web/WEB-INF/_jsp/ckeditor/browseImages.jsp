@@ -10,16 +10,15 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.page.PageCache" %>
-<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.content.ContentCache" %>
+<%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="java.util.List" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
-<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData data = rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
-    List<Integer> parentIds= PageCache.getParentContentIds(data.getId());
+    ContentData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT,ContentData.class);
+    List<Integer> parentIds=ContentCache.getParentContentIds(data.getId());
     parentIds.add(data.getId());
     rdata.setRequestObject("parentIds",parentIds);
     int callbackNum = rdata.getAttributes().getInt("CKEditorFuncNum", -1);
@@ -37,7 +36,7 @@
             <form:message/>
             <section class="treeSection">
                 <ul class="tree filetree">
-                    <% rdata.setRequestObject("treePage", PageCache.getContentRoot());%>
+                    <% rdata.setRequestObject("treePage", ContentCache.getContentRoot());%>
                     <jsp:include page="/WEB-INF/_jsp/ckeditor/imageBrowserFolder.inc.jsp" flush="true"/>
                     <% rdata.removeRequestObject("treePage");%>
                 </ul>

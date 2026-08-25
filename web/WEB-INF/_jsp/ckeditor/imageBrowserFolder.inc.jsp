@@ -10,13 +10,13 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.file.ImageData" %>
 <%@ page import="java.util.List" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getRequestObject("treePage", PageData.class);
+    ContentData contentData = rdata.getRequestObject("treePage", ContentData.class);
     List<Integer> parentIds=(List<Integer>) rdata.getRequestObject("parentIds");
     boolean isParent=parentIds.contains(contentData.getId());
 %>
@@ -38,7 +38,7 @@
         </li>
         <%}
         }
-        for (PageData subPage : contentData.getChildren()) {
+        for (ContentData subPage : contentData.getChildren()) {
             rdata.setRequestObject("treePage", subPage);%>
         <jsp:include page="/WEB-INF/_jsp/ckeditor/imageBrowserFolder.inc.jsp" flush="true"/>
         <%}

@@ -11,11 +11,11 @@
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
+    PageData contentData = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, PageData.class);
 %>
     <form action="/ctrl/page/saveFrontendContent/<%=contentData.getId()%>" method="post" id="pageform" name="pageform" accept-charset="UTF-8">
         <div class="btn-group btn-group-sm pageEditButtons">

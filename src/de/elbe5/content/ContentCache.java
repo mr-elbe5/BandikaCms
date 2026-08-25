@@ -6,7 +6,7 @@
  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
-package de.elbe5.page;
+package de.elbe5.content;
 
 import de.elbe5.base.Log;
 import de.elbe5.file.FileBean;
@@ -14,48 +14,48 @@ import de.elbe5.file.FileData;
 
 import java.util.*;
 
-public class PageCache {
+public class ContentCache {
 
-    private static PageData contentRoot = null;
+    private static ContentData contentRoot = null;
     private static int version = 1;
     private static volatile boolean dirty = true;
     private static final Object lockObj = new Object();
 
-    private static Map<Integer, PageData> contentMap = new HashMap<>();
-    private static Map<String, PageData> pathMap = new HashMap<>();
+    private static Map<Integer, ContentData> contentMap = new HashMap<>();
+    private static Map<String, ContentData> pathMap = new HashMap<>();
     private static Map<Integer, FileData> fileMap = new HashMap<>();
-    private static List<PageData> footerList = new ArrayList<>();
+    private static List<ContentData> footerList = new ArrayList<>();
 
     public static synchronized void load() {
-        List<PageData> contentList = PageBean.getInstance().getAllPages();
+        List<ContentData> contentList = ContentBean.getInstance().getAllContents();
         List<FileData> fileList = FileBean.getInstance().getAllFiles();
-        Map<Integer, PageData> contents = new HashMap<>();
-        Map<String, PageData> paths = new HashMap<>();
-        List<PageData> footer = new ArrayList<>();
-        for (PageData contentData : contentList) {
+        Map<Integer, ContentData> contents = new HashMap<>();
+        Map<String, ContentData> paths = new HashMap<>();
+        List<ContentData> footer = new ArrayList<>();
+        for (ContentData contentData : contentList) {
             contents.put(contentData.getId(), contentData);
         }
         Map<Integer, FileData> files = new HashMap<>();
         for (FileData fileData : fileList) {
             files.put(fileData.getId(), fileData);
-            PageData contentData=contents.get(fileData.getParentId());
+            ContentData contentData=contents.get(fileData.getParentId());
             if (contentData!=null) {
                 contentData.addFile(fileData);
                 fileData.setParent(contentData);
             }
         }
-        contentRoot = contents.get(PageData.ID_ROOT);
+        contentRoot = contents.get(ContentData.ID_ROOT);
         if (contentRoot == null)
             return;
-        for (PageData content : contentList) {
-            PageData parent = contents.get(content.getParentId());
+        for (ContentData content : contentList) {
+            ContentData parent = contents.get(content.getParentId());
             content.setParent(parent);
             if (parent != null) {
                 parent.addChild(content);
             }
         }
         contentRoot.initializeChildren();
-        for (PageData contentData : contentList) {
+        for (ContentData contentData : contentList) {
             paths.put(contentData.getUrl(), contentData);
             if (contentData.isActive() && contentData.isInFooterNav()){
                 footer.add(contentData);
@@ -93,17 +93,17 @@ public class PageCache {
         return version;
     }
 
-    public static PageData getContentRoot() {
+    public static ContentData getContentRoot() {
         checkDirty();
         return contentRoot;
     }
 
-    public static PageData getContent(int id) {
+    public static ContentData getContent(int id) {
         checkDirty();
         return contentMap.get(id);
     }
 
-    public static <T extends PageData> T getContent(int id, Class<T> cls) {
+    public static <T extends ContentData> T getContent(int id,Class<T> cls) {
         checkDirty();
         try {
             return cls.cast(contentMap.get(id));
@@ -113,11 +113,11 @@ public class PageCache {
         }
     }
 
-    public static <T extends PageData> List<T> getContents(Class<T> cls) {
+    public static <T extends ContentData> List<T> getContents(Class<T> cls) {
         checkDirty();
         List<T> list = new ArrayList<>();
         try {
-            for (PageData data : contentMap.values()){
+            for (ContentData data : contentMap.values()){
                 if (cls.isInstance(data))
                     list.add(cls.cast(data));
             }
@@ -128,12 +128,12 @@ public class PageCache {
         return list;
     }
 
-    public static PageData getContent(String url) {
+    public static ContentData getContent(String url) {
         checkDirty();
         return pathMap.get(url);
     }
 
-    public static <T extends PageData> T getContent(String url, Class<T> cls) {
+    public static <T extends ContentData> T getContent(String url,Class<T> cls) {
         checkDirty();
         try {
             return cls.cast(pathMap.get(url));
@@ -145,14 +145,14 @@ public class PageCache {
 
     public static int getParentContentId(int id) {
         checkDirty();
-        PageData contentData = getContent(id);
+        ContentData contentData = getContent(id);
         if (contentData == null) {
             return 0;
         }
         return contentData.getParentId();
     }
 
-    public static List<Integer> getParentContentIds(PageData data) {
+    public static List<Integer> getParentContentIds(ContentData data) {
         checkDirty();
         List<Integer> list = new ArrayList<>();
         while (data!=null) {
@@ -163,11 +163,11 @@ public class PageCache {
     }
 
     public static List<Integer> getParentContentIds(int contentId) {
-        PageData data=getContent(contentId);
+        ContentData data=getContent(contentId);
         return getParentContentIds(data);
     }
 
-    public static List<PageData> getFooterList() {
+    public static List<ContentData> getFooterList() {
         return footerList;
     }
 

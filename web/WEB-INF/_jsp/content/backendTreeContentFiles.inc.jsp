@@ -10,15 +10,14 @@
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="java.util.List" %>
-<%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
+<%@ page import="de.elbe5.content.ContentData" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ page import="de.elbe5.file.FileData" %>
 <%@ page import="de.elbe5.base.LocalizedSystemStrings" %>
-<%@ page import="de.elbe5.page.PageData" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = PageData.getCurrentContent(rdata);
+    ContentData contentData = ContentData.getCurrentContent(rdata);
     List<Class<? extends FileData>> fileClasses=contentData.getFileClasses();
     int fileId=rdata.getAttributes().getInt("fileId");
 %>
@@ -26,7 +25,7 @@
             <span>[<%=$SH("_files")%>]</span>
             <%if (contentData.hasUserEditRight(rdata.getLoginUser())) {%>
             <div class="icons">
-                <% if (rdata.hasClipboardData(RequestKeys.KEY_FILE)) {%>
+                <% if (rdata.hasClipboardData(ContentRequestKeys.KEY_FILE)) {%>
                 <a class="icon fa fa-paste" href="" onclick="return linkTo('/ctrl/file/pasteFile?parentId=<%=contentData.getId()%>');" title="<%=$SH("_pasteFile")%>"> </a>
                 <%}
                     if (!fileClasses.isEmpty()) {

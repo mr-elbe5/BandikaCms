@@ -10,19 +10,19 @@
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="java.util.List" %>
-<%@ page import="de.elbe5.page.PageData" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
+<%@ page import="de.elbe5.content.ContentData" %>
+<%@ page import="de.elbe5.request.ContentRequestKeys" %>
 <%@ page import="de.elbe5.base.LocalizedSystemStrings" %>
-<%@ page import="de.elbe5.page.PageData" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = PageData.getCurrentPage(rdata);
+    ContentData contentData = ContentData.getCurrentContent(rdata, ContentData.class);
     @SuppressWarnings("unchecked")
     List<Integer> openIds = rdata.getAttributes().get("openIds", List.class);
     String liClass = openIds != null
             ? openIds.contains(contentData.getId()) ? "open" : ""
             : "";
+    List<Class<? extends ContentData>> childClasses = contentData.getChildClasses();
 %>
 <li class="<%=liClass%>">
     <span>
@@ -32,16 +32,16 @@
     <div class="icons">
         <a class="icon fa fa-eye" href="" onclick="return linkTo('/ctrl/content/show/<%=contentData.getId()%>');" title="<%=$SH("_view")%>"> </a>
         <a class="icon fa fa-pencil" href="" onclick="return openModalDialog('/ctrl/content/openEditBackendContent/<%=contentData.getId()%>');" title="<%=$SH("_edit")%>"> </a>
-        <% if (contentData.getId() != PageData.ID_ROOT){%>
+        <% if (contentData.getId() != ContentData.ID_ROOT){%>
         <a class="icon fa fa-scissors" href="" onclick="return linkTo('/ctrl/content/cutContent/<%=contentData.getId()%>');" title="<%=$SH("_cut")%>"> </a>
         <%}%>
         <%if (contentData.hasChildren()){%>
         <a class="icon fa fa-sort" href="" onclick="return openModalDialog('/ctrl/content/openSortChildContents/<%=contentData.getId()%>');" title="<%=$SH("_sortChildPages")%>"> </a>
         <%}%>
-        <% if (contentData.getId() != PageData.ID_ROOT){%>
+        <% if (contentData.getId() != ContentData.ID_ROOT){%>
         <a class="icon fa fa-trash-o" href="" onclick="if (confirmDelete()) return linkTo('/ctrl/content/deleteBackendContent/<%=contentData.getId()%>');" title="<%=$SH("_delete")%>"> </a>
         <%}%>
-        <% if (rdata.hasClipboardData(RequestKeys.KEY_PAGE)) {%>
+        <% if (rdata.hasClipboardData(ContentRequestKeys.KEY_CONTENT)) {%>
         <a class="icon fa fa-paste" href="" onclick="return linkTo('/ctrl/content/pasteContent?parentId=<%=contentData.getId()%>');" title="<%=$SH("_pasteContent")%>"> </a>
         <%
         }
@@ -51,7 +51,7 @@
         <%} else {%>
         <a class="icon fa fa-plus dropdown-toggle" data-toggle="dropdown" title="<%=$SH("_newContent")%>"></a>
         <div class="dropdown-menu">
-            <%for (Class<? extends PageData> pageType : childClasses) {
+            <%for (Class<? extends ContentData> pageType : childClasses) {
                 String name = LocalizedSystemStrings.getInstance().html(pageType.getName());
             %>
             <a class="dropdown-item" onclick="return openModalDialog('/ctrl/content/openCreateBackendContent?parentId=<%=contentData.getId()%>&type=<%=pageType.getName()%>');"><%=name%>
@@ -66,7 +66,7 @@
     <ul>
         <jsp:include page="/WEB-INF/_jsp/content/backendTreeContentFiles.inc.jsp" flush="true" />
         <%if (contentData.hasChildren()) {
-            for (PageData childData : contentData.getChildren()) {
+            for (ContentData childData : contentData.getChildren()) {
                 childData.displayBackendTreeContent(pageContext, rdata);
             }
         }%>

@@ -11,10 +11,10 @@
 <%@include file="/WEB-INF/_jsp/_include/_functions.inc.jsp" %>
 <%@ page import="de.elbe5.request.RequestData" %>
 <%@ page import="de.elbe5.request.RequestKeys" %>
-<%@ page import="de.elbe5.page.PageData" %>
+<%@ page import="de.elbe5.rights.GlobalRight" %>
+<%@ page import="de.elbe5.content.ContentData" %>
 <%@ page import="de.elbe5.base.LocalizedSystemStrings" %>
 <%@ page import="de.elbe5.application.Configuration" %>
-<%@ page import="de.elbe5.page.PageData" %>
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
@@ -72,7 +72,7 @@
                                 <%}%>
                                 <% if (GlobalRight.hasGlobalContentEditRight(rdata.getLoginUser())){%>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/ctrl/admin/openContentAdministration?contentId=<%=PageData.ID_ROOT%>"><%=$SH("_contentAdministration")%>
+                                    <a class="nav-link" href="/ctrl/admin/openContentAdministration?contentId=<%=ContentData.ID_ROOT%>"><%=$SH("_contentAdministration")%>
                                     </a>
                                 </li>
                                 <li class="nav-item">

@@ -7,7 +7,7 @@
   You should have received a copy of the GNU General Public License along with this program; if not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@ page import="de.elbe5.request.RequestData" %>
-<%@ page import="de.elbe5.page.PageCache" %>
+<%@ page import="de.elbe5.content.ContentCache" %>
 <%@ page import="java.util.List" %>
 <%response.setContentType("text/html;charset=UTF-8");%>
 <%@ page trimDirectiveWhitespaces="true" %>
@@ -16,7 +16,7 @@
 <%
     RequestData rdata = RequestData.getRequestData(request);
     int openId = rdata.getAttributes().getInt("contentId");
-    List<Integer> openIds = PageCache.getParentContentIds(openId);
+    List<Integer> openIds = ContentCache.getParentContentIds(openId);
     rdata.getAttributes().put("openIds", openIds);
 %>
 <div id="pageContent">

@@ -12,7 +12,8 @@ import de.elbe5.application.ApplicationPath;
 import de.elbe5.base.Log;
 import de.elbe5.base.FileHelper;
 import de.elbe5.application.Configuration;
-import de.elbe5.page.PageCache;
+import de.elbe5.content.ContentCache;
+import de.elbe5.content.ContentData;
 import de.elbe5.request.RequestData;
 import de.elbe5.servlet.WebServlet;
 
@@ -46,7 +47,7 @@ public class FileServlet extends WebServlet {
             fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8).substring(1);
             String name = FileHelper.getFileNameWithoutExtension(fileName);
             int id = Integer.parseInt(name);
-            FileData data = PageCache.getFile(id);
+            FileData data = ContentCache.getFile(id);
             File file = new File(fileDir, fileName);
             // if not exists, create from database
             if (!file.exists() && !FileBean.getInstance().createTempFile(file)) {
