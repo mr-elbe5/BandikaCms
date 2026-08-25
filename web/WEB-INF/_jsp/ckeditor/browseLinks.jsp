@@ -59,7 +59,7 @@
                 </div>
                 <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
                     <section class="treeSection">
-                        <% if (GlobalRight.hasGlobalContentReadRight(rdata.getLoginUser())) { %>
+                        <% if (GlobalRight.hasGlobalContentReadRight(rdata.getCurrentUser())) { %>
                         <ul class="tree filetree">
                             <%rdata.setRequestObject("treePage", PageCache.getContentRoot());%>
                             <jsp:include page="/WEB-INF/_jsp/ckeditor/documentLinkBrowserFolder.inc.jsp" flush="true"/>
@@ -69,7 +69,7 @@
                 </div>
                 <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
                     <section class="treeSection">
-                        <% if (GlobalRight.hasGlobalContentReadRight(rdata.getLoginUser())) { %>
+                        <% if (GlobalRight.hasGlobalContentReadRight(rdata.getCurrentUser())) { %>
                         <ul class="tree filetree">
                             <%rdata.setRequestObject("treePage", PageCache.getContentRoot());%>
                             <jsp:include page="/WEB-INF/_jsp/ckeditor/imageLinkBrowserFolder.inc.jsp" flush="true"/>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="tab-pane fade" id="media" role="tabpanel" aria-labelledby="media-tab">
                     <section class="treeSection">
-                        <% if (GlobalRight.hasGlobalContentReadRight(rdata.getLoginUser())) { %>
+                        <% if (GlobalRight.hasGlobalContentReadRight(rdata.getCurrentUser())) { %>
                         <ul class="tree filetree">
                             <%rdata.setRequestObject("treePage", PageCache.getContentRoot());%>
                             <jsp:include page="/WEB-INF/_jsp/ckeditor/mediaLinkBrowserFolder.inc.jsp" flush="true"/>

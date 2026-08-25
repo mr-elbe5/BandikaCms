@@ -22,7 +22,7 @@
                 <a class="treeRoot"><%=$SH("_system")%>
                 </a>
                 <ul>
-                    <%if (GlobalRight.hasGlobalApplicationEditRight(rdata.getLoginUser())) {%>
+                    <%if (GlobalRight.hasGlobalApplicationEditRight(rdata.getCurrentUser())) {%>
                     <li>
                         <a href="" onclick="if (confirmExecute()) return openModalDialog('/ctrl/admin/restart');"><%=$SH("_restart")%>
                         </a>

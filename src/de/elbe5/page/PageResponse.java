@@ -9,7 +9,6 @@
 package de.elbe5.page;
 
 import de.elbe5.request.RequestData;
-import de.elbe5.request.RequestKeys;
 import de.elbe5.response.MasterResponse;
 
 import jakarta.servlet.ServletContext;
@@ -24,7 +23,7 @@ public class PageResponse extends MasterResponse {
     @Override
     public void processResponse(ServletContext context, RequestData rdata, HttpServletResponse response)  {
         //Log.log("process view");
-        rdata.setRequestObject(RequestKeys.KEY_PAGE, page);
+        rdata.setRequestObject(RequestData.KEY_PAGE, page);
         super.processResponse(context, rdata, response);
     }
 }

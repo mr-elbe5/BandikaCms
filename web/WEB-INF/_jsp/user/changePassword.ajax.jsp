@@ -14,7 +14,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    UserData user = rdata.getLoginUser();
+    UserData user = rdata.getCurrentUser();
     String url = "/ctrl/user/changePassword/" + user.getId();
 %>
 <div class="modal-dialog modal-lg" role="document">

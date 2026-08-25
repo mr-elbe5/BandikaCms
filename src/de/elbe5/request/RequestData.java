@@ -11,6 +11,10 @@ package de.elbe5.request;
 import de.elbe5.base.*;
 import de.elbe5.base.BaseData;
 import de.elbe5.application.Configuration;
+import de.elbe5.file.DocumentData;
+import de.elbe5.file.FileData;
+import de.elbe5.file.ImageData;
+import de.elbe5.file.MediaData;
 import de.elbe5.page.PageData;
 import de.elbe5.user.UserData;
 
@@ -23,8 +27,26 @@ import java.util.*;
 
 public class RequestData {
 
+    public static final String KEY_REQUESTDATA = "$REQUESTDATA";
+    public static final String KEY_MASTERINCLUDE = "$MASTERINCLUDE";
+    public static final String KEY_PAGE = "pageData";
+    public static final String KEY_FILE = "fileData";
+    public static final String KEY_USER = "userData";
+    public static final String KEY_URL = "$URL";
+    public static final String KEY_HOST = "$HOST";
+    public static final String KEY_JSP = "$JSP";
+    public static final String KEY_MESSAGE = "$MESSAGE";
+    public static final String KEY_MESSAGETYPE = "$MESSAGETYPE";
+    public static final String KEY_TARGETID = "$TARGETID";
+    public static final String KEY_CLIPBOARD = "$CLIPBOARD";
+    public static final String KEY_TITLE = "$TITLE";
+    public static final String KEY_LOGIN = "$LOGIN";
+    public static final String MESSAGE_TYPE_INFO = "info";
+    public static final String MESSAGE_TYPE_SUCCESS = "success";
+    public static final String MESSAGE_TYPE_ERROR = "danger";
+
     public static RequestData getRequestData(HttpServletRequest request) {
-        return (RequestData) request.getAttribute(RequestKeys.KEY_REQUESTDATA);
+        return (RequestData) request.getAttribute(KEY_REQUESTDATA);
     }
 
     private final KeyValueMap attributes = new KeyValueMap();
@@ -45,7 +67,7 @@ public class RequestData {
     }
 
     public void init(){
-        request.setAttribute(RequestKeys.KEY_REQUESTDATA, this);
+        request.setAttribute(KEY_REQUESTDATA, this);
         readRequestParams();
         initSession();
     }
@@ -81,37 +103,37 @@ public class RequestData {
     /*********** message *********/
 
     public boolean hasMessage() {
-        return getAttributes().containsKey(RequestKeys.KEY_MESSAGE);
+        return getAttributes().containsKey(KEY_MESSAGE);
     }
 
     public void setMessage(String msg, String type) {
-        getAttributes().put(RequestKeys.KEY_MESSAGE, msg);
-        getAttributes().put(RequestKeys.KEY_MESSAGETYPE, type);
+        getAttributes().put(KEY_MESSAGE, msg);
+        getAttributes().put(KEY_MESSAGETYPE, type);
     }
 
     /************ user ****************/
 
-    public UserData getLoginUser() {
-        return getSessionUser();
+    public UserData getCurrentUser() {
+        return getLoginUser();
     }
 
     public int getUserId() {
-        UserData user = getLoginUser();
+        UserData user = getCurrentUser();
         return user == null ? 0 : user.getId();
     }
 
     public boolean isLoggedIn() {
-        UserData user = getLoginUser();
+        UserData user = getCurrentUser();
         return user != null;
     }
 
     public boolean isEditor() {
-        UserData user = getLoginUser();
+        UserData user = getCurrentUser();
         return user != null && user.isEditor();
     }
 
     public boolean isAdmin() {
-        UserData user = getLoginUser();
+        UserData user = getCurrentUser();
         return user != null && user.isAdmin();
     }
 
@@ -343,7 +365,7 @@ public class RequestData {
         }
     }
 
-    public void setSessionObject(String key, Object obj) {
+    private void setSessionObject(String key, Object obj) {
         HttpSession session = request.getSession();
         if (session == null) {
             return;
@@ -371,7 +393,15 @@ public class RequestData {
         }
     }
 
-    public <T> T getSessionObject(String key, Class<T> cls) {
+    public void setSessionPage(PageData page){
+        setSessionObject(KEY_PAGE, page);
+    }
+
+    public void setSessionFile(FileData file){
+        setSessionObject(KEY_FILE, file);
+    }
+
+    private <T> T getSessionObject(String key, Class<T> cls) {
         HttpSession session = request.getSession();
         if (session == null) {
             return null;
@@ -384,6 +414,22 @@ public class RequestData {
         }
     }
 
+    public PageData getSessionPage(){
+        return getSessionObject(KEY_PAGE, PageData.class);
+    }
+
+    public ImageData getSessionImage(){
+        return getSessionObject(KEY_FILE, ImageData.class);
+    }
+
+    public DocumentData getSessionDocument(){
+        return getSessionObject(KEY_FILE, DocumentData.class);
+    }
+
+    public MediaData getSessionMedia(){
+        return getSessionObject(KEY_FILE, MediaData.class);
+    }
+
     public void removeSessionObject(String key) {
         HttpSession session = request.getSession();
         if (session == null) {
@@ -393,15 +439,15 @@ public class RequestData {
     }
 
     public ClipboardData getClipboard() {
-        ClipboardData data = getSessionObject(RequestKeys.KEY_CLIPBOARD,ClipboardData.class);
+        ClipboardData data = getSessionObject(KEY_CLIPBOARD,ClipboardData.class);
         if (data==null){
             data=new ClipboardData();
-            setSessionObject(RequestKeys.KEY_CLIPBOARD,data);
+            setSessionObject(KEY_CLIPBOARD,data);
         }
         return data;
     }
 
-    public <T extends BaseData> T getCurrentDataInRequestOrSession(String key, Class<T> cls) {
+    private <T extends BaseData> T getCurrentDataInRequestOrSession(String key, Class<T> cls) {
         try {
             Object obj=getRequestObject(key);
             if (obj==null)
@@ -409,7 +455,6 @@ public class RequestData {
             if (obj==null){
                 return null;
             }
-            //Log.log("current request page is: " + obj.getClass().getSimpleName());
             return cls.cast(obj);
         }
         catch (ClassCastException e){
@@ -417,8 +462,16 @@ public class RequestData {
         }
     }
 
-    public PageData getCurrentPageInRequestOrSession(String key) {
-        return getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
+    public PageData getCurrentPageInRequestOrSession() {
+        return getCurrentDataInRequestOrSession(KEY_PAGE, PageData.class);
+    }
+
+    public ImageData getCurrentImageInRequestOrSession(String key) {
+        return getCurrentDataInRequestOrSession(KEY_FILE, ImageData.class);
+    }
+
+    public DocumentData getCurrentDocumentInRequestOrSession(String key) {
+        return getCurrentDataInRequestOrSession(KEY_FILE, DocumentData.class);
     }
 
     public void setClipboardData(String key, BaseData data){
@@ -447,19 +500,27 @@ public class RequestData {
     }
 
     public void setSessionUser(UserData data) {
-        setSessionObject(RequestKeys.KEY_LOGIN, data);
+        setSessionObject(KEY_USER, data);
     }
 
-    protected UserData getSessionUser() {
-        return (UserData) getSessionObject(RequestKeys.KEY_LOGIN);
+    public UserData getSessionUser() {
+        return (UserData) getSessionObject(KEY_USER);
+    }
+
+    public void setLoginUser(UserData data) {
+        setSessionObject(KEY_LOGIN, data);
+    }
+
+    protected UserData getLoginUser() {
+        return (UserData) getSessionObject(KEY_LOGIN);
     }
 
     public void setSessionHost(String host) {
-        setSessionObject(RequestKeys.KEY_HOST, host);
+        setSessionObject(KEY_HOST, host);
     }
 
     public String getSessionHost() {
-        return getSessionObject(RequestKeys.KEY_HOST,String.class);
+        return getSessionObject(KEY_HOST,String.class);
     }
 
     public void resetSession() {

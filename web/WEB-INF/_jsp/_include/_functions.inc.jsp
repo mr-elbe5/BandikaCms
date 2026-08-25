@@ -9,7 +9,6 @@
 <%@ page import="de.elbe5.base.StringHelper" %>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="de.elbe5.base.LocalizedStrings" %>
-<%@ page import="java.util.Locale" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.LocalTime" %>
 <%@ page import="de.elbe5.base.DateHelper" %>

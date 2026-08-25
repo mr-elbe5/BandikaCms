@@ -18,8 +18,8 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    String title = rdata.getAttributes().getString(RequestKeys.KEY_TITLE);
-    String includeUrl = rdata.getAttributes().getString(RequestKeys.KEY_JSP);
+    String title = rdata.getAttributes().getString(RequestData.KEY_TITLE);
+    String includeUrl = rdata.getAttributes().getString(RequestData.KEY_JSP);
 %>
 <!DOCTYPE html>
 <html lang="<%=Configuration.getLocale().getLanguage()%>">
@@ -56,21 +56,21 @@
                     <nav class="navbar navbar-expand-lg navbar-light">
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mr-auto">
-                                <% if (GlobalRight.hasGlobalApplicationEditRight(rdata.getLoginUser())){%>
+                                <% if (GlobalRight.hasGlobalApplicationEditRight(rdata.getCurrentUser())){%>
                                 <li class="nav-item">
                                     <a class="nav-link"
                                        href="/ctrl/admin/openSystemAdministration"><%=$SH("_systemAdministration")%>
                                     </a>
                                 </li>
                                 <%}%>
-                                <% if (GlobalRight.hasGlobalUserEditRight(rdata.getLoginUser())){%>
+                                <% if (GlobalRight.hasGlobalUserEditRight(rdata.getCurrentUser())){%>
                                 <li class="nav-item">
                                     <a class="nav-link"
                                        href="/ctrl/admin/openPersonAdministration"><%=$SH("_personAdministration")%>
                                     </a>
                                 </li>
                                 <%}%>
-                                <% if (GlobalRight.hasGlobalContentEditRight(rdata.getLoginUser())){%>
+                                <% if (GlobalRight.hasGlobalContentEditRight(rdata.getCurrentUser())){%>
                                 <li class="nav-item">
                                     <a class="nav-link" href="/ctrl/admin/openContentAdministration?contentId=<%=PageData.ID_ROOT%>"><%=$SH("_contentAdministration")%>
                                     </a>

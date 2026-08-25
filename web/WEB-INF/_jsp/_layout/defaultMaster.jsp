@@ -13,20 +13,16 @@
 <%@ page import="de.elbe5.page.PageData" %>
 <%@ page import="de.elbe5.page.PageCache" %>
 <%@ page import="java.util.List" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
-<%@ page import="de.elbe5.request.RequestKeys" %>
 <%@ page import="de.elbe5.response.IMasterInclude" %>
 <%@ page import="de.elbe5.base.LocalizedSystemStrings" %>
 <%@ page import="de.elbe5.application.Configuration" %>
-<%@ page import="de.elbe5.page.PageData" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    IMasterInclude masterInclude = rdata.getRequestObject(RequestKeys.KEY_MASTERINCLUDE, IMasterInclude.class);
-    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
-    List<Integer> parentIds = PageCache.getParentContentIds(contentData);
-    String title = rdata.getAttributes().getString(RequestKeys.KEY_TITLE, Configuration.getAppTitle()) + (contentData != null ? " | " + contentData.getDisplayName() : "");
-    String keywords = contentData != null ? contentData.getKeywords() : title;
-    String description = contentData != null ? contentData.getDescription() : "";
+    IMasterInclude masterInclude = rdata.getRequestObject(RequestData.KEY_MASTERINCLUDE, IMasterInclude.class);
+    PageData pageData = rdata.getCurrentPageInRequestOrSession();
+    List<Integer> parentIds = PageCache.getParentContentIds(pageData);
+    String title = rdata.getAttributes().getString(RequestData.KEY_TITLE, Configuration.getAppTitle()) + (pageData != null ? " | " + pageData.getDisplayName() : "");
+    String keywords = pageData != null ? pageData.getKeywords() : title;
 %>
 <!DOCTYPE html>
 <html lang="<%=Configuration.getLocale().getLanguage()%>">
@@ -36,7 +32,6 @@
     <title><%=$H(title)%>
     </title>
     <meta name="keywords" content="<%=$H(keywords)%>">
-    <meta name="description" content="<%=$H(description)%>">
     <link rel="shortcut icon" href="/favicon.ico"/>
     <link rel="stylesheet" href="/static-content/css/bootstrap.css?v=1"/>
     <link rel="stylesheet" href="/static-content/css/fontmplus1p.css?v=1"/>
@@ -108,7 +103,7 @@
                 </a>
             </li>
             <% for (PageData data : PageCache.getFooterList()) {
-                if (data.isActive() && data.hasUserReadRight(rdata.getLoginUser())) {%>
+                if (data.isActive()) {%>
             <li class="nav-item">
                 <a class="nav-link" href="<%=data.getUrl()%>"><%=$H(data.getDisplayName())%>
                 </a>

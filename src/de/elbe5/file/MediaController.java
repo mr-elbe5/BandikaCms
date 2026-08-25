@@ -10,8 +10,6 @@ package de.elbe5.file;
 
 import de.elbe5.page.PageCache;
 import de.elbe5.request.RequestData;
-import de.elbe5.request.RequestKeys;
-import de.elbe5.request.RequestType;
 import de.elbe5.servlet.ControllerCache;
 import de.elbe5.response.CloseDialogResponse;
 import de.elbe5.response.IResponse;
@@ -44,16 +42,16 @@ public class MediaController extends FileController {
     public IResponse openEditFile(RequestData rdata) {
         assertLoggedIn(rdata);
         FileData data = FileBean.getInstance().getFile(rdata.getId(),true);
-        rdata.setSessionObject(RequestKeys.KEY_FILE,data);
+        rdata.setSessionFile(data);
         return showEditFile();
     }
 
     public IResponse saveFile(RequestData rdata) {
         assertLoggedIn(rdata);
         int fileId = rdata.getId();
-        MediaData data = rdata.getSessionObject(RequestKeys.KEY_FILE,MediaData.class);
+        MediaData data = rdata.getSessionMedia();
         assert fileId == data.getId();
-        data.readRequestData(rdata, RequestType.backend);
+        data.readBackendRequestData(rdata);
         if (!rdata.checkFormErrors()) {
             return showEditFile();
         }
@@ -65,7 +63,7 @@ public class MediaController extends FileController {
         }
         data.setNew(false);
         PageCache.setDirty();
-        rdata.setMessage($S("_fileSaved"), RequestKeys.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_fileSaved"), RequestData.MESSAGE_TYPE_SUCCESS);
         return new CloseDialogResponse("/ctrl/admin/openContentAdministration?contentId=" + data.getId());
     }
 

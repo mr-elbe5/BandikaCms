@@ -22,7 +22,7 @@
                 <a class="treeRoot"><%=$SH("_persons")%>
                 </a>
                 <ul>
-                    <%if (GlobalRight.hasGlobalUserEditRight(rdata.getLoginUser())) {%>
+                    <%if (GlobalRight.hasGlobalUserEditRight(rdata.getCurrentUser())) {%>
                     <jsp:include page="../group/groupAdministration.inc.jsp" flush="true"/>
                     <jsp:include page="../user/userAdministration.inc.jsp" flush="true"/>
                     <%}%>

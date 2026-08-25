@@ -75,9 +75,9 @@ public class FileController extends Controller {
         PageData parentData = PageCache.getContent(parentId);
         String type=rdata.getAttributes().getString("type");
         FileData data = FileBean.getInstance().getNewFileData(type);
-        data.setCreateValues(rdata, RequestType.backend);
+        data.setCreateValues(rdata);
         data.setParentValues(parentData);
-        rdata.setSessionObject(RequestKeys.KEY_FILE, data);
+        rdata.setSessionFile(data);
         return new ForwardResponse(data.getEditURL());
     }
 
@@ -86,7 +86,7 @@ public class FileController extends Controller {
         int fileId = rdata.getId();
         FileData data = FileBean.getInstance().getFile(fileId,true);
         PageData parent= PageCache.getContent(data.getParentId());
-        rdata.setClipboardData(RequestKeys.KEY_FILE, data);
+        rdata.setClipboardData(RequestData.KEY_FILE, data);
         return showContentAdministration(rdata,parent.getId());
     }
 
@@ -99,26 +99,26 @@ public class FileController extends Controller {
         data.setId(FileBean.getInstance().getNextId());
         data.setCreatorId(rdata.getUserId());
         data.setChangerId(rdata.getUserId());
-        rdata.setClipboardData(RequestKeys.KEY_FILE, data);
+        rdata.setClipboardData(RequestData.KEY_FILE, data);
         return showContentAdministration(rdata,parent.getId());
     }
 
     public IResponse pasteFile(RequestData rdata) {
         assertLoggedIn(rdata);
         int parentId = rdata.getAttributes().getInt("parentId");
-        FileData data=rdata.getClipboardData(RequestKeys.KEY_FILE, FileData.class);
+        FileData data=rdata.getClipboardData(RequestData.KEY_FILE, FileData.class);
         PageData parent= PageCache.getContent(parentId);
         if (parent == null){
-            rdata.setMessage($S("_actionNotExcecuted"), RequestKeys.MESSAGE_TYPE_ERROR);
+            rdata.setMessage($S("_actionNotExcecuted"), RequestData.MESSAGE_TYPE_ERROR);
             return showContentAdministration(rdata, parentId);
         }
         data.setParentId(parentId);
         data.setParent(parent);
         data.setChangerId(rdata.getUserId());
         FileBean.getInstance().saveFile(data, true);
-        rdata.clearClipboardData(RequestKeys.KEY_FILE);
+        rdata.clearClipboardData(RequestData.KEY_FILE);
         PageCache.setDirty();
-        rdata.setMessage($S("_filePasted"), RequestKeys.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_filePasted"), RequestData.MESSAGE_TYPE_SUCCESS);
         return showContentAdministration(rdata,data.getId());
     }
 
@@ -131,7 +131,7 @@ public class FileController extends Controller {
         FileBean.getInstance().deleteFile(data);
         PageCache.setDirty();
         rdata.getAttributes().put("contentId", Integer.toString(parentId));
-        rdata.setMessage($S("_fileDeleted"), RequestKeys.MESSAGE_TYPE_SUCCESS);
+        rdata.setMessage($S("_fileDeleted"), RequestData.MESSAGE_TYPE_SUCCESS);
         return showContentAdministration(rdata,parentId);
     }
 

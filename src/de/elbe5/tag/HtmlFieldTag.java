@@ -16,7 +16,6 @@ import de.elbe5.page.PagePartData;
 import de.elbe5.page.PartField;
 import de.elbe5.request.RequestData;
 
-import de.elbe5.request.RequestKeys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.jsp.JspWriter;
 
@@ -34,7 +33,7 @@ public class HtmlFieldTag extends FieldTag {
             HttpServletRequest request = (HttpServletRequest) getContext().getRequest();
             RequestData rdata = RequestData.getRequestData(request);
             JspWriter writer = getContext().getOut();
-            PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
+            PageData contentData = rdata.getCurrentPageInRequestOrSession();
             PagePartData partData = (PagePartData) rdata.getAttributes().get(PagePartData.KEY_PART);
             PartField field = partData.ensureHtmlField(name);
             if (contentData.isEditMode()) {

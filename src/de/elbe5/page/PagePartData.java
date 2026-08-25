@@ -10,7 +10,6 @@ package de.elbe5.page;
 
 import de.elbe5.base.BaseData;
 import de.elbe5.request.RequestData;
-import de.elbe5.request.RequestType;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -122,8 +121,8 @@ public class PagePartData extends BaseData implements Comparable<PagePartData> {
         setId(PagePartBean.getInstance().getNextPartId());
     }
 
-    public void setCreateValues(RequestData rdata, RequestType type) {
-        super.setCreateValues(rdata, type);
+    public void setCreateValues(RequestData rdata) {
+        super.setCreateValues(rdata);
         setSectionName(rdata.getAttributes().getString("sectionName"));
         setLayout(rdata.getAttributes().getString("layout"));
     }
@@ -133,15 +132,15 @@ public class PagePartData extends BaseData implements Comparable<PagePartData> {
         setId(PagePartBean.getInstance().getNextPartId());
     }
 
-    public void readRequestData(RequestData rdata, RequestType type) {
-        switch (type) {
-            case frontend -> {
-                // -1 if deleted
-                setPosition(rdata.getAttributes().getInt(getPartPositionName(), -1));
-                for (PartField field : getFields().values()) {
-                    field.readFrontendRequestData(rdata);
-                }
-            }
+    public void readBackendRequestData(RequestData rdata){
+
+    }
+
+    public void readFrontendRequestData(RequestData rdata) {
+        // -1 if deleted
+        setPosition(rdata.getAttributes().getInt(getPartPositionName(), -1));
+        for (PartField field : getFields().values()) {
+            field.readFrontendRequestData(rdata);
         }
     }
 

@@ -10,7 +10,6 @@ package de.elbe5.response;
 
 import de.elbe5.page.PageData;
 import de.elbe5.request.RequestData;
-import de.elbe5.request.RequestKeys;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletContext;
@@ -41,7 +40,7 @@ public class MasterResponse implements IResponse {
     public void processResponse(ServletContext context, RequestData rdata, HttpServletResponse response)  {
         RequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/_jsp/_layout/"+master+".jsp");
         if (page != null){
-            rdata.setRequestObject(RequestKeys.KEY_PAGE, page);
+            rdata.setRequestObject(RequestData.KEY_PAGE, page);
         }
         try {
             rd.forward(rdata.getRequest(), response);

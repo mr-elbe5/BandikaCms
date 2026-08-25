@@ -12,7 +12,6 @@ import de.elbe5.base.Log;
 import de.elbe5.base.StringFormatter;
 import de.elbe5.base.StringHelper;
 import de.elbe5.request.RequestData;
-import de.elbe5.request.RequestKeys;
 
 import jakarta.servlet.jsp.JspException;
 import java.io.Writer;
@@ -26,8 +25,8 @@ public class MessageTag extends BaseTag {
         try {
             RequestData rdata = getRequestData();
             if (rdata.hasMessage()) {
-                String msg = rdata.getAttributes().getString(RequestKeys.KEY_MESSAGE);
-                String msgType = rdata.getAttributes().getString(RequestKeys.KEY_MESSAGETYPE);
+                String msg = rdata.getAttributes().getString(RequestData.KEY_MESSAGE);
+                String msgType = rdata.getAttributes().getString(RequestData.KEY_MESSAGETYPE);
                 Writer writer = getWriter();
                 writer.write(StringFormatter.format(controlHtml, msgType, StringHelper.toHtml(msg)));
             }

@@ -9,7 +9,6 @@
 package de.elbe5.response;
 
 import de.elbe5.request.RequestData;
-import de.elbe5.request.RequestKeys;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletContext;
@@ -32,9 +31,9 @@ public class CloseDialogResponse extends ForwardResponse {
 
     @Override
     public void processResponse(ServletContext context, RequestData rdata, HttpServletResponse response)  {
-        rdata.getAttributes().put(RequestKeys.KEY_URL, url);
+        rdata.getAttributes().put(RequestData.KEY_URL, url);
         if (!targetId.isEmpty())
-            rdata.getAttributes().put(RequestKeys.KEY_TARGETID, targetId);
+            rdata.getAttributes().put(RequestData.KEY_TARGETID, targetId);
         RequestDispatcher rd = context.getRequestDispatcher("/WEB-INF/_jsp/closeDialog.ajax.jsp");
         try {
             rd.forward(rdata.getRequest(), response);

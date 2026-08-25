@@ -12,8 +12,6 @@ import de.elbe5.base.*;
 import de.elbe5.base.BaseData;
 import de.elbe5.file.*;
 import de.elbe5.request.RequestData;
-import de.elbe5.request.RequestKeys;
-import de.elbe5.request.RequestType;
 import de.elbe5.response.IMasterInclude;
 import de.elbe5.response.IResponse;
 
@@ -31,11 +29,11 @@ import java.util.*;
 public class PageData extends BaseData implements IMasterInclude, Comparable<PageData> {
 
     public static PageData getCurrentPage(RequestData rdata) {
-        return rdata.getCurrentPageInRequestOrSession(RequestKeys.KEY_PAGE);
+        return rdata.getCurrentPageInRequestOrSession();
     }
 
     public static PageData getSessionPage(RequestData rdata) {
-        return rdata.getSessionObject(RequestKeys.KEY_PAGE, PageData.class);
+        return rdata.getSessionPage();
     }
 
     public static final int ID_ROOT = 1;
@@ -49,7 +47,7 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     protected String keywords = "";
     protected String layout = "";
     protected LocalDateTime publishDate = null;
-    protected String publishedContent="";
+    protected String publishedContent = "";
 
     // tree data
     protected int parentId = 0;
@@ -130,11 +128,11 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     public void setNavType(PageNavType navType) {
         this.navType = navType;
     }
+
     public void setNavType(String type) {
-        try{
+        try {
             navType = PageNavType.valueOf(type);
-        }
-        catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             navType = PageNavType.NONE;
         }
     }
@@ -160,7 +158,7 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     }
 
     public String getLayoutUrl() {
-        return "/WEB-INF/_jsp/_layout/"+ layout +".jsp";
+        return "/WEB-INF/_jsp/_layout/" + layout + ".jsp";
     }
 
     public void setLayout(String layout) {
@@ -172,7 +170,7 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     }
 
     public void setPublishDate(LocalDateTime publishDate) {
-        this.publishDate=publishDate;
+        this.publishDate = publishDate;
     }
 
     public String getPublishedContent() {
@@ -184,7 +182,7 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     }
 
     public void reformatPublishedContent() {
-        Document doc= Jsoup.parseBodyFragment(getPublishedContent());
+        Document doc = Jsoup.parseBodyFragment(getPublishedContent());
         setPublishedContent(doc.body().html());
     }
 
@@ -242,7 +240,7 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     public PagePartData getPart(int pid) {
         for (SectionData section : getSections().values()) {
             PagePartData part = section.getPart(pid);
-            if (part!=null)
+            if (part != null)
                 return part;
         }
         return null;
@@ -267,7 +265,7 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     public void deletePart(int pid) {
         for (SectionData section : getSections().values()) {
             PagePartData part = section.getPart(pid);
-            if (part!=null) {
+            if (part != null) {
                 section.deletePart(pid);
                 break;
             }
@@ -294,13 +292,13 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
         writer.write(publishedContent);
     }
 
-    public IResponse getDefaultView(){
+    public IResponse getDefaultView() {
         return new PageResponse(this);
     }
 
     public void displayContent(PageContext context, RequestData rdata) throws IOException, ServletException {
         JspWriter writer = context.getOut();
-        if (isPublishing()){
+        if (isPublishing()) {
             writer.write("<div id=\"pageContent\" class=\"viewArea\">");
             StringWriter stringWriter = new StringWriter();
             context.pushBody(stringWriter);
@@ -317,19 +315,16 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
             setEditMode(false);
             PageCache.setDirty();
             writer.write("</div>");
-        }
-        else if (isEditMode()){
+        } else if (isEditMode()) {
             writer.write("<div id=\"pageContent\" class=\"editArea\">");
             displayEditContent(context, context.getOut(), rdata);
             writer.write("</div>");
-        }
-        else if (isPublished() && showPublished()){
+        } else if (isPublished() && showPublished()) {
             writer.write("<div id=\"pageContent\" class=\"viewArea\">");
             displayPublishedContent(context, context.getOut(), rdata);
             writer.write("</div>");
             showPublished(false);
-        }
-        else {
+        } else {
             writer.write("<div id=\"pageContent\" class=\"viewArea\">");
             if (isPublished() && !rdata.isLoggedIn())
                 displayPublishedContent(context, context.getOut(), rdata);
@@ -361,8 +356,7 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     public <T extends PageData> T getParent(Class<T> cls) {
         try {
             return cls.cast(getParent());
-        }
-        catch(NullPointerException | ClassCastException e){
+        } catch (NullPointerException | ClassCastException e) {
             return null;
         }
     }
@@ -443,9 +437,9 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
         }
     }
 
-    public int getChildIndex(PageData child){
-        for (int i= 0; i<children.size(); i++){
-            if (children.get(i).getId() == child.getId()){
+    public int getChildIndex(PageData child) {
+        for (int i = 0; i < children.size(); i++) {
+            if (children.get(i).getId() == child.getId()) {
                 return i;
             }
         }
@@ -524,11 +518,11 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     //used in admin jsp
     public void displayBackendTreeContent(PageContext context, RequestData rdata) throws IOException, ServletException {
         //backup
-        PageData currentContent = rdata.getRequestObject(RequestKeys.KEY_PAGE, PageData.class);
-        rdata.setRequestObject(RequestKeys.KEY_PAGE, this);
+        PageData currentContent = rdata.getRequestObject(RequestData.KEY_PAGE, PageData.class);
+        rdata.setRequestObject(RequestData.KEY_PAGE, this);
         context.include(getBackendContentTreeJsp(), true);
         //restore
-        rdata.setRequestObject(RequestKeys.KEY_PAGE, currentContent);
+        rdata.setRequestObject(RequestData.KEY_PAGE, currentContent);
     }
 
     public String getFrontendContentTreeJsp() {
@@ -542,18 +536,17 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     //used in jsp
     public void displayFrontendTreeContent(PageContext context, RequestData rdata) throws IOException, ServletException {
         //backup
-        PageData currentContent = rdata.getCurrentPageInRequestOrSession(RequestKeys.KEY_PAGE);
-        rdata.setRequestObject(RequestKeys.KEY_PAGE, this);
+        PageData currentContent = rdata.getCurrentPageInRequestOrSession();
+        rdata.setRequestObject(RequestData.KEY_PAGE, this);
         context.include(getFrontendContentTreeJsp(), true);
         //restore
-        rdata.setRequestObject(RequestKeys.KEY_PAGE, currentContent);
+        rdata.setRequestObject(RequestData.KEY_PAGE, currentContent);
     }
 
     //used in jsp/tag
     public void displayPage(PageContext context, RequestData rdata) throws IOException, ServletException {
     }
 
-    @Override
     public void appendContent(StringBuilder sb, RequestData rdata) {
 
     }
@@ -561,11 +554,11 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     // multiple data
 
     @Override
-    public void setNewId(){
+    public void setNewId() {
         setId(PageBean.getInstance().getNextId());
     }
 
-    public void setParentValues(PageData parent){
+    public void setParentValues(PageData parent) {
         setParentId(parent.getId());
         setParent(parent);
         setRanking(parent.getChildren().size());
@@ -586,33 +579,28 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
         }
     }
 
-    public void readRequestData(RequestData rdata, RequestType type){
-        Log.log("PageData.readRequestData");
-        super.readRequestData(rdata, type);
-        switch (type) {
-            case backend -> {
-                setDisplayName(rdata.getAttributes().getString("displayName").trim());
-                setName(StringHelper.toSafeWebName(getDisplayName()));
-                setNavType(rdata.getAttributes().getString("navType"));
-                setActive(rdata.getAttributes().getBoolean("active"));
-                setKeywords(rdata.getAttributes().getString("keywords"));
-                setLayout(rdata.getAttributes().getString("layout"));
-                if (layout.isEmpty()) {
-                    rdata.addIncompleteField("layout");
-                }
-                if (name.isEmpty()) {
-                    rdata.addIncompleteField("name");
-                }
-            }
-            case frontend -> {
-                for (SectionData section : getSections().values()) {
-                    section.readRequestData(rdata, type);
-                }
-            }
+    public void readBackendRequestData(RequestData rdata) {
+        setDisplayName(rdata.getAttributes().getString("displayName").trim());
+        setName(StringHelper.toSafeWebName(getDisplayName()));
+        setNavType(rdata.getAttributes().getString("navType"));
+        setActive(rdata.getAttributes().getBoolean("active"));
+        setKeywords(rdata.getAttributes().getString("keywords"));
+        setLayout(rdata.getAttributes().getString("layout"));
+        if (layout.isEmpty()) {
+            rdata.addIncompleteField("layout");
+        }
+        if (name.isEmpty()) {
+            rdata.addIncompleteField("name");
         }
     }
 
-    @Override
+    public void readFrontendRequestData(RequestData rdata) {
+        super.readFrontendRequestData(rdata);
+        for (SectionData section : getSections().values()) {
+            section.readFrontendRequestData(rdata);
+        }
+    }
+
     public int compareTo(PageData data) {
         int i = getRanking() - data.getRanking();
         if (i != 0)
@@ -621,3 +609,5 @@ public class PageData extends BaseData implements IMasterInclude, Comparable<Pag
     }
 
 }
+
+

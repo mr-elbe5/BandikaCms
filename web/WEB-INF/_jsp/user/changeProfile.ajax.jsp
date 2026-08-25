@@ -15,7 +15,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    UserData user = UserBean.getInstance().getUser(rdata.getLoginUser().getId());
+    UserData user = UserBean.getInstance().getUser(rdata.getCurrentUser().getId());
     String url = "/ctrl/user/changeProfile/" + user.getId();
 %>
 <div class="modal-dialog modal-lg" role="document">

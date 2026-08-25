@@ -15,7 +15,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    UserData user = UserBean.getInstance().getUser(rdata.getLoginUser().getId());
+    UserData user = UserBean.getInstance().getUser(rdata.getCurrentUser().getId());
 %>
 <form:message/>
 <section class="contentTop">

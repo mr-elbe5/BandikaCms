@@ -16,7 +16,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    DocumentData documentData = rdata.getSessionObject(RequestKeys.KEY_FILE,DocumentData.class);
+    DocumentData documentData = rdata.getSessionObject(RequestData.KEY_FILE,DocumentData.class);
     String url = "/ctrl/document/saveFile/" + documentData.getId();
 %>
 <div class="modal-dialog modal-lg" role="document">

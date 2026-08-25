@@ -24,7 +24,7 @@
 <%@ taglib uri="/WEB-INF/formtags.tld" prefix="form" %>
 <%
     RequestData rdata = RequestData.getRequestData(request);
-    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestKeys.KEY_PAGE, PageData.class);
+    PageData contentData = rdata.getCurrentDataInRequestOrSession(RequestData.KEY_PAGE, PageData.class);
     List<LayoutData> pageLayouts = LayoutCache.getLayouts(PageData.LAYOUT_TYPE);
     String url = "/ctrl/page/saveBackendContent/" + contentData.getId();
     String header = contentData.isNew() ? $SH("_newContent") : $SH("_editContentData");

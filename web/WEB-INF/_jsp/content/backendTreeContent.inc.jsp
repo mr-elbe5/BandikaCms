@@ -28,7 +28,7 @@
     <span>
         <%=$H(contentData.getDisplayName())%>
     </span>
-    <%if (contentData.hasUserEditRight(rdata.getLoginUser())) {%>
+    <%if (contentData.hasUserEditRight(rdata.getCurrentUser())) {%>
     <div class="icons">
         <a class="icon fa fa-eye" href="" onclick="return linkTo('/ctrl/content/show/<%=contentData.getId()%>');" title="<%=$SH("_view")%>"> </a>
         <a class="icon fa fa-pencil" href="" onclick="return openModalDialog('/ctrl/content/openEditBackendContent/<%=contentData.getId()%>');" title="<%=$SH("_edit")%>"> </a>
@@ -41,7 +41,7 @@
         <% if (contentData.getId() != PageData.ID_ROOT){%>
         <a class="icon fa fa-trash-o" href="" onclick="if (confirmDelete()) return linkTo('/ctrl/content/deleteBackendContent/<%=contentData.getId()%>');" title="<%=$SH("_delete")%>"> </a>
         <%}%>
-        <% if (rdata.hasClipboardData(RequestKeys.KEY_PAGE)) {%>
+        <% if (rdata.hasClipboardData(RequestData.KEY_PAGE)) {%>
         <a class="icon fa fa-paste" href="" onclick="return linkTo('/ctrl/content/pasteContent?parentId=<%=contentData.getId()%>');" title="<%=$SH("_pasteContent")%>"> </a>
         <%
         }
