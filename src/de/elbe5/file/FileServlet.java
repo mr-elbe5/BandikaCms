@@ -14,6 +14,7 @@ import de.elbe5.base.FileHelper;
 import de.elbe5.application.Configuration;
 import de.elbe5.content.ContentCache;
 import de.elbe5.content.ContentData;
+import de.elbe5.request.RequestContext;
 import de.elbe5.request.RequestData;
 import de.elbe5.servlet.WebServlet;
 
@@ -35,7 +36,7 @@ public class FileServlet extends WebServlet {
 
     protected void processRequest(String method, HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding(Configuration.ENCODING);
-        RequestData rdata = new RequestData(method, request);
+        RequestData rdata = new RequestData(method, RequestContext.file, request);
         rdata.init();
         try {
             String fileName = request.getPathInfo();
@@ -48,6 +49,11 @@ public class FileServlet extends WebServlet {
             String name = FileHelper.getFileNameWithoutExtension(fileName);
             int id = Integer.parseInt(name);
             FileData data = ContentCache.getFile(id);
+            ContentData parent=ContentCache.getContent(data.getParentId());
+            if (!parent.hasUserReadRight(rdata.getLoginUser())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
             File file = new File(fileDir, fileName);
             // if not exists, create from database
             if (!file.exists() && !FileBean.getInstance().createTempFile(file)) {

@@ -105,6 +105,17 @@ public class LayoutPartData extends PagePartData {
         return fields.get(name);
     }
 
+    public PartTextField ensureTextField(String name) {
+        PartField field = fields.get(name);
+        if (field instanceof PartTextField)
+            return (PartTextField) field;
+        PartTextField textfield = new PartTextField();
+        textfield.setName(name);
+        textfield.setPartId(getId());
+        fields.put(name, textfield);
+        return textfield;
+    }
+
     public PartHtmlField ensureHtmlField(String name) {
         PartField field = fields.get(name);
         if (field instanceof PartHtmlField)
@@ -114,6 +125,17 @@ public class LayoutPartData extends PagePartData {
         htmlfield.setPartId(getId());
         fields.put(name, htmlfield);
         return htmlfield;
+    }
+
+    public PartScriptField ensureScriptField(String name) {
+        PartField field = fields.get(name);
+        if (field instanceof PartScriptField)
+            return (PartScriptField) field;
+        PartScriptField scriptField = new PartScriptField();
+        scriptField.setName(name);
+        scriptField.setPartId(getId());
+        fields.put(name, scriptField);
+        return scriptField;
     }
 
     @Override
@@ -132,6 +154,18 @@ public class LayoutPartData extends PagePartData {
                 }
             }
         }
+    }
+
+    public PartField getNewField(String type) {
+        switch (type) {
+            case PartTextField.FIELDTYPE:
+                return new PartTextField();
+            case PartHtmlField.FIELDTYPE:
+                return new PartHtmlField();
+            case PartScriptField.FIELDTYPE:
+                return new PartScriptField();
+        }
+        return null;
     }
 
 }

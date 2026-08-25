@@ -8,6 +8,7 @@
  */
 package de.elbe5.page;
 
+import de.elbe5.application.Configuration;
 import de.elbe5.base.Log;
 import de.elbe5.content.*;
 import de.elbe5.file.ImageBean;
@@ -17,7 +18,7 @@ import de.elbe5.servlet.ControllerCache;
 import de.elbe5.response.IResponse;
 import de.elbe5.response.ForwardResponse;
 
-public class PageController extends ContentController {
+public class PageController extends ContentLogController {
 
     public static final String KEY = "page";
 
@@ -43,9 +44,10 @@ public class PageController extends ContentController {
 
     @Override
     public IResponse openEditFrontendContent(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = ContentBean.getInstance().getContent(contentId,PageData.class);
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         data.setUpdateValues(ContentCache.getContent(data.getId()), rdata);
         data.setEditMode(true);
         rdata.setSessionObject(ContentRequestKeys.KEY_CONTENT, data);
@@ -54,17 +56,19 @@ public class PageController extends ContentController {
 
     @Override
     public IResponse showEditFrontendContent(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         return data.getDefaultView();
     }
 
     @Override
     public IResponse saveFrontendContent(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         assert(contentId == data.getId());
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         data.readRequestData(rdata, RequestType.frontend);
         data.setChangerId(rdata.getUserId());
         if (!ContentBean.getInstance().saveContent(data)) {
@@ -79,58 +83,65 @@ public class PageController extends ContentController {
 
     @Override
     public IResponse cancelEditFrontendContent(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
         assert data.getId() == contentId;
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         data.setEditMode(false);
         return data.getDefaultView();
     }
 
     public IResponse showDraft(RequestData rdata){
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = ContentCache.getContent(contentId, PageData.class);
         assert(data!=null);
+        assertRights(data.hasUserReadRight(rdata.getLoginUser()));
         return data.getDefaultView();
     }
 
     public IResponse showPublished(RequestData rdata){
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = ContentCache.getContent(contentId, PageData.class);
         assert(data!=null);
+        assertRights(data.hasUserReadRight(rdata.getLoginUser()));
         data.showPublished(true);
         return data.getDefaultView();
     }
 
     //frontend
     public IResponse publishPage(RequestData rdata){
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         Log.log("Publishing page" + contentId);
         PageData data=ContentCache.getContent(contentId,PageData.class);
         assert(data!=null);
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         data.setPublishing(true);
         data.setPublishDate(PageBean.getInstance().getServerTime());
         return data.getDefaultView();
     }
 
     public IResponse openLinkBrowser(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseLinks.jsp");
     }
 
     public IResponse openImageBrowser(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         return new ForwardResponse("/WEB-INF/_jsp/ckeditor/browseImages.jsp");
     }
 
     public IResponse addImage(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         ContentData data=rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
+        assertRights(data.hasUserEditRight(rdata.getLoginUser()));
         ImageData image=new ImageData();
         image.setCreateValues(rdata, RequestType.frontend);
         image.setParentValues(data);
@@ -142,9 +153,10 @@ public class PageController extends ContentController {
     }
 
     public IResponse addPart(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         int contentId = rdata.getId();
         PageData data = rdata.getSessionObject(ContentRequestKeys.KEY_CONTENT, PageData.class);
+        assertRights(data.getId() == contentId && data.hasUserEditRight(rdata.getLoginUser()));
         int fromPartId = rdata.getAttributes().getInt("fromPartId", -1);
         String partType = rdata.getAttributes().getString("partType");
         PagePartData pdata = PageBean.getInstance().getNewPagePartData(partType);

@@ -36,6 +36,10 @@
         <url-pattern>/ctrl/*</url-pattern>
     </servlet-mapping>
 
+    <listener>
+        <listener-class>de.elbe5.application.AppContextListener</listener-class>
+    </listener>
+
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>

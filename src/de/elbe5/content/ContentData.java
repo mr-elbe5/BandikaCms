@@ -10,11 +10,16 @@ package de.elbe5.content;
 
 import de.elbe5.base.*;
 import de.elbe5.base.BaseData;
+import de.elbe5.application.Configuration;
 import de.elbe5.file.*;
+import de.elbe5.group.GroupCache;
+import de.elbe5.group.GroupData;
 import de.elbe5.request.ContentRequestKeys;
 import de.elbe5.request.RequestData;
 import de.elbe5.request.RequestType;
 import de.elbe5.response.IMasterInclude;
+import de.elbe5.rights.GlobalRight;
+import de.elbe5.user.UserData;
 import de.elbe5.response.IResponse;
 
 import jakarta.servlet.ServletException;
@@ -47,6 +52,9 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
     private String path = "";
     private String displayName = "";
     private String description = "";
+    private boolean openAccess = true;
+    protected int readerGroupId=0;
+    protected int editorGroupId=0;
     private ContentNavType navType = ContentNavType.NONE;
     private boolean active = true;
 
@@ -128,6 +136,70 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
         this.description = description;
     }
 
+    public boolean isOpenAccess() {
+        return !Configuration.useReadRights() || openAccess;
+    }
+
+    public void setOpenAccess(boolean openAccess) {
+        this.openAccess = openAccess;
+        if (openAccess)
+            setReaderGroupId(0);
+    }
+
+    public int getReaderGroupId() {
+        return readerGroupId;
+    }
+
+    public GroupData getReaderGroup(){
+        if (readerGroupId == 0)
+            return null;
+        return GroupCache.getGroup(readerGroupId);
+    }
+
+    public boolean hasUserReadRight(UserData user) {
+        if (isOpenAccess())
+            return true;
+        else if (user==null)
+            return false;
+        if (GlobalRight.hasGlobalContentReadRight(user))
+            return true;
+        if (getReaderGroupId() != 0) {
+            GroupData group = getReaderGroup();
+            if (group != null && group.getUserIds().contains(user.getId()))
+                return true;
+        }
+        return hasUserEditRight(user);
+    }
+
+    public void setReaderGroupId(int readerGroupId) {
+        this.readerGroupId = readerGroupId;
+    }
+
+    public int getEditorGroupId() {
+        return editorGroupId;
+    }
+
+    public boolean hasUserEditRight(UserData user) {
+        if (user==null)
+            return false;
+        if (GlobalRight.hasGlobalContentEditRight(user))
+            return true;
+        if (getEditorGroupId() != 0) {
+            GroupData group = getEditorGroup();
+            return group != null && group.getUserIds().contains(user.getId());
+        }
+        return false;
+    }
+
+    public GroupData getEditorGroup(){
+        if (editorGroupId == 0)
+            return null;
+        return GroupCache.getGroup(editorGroupId);
+    }
+
+    public void setEditorGroupId(int editorGroupId) {
+        this.editorGroupId = editorGroupId;
+    }
 
     public ContentNavType getNavType() {
         return navType;
@@ -225,12 +297,23 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
         this.ranking = ranking;
     }
 
+    public void inheritRightsFromParent() {
+        if (parent.isOpenAccess()) {
+            openAccess = true;
+            setReaderGroupId(0);
+        }
+        else if (parent.getReaderGroupId()!=0)
+            setReaderGroupId(parent.getReaderGroupId());
+        if (parent.getEditorGroupId()!=0)
+            setEditorGroupId(parent.getEditorGroupId());
+    }
+
     public List<ContentData> getChildren() {
         return children;
     }
 
     public boolean hasChildren() {
-        return !getChildren().isEmpty();
+        return getChildren().size() > 0;
     }
 
     public <T extends ContentData> List<T> getChildren(Class<T> cls) {
@@ -287,6 +370,7 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
             Collections.sort(children);
             for (ContentData child : children) {
                 child.generatePath();
+                child.inheritRightsFromParent();
                 child.initializeChildren();
             }
         }
@@ -297,7 +381,7 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
     }
 
     public boolean hasFiles() {
-        return !getFiles().isEmpty();
+        return getFiles().size() > 0;
     }
 
     public <T extends FileData> List<T> getFiles(Class<T> cls) {
@@ -359,12 +443,14 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
 
     //used in admin jsp
     public void displayBackendTreeContent(PageContext context, RequestData rdata) throws IOException, ServletException {
-        //backup
-        ContentData currentContent = rdata.getRequestObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
-        rdata.setRequestObject(ContentRequestKeys.KEY_CONTENT, this);
-        context.include(getBackendContentTreeJsp(), true);
-        //restore
-        rdata.setRequestObject(ContentRequestKeys.KEY_CONTENT, currentContent);
+        if (hasUserReadRight(rdata.getLoginUser())) {
+            //backup
+            ContentData currentContent = rdata.getRequestObject(ContentRequestKeys.KEY_CONTENT, ContentData.class);
+            rdata.setRequestObject(ContentRequestKeys.KEY_CONTENT, this);
+            context.include(getBackendContentTreeJsp(), true);
+            //restore
+            rdata.setRequestObject(ContentRequestKeys.KEY_CONTENT, currentContent);
+        }
     }
 
     public String getBackendEditJsp() {
@@ -381,12 +467,14 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
 
     //used in jsp
     public void displayFrontendTreeContent(PageContext context, RequestData rdata) throws IOException, ServletException {
-        //backup
-        ContentData currentContent = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, ContentData.class);
-        rdata.setRequestObject(ContentRequestKeys.KEY_CONTENT, this);
-        context.include(getFrontendContentTreeJsp(), true);
-        //restore
-        rdata.setRequestObject(ContentRequestKeys.KEY_CONTENT, currentContent);
+        if (hasUserReadRight(rdata.getLoginUser())) {
+            //backup
+            ContentData currentContent = rdata.getCurrentDataInRequestOrSession(ContentRequestKeys.KEY_CONTENT, ContentData.class);
+            rdata.setRequestObject(ContentRequestKeys.KEY_CONTENT, this);
+            context.include(getFrontendContentTreeJsp(), true);
+            //restore
+            rdata.setRequestObject(ContentRequestKeys.KEY_CONTENT, currentContent);
+        }
     }
 
     //used in jsp/tag
@@ -409,6 +497,7 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
     public void setParentValues(ContentData parent){
         setParentId(parent.getId());
         setParent(parent);
+        inheritRightsFromParent();
         setRanking(parent.getChildren().size());
     }
 
@@ -434,11 +523,22 @@ public class ContentData extends BaseData implements IMasterInclude, Comparable<
                 setDisplayName(rdata.getAttributes().getString("displayName").trim());
                 setName(StringHelper.toSafeWebName(getDisplayName()));
                 setDescription(rdata.getAttributes().getString("description"));
+                setOpenAccess(rdata.getAttributes().getBoolean("openAccess"));
+                setReaderGroupId(rdata.getAttributes().getInt("readerGroupId"));
+                setEditorGroupId(rdata.getAttributes().getInt("editorGroupId"));
                 setNavType(rdata.getAttributes().getString("navType"));
                 setActive(rdata.getAttributes().getBoolean("active"));
                 if (name.isEmpty()) {
                     rdata.addIncompleteField("name");
                 }
+            }
+            case api -> {
+                super.readRequestData(rdata, type);
+                setDisplayName(rdata.getAttributes().getString("displayName").trim());
+                setName(StringHelper.toSafeWebName(getDisplayName()));
+                setDescription(rdata.getAttributes().getString("description"));
+                setOpenAccess(true);
+                setActive(true);
             }
             case frontend -> {
             }

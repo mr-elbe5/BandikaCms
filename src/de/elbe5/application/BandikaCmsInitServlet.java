@@ -15,10 +15,12 @@ import de.elbe5.base.Log;
 import de.elbe5.ckeditor.CkEditorController;
 import de.elbe5.content.*;
 import de.elbe5.database.DbConnector;
+import de.elbe5.group.GroupCache;
 import de.elbe5.layout.LocalizedLayoutNames;
 import de.elbe5.link.LinkData;
 import de.elbe5.page.LayoutPartData;
 import de.elbe5.file.*;
+import de.elbe5.group.GroupController;
 import de.elbe5.layout.LayoutCache;
 import de.elbe5.page.*;
 import de.elbe5.servlet.InitServlet;
@@ -49,6 +51,7 @@ public class BandikaCmsInitServlet extends InitServlet {
         DocumentController.register(new DocumentController());
         ImageController.register(new ImageController());
         MediaController.register(new MediaController());
+        GroupController.register(new GroupController());
         PageController.register(new PageController());
         CkEditorController.register(new CkEditorController());
         UserController.register(new UserController());
@@ -64,6 +67,7 @@ public class BandikaCmsInitServlet extends InitServlet {
 
         ContentCache.load();
         UserCache.load();
+        GroupCache.load();
         LayoutCache.load();
         if (!FileBean.getInstance().assertFileDirectory()){
             Log.error("could not create file directory");

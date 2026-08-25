@@ -11,7 +11,9 @@ package de.elbe5.user;
 import de.elbe5.base.*;
 import de.elbe5.base.BaseData;
 import de.elbe5.application.Configuration;
+import de.elbe5.group.GroupData;
 import de.elbe5.request.RequestData;
+import de.elbe5.rights.GlobalRight;
 
 import java.util.*;
 
@@ -22,12 +24,29 @@ public class UserData extends BaseData {
     public static int MIN_PASSWORD_LENGTH = 8;
 
     protected String name = "";
+    protected String email = "";
     protected String login = "";
     protected String passwordHash = "";
+    protected String token = "";
 
     protected boolean active = true;
 
+    protected Set<Integer> groupIds = new HashSet<>();
+
+    protected List<GroupData> groups = new ArrayList<>();
+
+    //from groups
+    protected Set<GlobalRight> globalRights = new HashSet<>();
+
     public UserData(){
+    }
+
+    public String getType() {
+        return getClass().getName();
+    }
+
+    public UserBean getBean() {
+        return UserBean.getInstance();
     }
 
     // base data
@@ -38,6 +57,14 @@ public class UserData extends BaseData {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getLogin() {
@@ -68,6 +95,14 @@ public class UserData extends BaseData {
         }
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -76,8 +111,28 @@ public class UserData extends BaseData {
         this.active = active;
     }
 
+    public Set<GlobalRight> getGlobalRights() {
+        return globalRights;
+    }
+
+    public void clearGlobalRights(){
+        globalRights.clear();
+    }
+
+    public void addGlobalRight(GlobalRight right) {
+        globalRights.add(right);
+    }
+
     public boolean isRoot(){
         return getId()== ID_ROOT;
+    }
+
+    public Set<Integer> getGroupIds() {
+        return groupIds;
+    }
+
+    public void setGroupIds(Set<Integer> groupIds) {
+        this.groupIds = groupIds;
     }
 
     // multiple data
@@ -86,14 +141,24 @@ public class UserData extends BaseData {
         return "/WEB-INF/_jsp/user/editUser.ajax.jsp";
     }
 
+    public String getProfileJsp() {
+        return "/WEB-INF/_jsp/user/profile.jsp";
+    }
+
+    public String getProfileEditJsp() {
+        return "/WEB-INF/_jsp/user/changeProfile.ajax.jsp";
+    }
+
     public void readBackendRequestData(RequestData rdata) {
         setName(rdata.getAttributes().getString("name"));
+        setEmail(rdata.getAttributes().getString("email"));
         setLogin(rdata.getAttributes().getString("login"));
         String pwd = rdata.getAttributes().getString("password");
         String pwd2 = rdata.getAttributes().getString("password2");
         setActive(rdata.getAttributes().getBoolean("active"));
         if (pwd.equals(pwd2))
             setPassword(pwd);
+        setGroupIds(rdata.getAttributes().getIntegerSet("groupIds"));
         if (login.isEmpty())
             rdata.addIncompleteField("login");
         if (!pwd.equals(pwd2)){
@@ -105,6 +170,10 @@ public class UserData extends BaseData {
             rdata.addIncompleteField("password");
         if (name.isEmpty())
             rdata.addIncompleteField("name");
+    }
+
+    public void readProfileRequestData(RequestData rdata) {
+        setEmail(rdata.getAttributes().getString("email"));
     }
 
 }

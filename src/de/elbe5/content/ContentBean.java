@@ -96,7 +96,7 @@ public class ContentBean extends DbBean {
         }
     }
 
-    private static final String GET_CONTENT_SQL = "SELECT type,id,creator_id,changer_id,creation_date,change_date,parent_id,ranking,name,display_name,description,nav_type,active FROM t_content WHERE id=?";
+    private static final String GET_CONTENT_SQL = "SELECT type,id,creator_id,changer_id,creation_date,change_date,parent_id,ranking,name,display_name,description,open_access,reader_group_id,editor_group_id,nav_type,active FROM t_content WHERE id=?";
 
     public ContentData readContent(Connection con, int id) throws SQLException {
         ContentData data = null;
@@ -133,6 +133,9 @@ public class ContentBean extends DbBean {
             data.setName(rs.getString(i++));
             data.setDisplayName(rs.getString(i++));
             data.setDescription(rs.getString(i++));
+            data.setOpenAccess(rs.getBoolean(i++));
+            data.setReaderGroupId(rs.getInt(i++));
+            data.setEditorGroupId(rs.getInt(i++));
             data.setNavType(rs.getString(i++));
             data.setActive(rs.getBoolean(i));
         }
@@ -161,7 +164,7 @@ public class ContentBean extends DbBean {
         }
     }
 
-    private static final String INSERT_CONTENT_SQL = "insert into t_content (type,creator_id,changer_id,creation_date,change_date,parent_id,ranking,name,display_name,description,nav_type,active,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String INSERT_CONTENT_SQL = "insert into t_content (type,creator_id,changer_id,creation_date,change_date,parent_id,ranking,name,display_name,description,open_access,reader_group_id,editor_group_id,nav_type,active,id) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     protected void createContent(Connection con, ContentData data) throws SQLException {
         PreparedStatement pst = null;
@@ -182,6 +185,17 @@ public class ContentBean extends DbBean {
             pst.setString(i++, data.getName());
             pst.setString(i++, data.getDisplayName());
             pst.setString(i++, data.getDescription());
+            pst.setBoolean(i++, data.isOpenAccess());
+            if (data.getReaderGroupId() == 0) {
+                pst.setNull(i++, Types.INTEGER);
+            } else {
+                pst.setInt(i++, data.getReaderGroupId());
+            }
+            if (data.getEditorGroupId() == 0) {
+                pst.setNull(i++, Types.INTEGER);
+            } else {
+                pst.setInt(i++, data.getEditorGroupId());
+            }
             pst.setString(i++, data.getNavTypeString());
             pst.setBoolean(i++,data.isActive());
             pst.setInt(i, data.getId());
@@ -192,7 +206,7 @@ public class ContentBean extends DbBean {
         }
     }
 
-    private static final String UPDATE_CONTENT_SQL = "update t_content set changer_id=?,change_date=?,parent_id=?,ranking=?,name=?,display_name=?,description=?,nav_type=?,active=? where id=?";
+    private static final String UPDATE_CONTENT_SQL = "update t_content set changer_id=?,change_date=?,parent_id=?,ranking=?,name=?,display_name=?,description=?,open_access=?,reader_group_id=?,editor_group_id=?,nav_type=?,active=? where id=?";
 
     protected void updateContent(Connection con, ContentData data) throws SQLException {
         PreparedStatement pst = null;
@@ -211,6 +225,17 @@ public class ContentBean extends DbBean {
             pst.setString(i++, data.getName());
             pst.setString(i++, data.getDisplayName());
             pst.setString(i++, data.getDescription());
+            pst.setBoolean(i++, data.isOpenAccess());
+            if (data.getReaderGroupId() == 0) {
+                pst.setNull(i++, Types.INTEGER);
+            } else {
+                pst.setInt(i++, data.getReaderGroupId());
+            }
+            if (data.getEditorGroupId() == 0) {
+                pst.setNull(i++, Types.INTEGER);
+            } else {
+                pst.setInt(i++, data.getEditorGroupId());
+            }
             pst.setString(i++, data.getNavTypeString());
             pst.setBoolean(i++,data.isActive());
             pst.setInt(i, data.getId());

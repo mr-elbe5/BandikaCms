@@ -12,11 +12,13 @@ import de.elbe5.base.Log;
 import de.elbe5.base.StringFormatter;
 import de.elbe5.application.Configuration;
 import de.elbe5.database.DbBean;
+import de.elbe5.rights.GlobalRight;
 
 import java.lang.reflect.Constructor;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Class UserBean is the persistence class for users and groups. <br>
@@ -51,7 +53,7 @@ public class UserBean extends DbBean {
 
     private static final String CHANGED_SQL = "SELECT change_date FROM t_user WHERE id=?";
 
-    private static final String GET_ALL_USERS_SQL = "SELECT type,id,creator_id,changer_id,creation_date,change_date,name,login,active FROM t_user";
+    private static final String GET_ALL_USERS_SQL = "SELECT type,id,creator_id,changer_id,creation_date,change_date,name,email,login,active FROM t_user";
 
     public List<UserData> getAllUsers() {
         List<UserData> list = new ArrayList<>();
@@ -63,6 +65,11 @@ public class UserBean extends DbBean {
                 while (rs.next()) {
                     UserData data = readUserData(rs);
                     if (data != null) {
+                        UserBean extBean = data.getBean();
+                        if (extBean != null)
+                            extBean.readUserExtras(con, data);
+                        readUserGroups(con, data);
+                        readUserRights(con,data);
                         list.add(data);
                     }
                 }
@@ -81,6 +88,11 @@ public class UserBean extends DbBean {
         Connection con = getConnection();
         try {
             data = readUser(con, id);
+            UserBean extBean = data.getBean();
+            if (extBean != null)
+                extBean.readUserExtras(con, data);
+            readUserGroups(con, data);
+            readUserRights(con,data);
         } catch (SQLException se) {
             Log.error("sql error", se);
         } finally {
@@ -98,7 +110,7 @@ public class UserBean extends DbBean {
         }
     }
 
-    private static final String GET_USER_SQL = "SELECT type,id,creator_id,changer_id,creation_date,change_date,name,login,active FROM t_user WHERE id=?";
+    private static final String GET_USER_SQL = "SELECT type,id,creator_id,changer_id,creation_date,change_date,name,email,login,active FROM t_user WHERE id=?";
 
     public UserData readUser(Connection con, int id) throws SQLException {
         UserData data = null;
@@ -131,6 +143,7 @@ public class UserBean extends DbBean {
             data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
             data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
             data.setName(rs.getString(i++));
+            data.setEmail(rs.getString(i++));
             data.setLogin(rs.getString(i++));
             data.setPassword("");
             data.setActive(rs.getBoolean(i));
@@ -138,7 +151,7 @@ public class UserBean extends DbBean {
         return data;
     }
 
-    private static final String LOGIN_SQL = "SELECT pwd,type,id,creator_id,changer_id,creation_date,change_date,name FROM t_user WHERE login=? AND active=TRUE";
+    private static final String LOGIN_SQL = "SELECT pwd,type,id,creator_id,changer_id,creation_date,change_date,name,email FROM t_user WHERE login=? AND active=TRUE";
 
     public UserData loginUser(String login, String pwd) {
         Connection con = getConnection();
@@ -147,6 +160,7 @@ public class UserBean extends DbBean {
         try {
             pst = con.prepareStatement(LOGIN_SQL);
             pst.setString(1, login);
+            boolean passed;
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     int i = 1;
@@ -161,9 +175,125 @@ public class UserBean extends DbBean {
                             data.setChangerId(rs.getInt(i++));
                             data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
                             data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
-                            data.setName(rs.getString(i));
+                            data.setName(rs.getString(i++));
+                            data.setEmail(rs.getString(i));
                             data.setActive(true);
+                            UserBean extBean = data.getBean();
+                            if (extBean != null)
+                                extBean.readUserExtras(con, data);
+                            readUserGroups(con, data);
+                            readUserRights(con, data);
                         }
+                    }
+                }
+            }
+        } catch (SQLException se) {
+            Log.error("sql error", se);
+        } finally {
+            closeStatement(pst);
+            closeConnection(con);
+        }
+        return data;
+    }
+
+    private static final String API_LOGIN_SQL = "SELECT pwd,type,id,creator_id,changer_id,creation_date,change_date,name,email,token FROM t_user WHERE login=? AND active=TRUE";
+
+    //todo
+    public UserData loginApiUser(String login, String pwd) {
+        Connection con = getConnection();
+        PreparedStatement pst = null;
+        UserData data = null;
+        try {
+            pst = con.prepareStatement(API_LOGIN_SQL);
+            pst.setString(1, login);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    int i = 1;
+                    String encrypted = rs.getString(i++);
+                    String encryptedLogin = UserSecurity.encryptPassword(pwd, Configuration.getSalt());
+                    if (encryptedLogin != null && encryptedLogin.equals(encrypted)) {
+                        String type = rs.getString(i++);
+                        data = getNewUserData(type);
+                        if (data!=null) {
+                            data = new UserData();
+                            data.setId(rs.getInt(i++));
+                            data.setLogin(login);
+                            data.setCreatorId(rs.getInt(i++));
+                            data.setChangerId(rs.getInt(i++));
+                            data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
+                            data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
+                            data.setName(rs.getString(i++));
+                            data.setEmail(rs.getString(i++));
+                            data.setToken(rs.getString(i));
+                            data.setActive(true);
+                            UserBean extBean = data.getBean();
+                            if (extBean != null)
+                                extBean.readUserExtras(con, data);
+                            readUserGroups(con, data);
+                            readUserRights(con, data);
+                        }
+                    }
+                }
+            }
+
+        } catch (SQLException se) {
+            Log.error("sql error", se);
+        } finally {
+            closeStatement(pst);
+            closeConnection(con);
+        }
+        return data;
+    }
+
+    private static final String SET_TOKEN_SQL = "UPDATE t_user SET token=? WHERE id=?";
+
+    public boolean setToken(UserData data){
+        Connection con = startTransaction();
+        PreparedStatement pst;
+        try {
+            String token=UUID.randomUUID().toString();
+            pst = con.prepareStatement(SET_TOKEN_SQL);
+            pst.setString(1, token);
+            pst.setInt(2, data.getId());
+            pst.executeUpdate();
+            pst.close();
+            data.setToken(token);
+            return commitTransaction(con);
+        } catch (Exception se) {
+            return rollbackTransaction(con, se);
+        }
+    }
+
+    private static final String LOGIN_BY_TOKEN_SQL = "SELECT type,id,login,creator_id,changer_id,creation_date,change_date,name,email FROM t_user WHERE token=? AND active=TRUE";
+
+    public UserData loginUserByToken(String token) {
+        Connection con = getConnection();
+        PreparedStatement pst = null;
+        UserData data = null;
+        try {
+            pst = con.prepareStatement(LOGIN_BY_TOKEN_SQL);
+            pst.setString(1, token);
+            boolean passed;
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    int i = 1;
+                    String type = rs.getString(i++);
+                    data = getNewUserData(type);
+                    if (data!=null) {
+                        data.setId(rs.getInt(i++));
+                        data.setLogin(rs.getString(i++));
+                        data.setCreatorId(rs.getInt(i++));
+                        data.setChangerId(rs.getInt(i++));
+                        data.setCreationDate(rs.getTimestamp(i++).toLocalDateTime());
+                        data.setChangeDate(rs.getTimestamp(i++).toLocalDateTime());
+                        data.setName(rs.getString(i++));
+                        data.setEmail(rs.getString(i));
+                        data.setActive(true);
+                        UserBean extBean = data.getBean();
+                        if (extBean != null)
+                            extBean.readUserExtras(con, data);
+                        readUserGroups(con, data);
+                        readUserRights(con, data);
                     }
                 }
             }
@@ -222,22 +352,46 @@ public class UserBean extends DbBean {
         return exists;
     }
 
+    private static final String READ_USER_GROUPS_SQL = "SELECT group_id FROM t_user2group WHERE user_id=?";
+
+    protected void readUserGroups(Connection con, UserData data) throws SQLException {
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(READ_USER_GROUPS_SQL);
+            pst.setInt(1, data.getId());
+            try (ResultSet rs = pst.executeQuery()) {
+                data.getGroupIds().clear();
+                while (rs.next()) {
+                    data.getGroupIds().add(rs.getInt(1));
+                }
+            }
+        } finally {
+            closeStatement(pst);
+        }
+    }
+
     public boolean saveUser(UserData data) {
         Connection con = startTransaction();
         try {
+            UserBean extrasBean = data.getBean();
             if (data.isNew()){
                 createUser(con,data);
+                if (extrasBean != null)
+                    extrasBean.createUserExtras(con, data);
             }
             else{
                 updateUser(con,data);
+                if (extrasBean != null)
+                    extrasBean.updateUserExtras(con, data);
             }
+            writeUserGroups(con, data);
             return commitTransaction(con);
         } catch (Exception se) {
             return rollbackTransaction(con, se);
         }
     }
 
-    private static final String INSERT_USER_SQL = "insert into t_user (type,creator_id,changer_id,creation_date,change_date,name,login,pwd,active,id) values(?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String INSERT_USER_SQL = "insert into t_user (type,creator_id,changer_id,creation_date,change_date,name,email,login,pwd,active,id) values(?,?,?,?,?,?,?,?,?,?,?)";
 
     protected void createUser(Connection con, UserData data) throws SQLException {
         PreparedStatement pst = null;
@@ -250,6 +404,7 @@ public class UserBean extends DbBean {
             pst.setTimestamp(i++, Timestamp.valueOf(data.getCreationDate()));
             pst.setTimestamp(i++, Timestamp.valueOf(data.getChangeDate()));
             pst.setString(i++, data.getName());
+            pst.setString(i++, data.getEmail());
             pst.setString(i++, data.getLogin());
             if (data.hasPassword()) {
                 pst.setString(i++, data.getPasswordHash());
@@ -262,8 +417,8 @@ public class UserBean extends DbBean {
             closeStatement(pst);
         }
     }
-    private static final String UPDATE_USER_PWD_SQL = "update t_user set changer_id=?,change_date=?,name=?,login=?,pwd=?,active=? where id=?";
-    private static final String UPDATE_USER_NOPWD_SQL = "update t_user set changer_id=?,change_date=?,name=?,login=?,active=? where id=?";
+    private static final String UPDATE_USER_PWD_SQL = "update t_user set changer_id=?,change_date=?,name=?,email=?,login=?,pwd=?,active=? where id=?";
+    private static final String UPDATE_USER_NOPWD_SQL = "update t_user set changer_id=?,change_date=?,name=?,email=?,login=?,active=? where id=?";
 
     protected void updateUser(Connection con, UserData data) throws SQLException {
         PreparedStatement pst = null;
@@ -273,6 +428,7 @@ public class UserBean extends DbBean {
             pst.setInt(i++, data.getChangerId());
             pst.setTimestamp(i++, Timestamp.valueOf(data.getChangeDate()));
             pst.setString(i++, data.getName());
+            pst.setString(i++, data.getEmail());
             pst.setString(i++, data.getLogin());
             if (data.hasPassword()) {
                 pst.setString(i++, data.getPasswordHash());
@@ -284,6 +440,48 @@ public class UserBean extends DbBean {
         } finally {
             closeStatement(pst);
         }
+    }
+
+    public void createUserExtras(Connection con, UserData userData) throws SQLException{
+    }
+
+    public void updateUserExtras(Connection con, UserData userData) throws SQLException{
+    }
+
+    public boolean saveUserProfile(UserData data) {
+        Connection con = startTransaction();
+        try {
+            data.setChangeDate(getServerTime(con));
+            writeUserProfile(con, data);
+            UserBean extrasBean = data.getBean();
+            if (extrasBean != null)
+                extrasBean.updateProfileExtras(con, data);
+            return commitTransaction(con);
+        } catch (Exception se) {
+            return rollbackTransaction(con, se);
+        }
+    }
+
+    private static final String UPDATE_PROFILE_SQL = "UPDATE t_user SET changer_id=?,change_date=?,name=?,email=? WHERE id=?";
+
+    protected void writeUserProfile(Connection con, UserData data) throws SQLException {
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(UPDATE_PROFILE_SQL);
+            int i = 1;
+            pst.setInt(i++, data.getChangerId());
+            pst.setTimestamp(i++, Timestamp.valueOf(data.getChangeDate()));
+            pst.setString(i++, data.getName());
+            pst.setString(i++, data.getEmail());
+            pst.setInt(i, data.getId());
+            pst.executeUpdate();
+            pst.close();
+        } finally {
+            closeStatement(pst);
+        }
+    }
+
+    public void updateProfileExtras(Connection con, UserData userData) throws SQLException{
     }
 
     public boolean saveUserPassword(UserData data) {
@@ -314,13 +512,41 @@ public class UserBean extends DbBean {
         }
     }
 
+    private static final String DELETE_USERGROUPS_SQL = "DELETE FROM t_user2group WHERE user_id=?";
+    private static final String INSERT_USERGROUP_SQL = "INSERT INTO t_user2group (user_id,group_id) VALUES(?,?)";
+
+    protected void writeUserGroups(Connection con, UserData data) throws SQLException {
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement(DELETE_USERGROUPS_SQL);
+            pst.setInt(1, data.getId());
+            pst.execute();
+            if (data.getGroupIds() != null) {
+                pst.close();
+                pst = con.prepareStatement(INSERT_USERGROUP_SQL);
+                pst.setInt(1, data.getId());
+                for (int groupId : data.getGroupIds()) {
+                    pst.setInt(2, groupId);
+                    pst.executeUpdate();
+                }
+            }
+        } finally {
+            closeStatement(pst);
+        }
+    }
+
     private static final String DELETE_USER_SQL = "delete from t_user WHERE id=?";
+    private static final String DELETE_ALL_USERGROUPS_SQL = "DELETE FROM t_user2group WHERE user_id=?";
 
     public boolean deleteUser(int id) {
         Connection con = getConnection();
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(DELETE_USER_SQL);
+            pst.setInt(1, id);
+            pst.executeUpdate();
+            pst.close();
+            pst = con.prepareStatement(DELETE_ALL_USERGROUPS_SQL);
             pst.setInt(1, id);
             pst.executeUpdate();
         } catch (SQLException se) {
@@ -331,6 +557,35 @@ public class UserBean extends DbBean {
             closeConnection(con);
         }
         return true;
+    }
+
+    private static final String GET_SYSTEM_RIGHTS_SQL = "select name from t_system_right where group_id in({1})";
+
+    public void readUserRights(Connection con, UserData data) {
+        data.clearGlobalRights();
+        PreparedStatement pst = null;
+        try {
+            if (data.getGroupIds().isEmpty()) {
+                return;
+            }
+            StringBuilder buffer = new StringBuilder();
+            for (int id : data.getGroupIds()) {
+                if (buffer.length() > 0) {
+                    buffer.append(',');
+                }
+                buffer.append(id);
+            }
+            pst = con.prepareStatement(StringFormatter.format(GET_SYSTEM_RIGHTS_SQL, buffer.toString()));
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                data.addGlobalRight(GlobalRight.valueOf(rs.getString(1)));
+            }
+            rs.close();
+        } catch (SQLException se) {
+            Log.error("sql error", se);
+        } finally {
+            closeStatement(pst);
+        }
     }
 
 }

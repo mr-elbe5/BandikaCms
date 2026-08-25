@@ -59,7 +59,7 @@ public class LayoutPartBean extends PagePartBean {
                 while (rs.next()) {
                     int i = 1;
                     String fieldType = rs.getString(i++);
-                    field = new PartHtmlField();
+                    field = data.getNewField(fieldType);
                     field.setPartId(data.getId());
                     field.setName(rs.getString(i++));
                     field.setContent(rs.getString(i));

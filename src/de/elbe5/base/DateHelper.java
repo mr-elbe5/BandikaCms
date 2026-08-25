@@ -78,7 +78,9 @@ public class DateHelper {
     }
 
     public static LocalDateTime getCurrentTime(){
-        return asLocalDateTime(new Date());
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.roll(Calendar.HOUR_OF_DAY, Configuration.getTimeOffset());
+        return asLocalDateTime(cal.getTime());
     }
 
     public static String getDatePattern(){
@@ -136,7 +138,30 @@ public class DateHelper {
     }
 
     public static String toHtml(LocalDateTime date){
-        return toHtmlDateTime(date);
+        return Configuration.showDateTime() ? toHtmlDateTime(date) : toHtmlDate(date);
     }
 
+    public static String toISODateTime(LocalDateTime date) {
+        if (date == null)
+            return "";
+        return date.format(isoDateTimeFormatter);
+    }
+
+    public static String toISODate(LocalDate date) {
+        if (date == null)
+            return "";
+        return date.format(isoDateFormatter);
+    }
+
+    public static LocalDateTime fromISODateTime(String s) {
+        if (s == null || s.isEmpty())
+            return null;
+        return LocalDateTime.parse(s, isoDateTimeFormatter);
+    }
+
+    public static LocalDate fromISODate(String s) {
+        if (s == null || s.isEmpty())
+            return null;
+        return LocalDate.parse(s, isoDateTimeFormatter);
+    }
 }

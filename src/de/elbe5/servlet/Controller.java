@@ -15,6 +15,11 @@ public abstract class Controller {
         return new ForwardResponse("/");
     }
 
+    protected void assertRights(boolean hasRights){
+        if (!hasRights)
+            throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
     protected void setSaveError(RequestData rdata) {
         rdata.setMessage($S("_saveError"), RequestKeys.MESSAGE_TYPE_ERROR);
     }
@@ -33,9 +38,28 @@ public abstract class Controller {
         return openAdminPage(rdata, "/WEB-INF/_jsp/administration/personAdministration.jsp", $S("_personAdministration"));
     }
 
-    protected void assertPostback(RequestData rdata){
-        if (!rdata.isPostback())
+    protected void assertSessionCall(RequestData rdata){
+        if (rdata.getContext()!=RequestContext.session && rdata.getContext()!=RequestContext.content){
             throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+    }
+
+    protected void assertLoggedInSessionCall(RequestData rdata){
+        if (!rdata.isLoggedIn() || (rdata.getContext()!=RequestContext.session && rdata.getContext()!=RequestContext.content)){
+            throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+    }
+
+    protected void assertApiCall(RequestData rdata){
+        if (rdata.getContext()!=RequestContext.api){
+            throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+    }
+
+    protected void assertLoggedInApiCall(RequestData rdata){
+        if (!rdata.isLoggedIn() || rdata.getContext()!=RequestContext.api){
+            throw new ResponseException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
     }
 
     protected void assertLoggedIn(RequestData rdata){

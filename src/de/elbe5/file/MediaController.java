@@ -44,17 +44,21 @@ public class MediaController extends FileController {
     }
 
     public IResponse openEditFile(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertLoggedInSessionCall(rdata);
         FileData data = FileBean.getInstance().getFile(rdata.getId(),true);
+        ContentData parent=ContentCache.getContent(data.getParentId());
+        assertRights(parent.hasUserEditRight(rdata.getLoginUser()));
         rdata.setSessionObject(ContentRequestKeys.KEY_FILE,data);
         return showEditFile();
     }
 
     public IResponse saveFile(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertLoggedInSessionCall(rdata);
         int fileId = rdata.getId();
         MediaData data = rdata.getSessionObject(ContentRequestKeys.KEY_FILE,MediaData.class);
         assert fileId == data.getId();
+        ContentData parent=ContentCache.getContent(data.getParentId());
+        assertRights(parent.hasUserEditRight(rdata.getLoginUser()));
         data.readRequestData(rdata, RequestType.backend);
         if (!rdata.checkFormErrors()) {
             return showEditFile();

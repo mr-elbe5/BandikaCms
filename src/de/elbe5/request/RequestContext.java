@@ -9,8 +9,10 @@
 
 package de.elbe5.request;
 
-public enum RequestType {
+public enum RequestContext {
+    any,
+    content,
+    session,
     api,
-    backend,
-    frontend
+    file
 }

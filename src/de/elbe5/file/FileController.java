@@ -48,7 +48,21 @@ public class FileController extends Controller {
     }
 
     public IResponse download(RequestData rdata) {
-        assertLoggedIn(rdata);
+        if (rdata.getContext() == RequestContext.api)
+            return apiDownload(rdata);
+        else
+            return sessionDownload(rdata);
+    }
+
+    public IResponse apiDownload(RequestData rdata) {
+        assertLoggedInApiCall(rdata);
+        int id = rdata.getId();
+        BinaryFile file = FileBean.getInstance().getBinaryFile(id);
+        return new MemoryFileResponse(file);
+    }
+
+    public IResponse sessionDownload(RequestData rdata) {
+        assertSessionCall(rdata);
         int id = rdata.getId();
         FileData data = ContentCache.getFile(id);
         rdata.getAttributes().put("download", "true");
@@ -56,7 +70,7 @@ public class FileController extends Controller {
     }
 
     private IResponse show(FileData data, RequestData rdata){
-        assertLoggedIn(rdata);
+        assertSessionCall(rdata);
         ContentData parent=ContentCache.getContent(data.getParentId());
         File file = new File(ApplicationPath.getAppFilePath(), data.getStaticFileName());
         // if not exists, create from database
@@ -72,9 +86,10 @@ public class FileController extends Controller {
     }
 
     public IResponse openCreateFile(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertLoggedInSessionCall(rdata);
         int parentId = rdata.getAttributes().getInt("parentId");
         ContentData parentData = ContentCache.getContent(parentId);
+        assertRights(parentData.hasUserEditRight(rdata.getLoginUser()));
         String type=rdata.getAttributes().getString("type");
         FileData data = FileBean.getInstance().getNewFileData(type);
         data.setCreateValues(rdata, RequestType.backend);
@@ -84,19 +99,21 @@ public class FileController extends Controller {
     }
 
     public IResponse cutFile(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertLoggedInSessionCall(rdata);
         int fileId = rdata.getId();
         FileData data = FileBean.getInstance().getFile(fileId,true);
         ContentData parent=ContentCache.getContent(data.getParentId());
+        assertRights(parent.hasUserEditRight(rdata.getLoginUser()));
         rdata.setClipboardData(ContentRequestKeys.KEY_FILE, data);
         return showContentAdministration(rdata,parent.getId());
     }
 
     public IResponse copyFile(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertLoggedInSessionCall(rdata);
         int fileId = rdata.getId();
         FileData data = FileBean.getInstance().getFile(fileId,true);
         ContentData parent=ContentCache.getContent(data.getParentId());
+        assertRights(parent.hasUserEditRight(rdata.getLoginUser()));
         data.setNew(true);
         data.setId(FileBean.getInstance().getNextId());
         data.setCreatorId(rdata.getUserId());
@@ -106,7 +123,7 @@ public class FileController extends Controller {
     }
 
     public IResponse pasteFile(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertLoggedInSessionCall(rdata);
         int parentId = rdata.getAttributes().getInt("parentId");
         FileData data=rdata.getClipboardData(ContentRequestKeys.KEY_FILE, FileData.class);
         ContentData parent=ContentCache.getContent(parentId);
@@ -114,6 +131,7 @@ public class FileController extends Controller {
             rdata.setMessage($S("_actionNotExcecuted"), RequestKeys.MESSAGE_TYPE_ERROR);
             return showContentAdministration(rdata, parentId);
         }
+        assertRights(parent.hasUserEditRight(rdata.getLoginUser()));
         data.setParentId(parentId);
         data.setParent(parent);
         data.setChangerId(rdata.getUserId());
@@ -125,10 +143,11 @@ public class FileController extends Controller {
     }
 
     public IResponse deleteFile(RequestData rdata) {
-        assertLoggedIn(rdata);
+        assertLoggedInSessionCall(rdata);
         int fileId = rdata.getId();
         int parentId = ContentCache.getFileParentId(fileId);
         ContentData parent=ContentCache.getContent(parentId);
+        assertRights(parent.hasUserReadRight(rdata.getLoginUser()));
         FileData data = ContentCache.getFile(fileId);
         FileBean.getInstance().deleteFile(data);
         ContentCache.setDirty();

@@ -174,6 +174,17 @@ public class KeyValueMap extends HashMap<String, Object> {
         return value;
     }
 
+    public LocalDate getIsoDate(String key) {
+        LocalDate value = null;
+        try {
+            String str = getString(key);
+            value = DateHelper.fromISODate(str);
+
+        } catch (Exception ignore) {/* do nothing */
+        }
+        return value;
+    }
+
     public LocalTime getTime(String key) {
         LocalTime value = null;
         try {
@@ -189,6 +200,16 @@ public class KeyValueMap extends HashMap<String, Object> {
         try {
             String str = getString(key);
             value = DateHelper.fromDateTime(str);
+        } catch (Exception ignore) {/* do nothing */
+        }
+        return value;
+    }
+
+    public LocalDateTime getIsoDateTime(String key) {
+        LocalDateTime value = null;
+        try {
+            String str = getString(key);
+            value = DateHelper.fromISODateTime(str);
         } catch (Exception ignore) {/* do nothing */
         }
         return value;

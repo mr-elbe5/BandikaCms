@@ -38,11 +38,25 @@ public class RequestData {
 
     private final String method;
 
+    private final RequestContext context;
+
+    private UserData apiUser;
+
     private FormError formError = null;
 
-    public RequestData(String method, HttpServletRequest request) {
+    public RequestData(String method, RequestContext context, HttpServletRequest request) {
         this.request = request;
+        this.context = context;
         this.method = method;
+        if (context ==RequestContext.api) {
+            String apiToken = request.getHeader("Authentication");
+            if (apiToken == null || apiToken.isEmpty())
+                apiToken = request.getHeader("token");
+            if (apiToken == null || apiToken.isEmpty()){
+                return;
+            }
+            apiUser = UserBean.getInstance().loginUserByToken(apiToken);
+        }
     }
 
     public void init(){
@@ -79,6 +93,10 @@ public class RequestData {
         return method.equals("POST");
     }
 
+    public RequestContext getContext() {
+        return context;
+    }
+
     /*********** message *********/
 
     public boolean hasMessage() {
@@ -93,7 +111,19 @@ public class RequestData {
     /************ user ****************/
 
     public UserData getLoginUser() {
+        if (context ==RequestContext.api){
+            return apiUser;
+        }
         return getSessionUser();
+    }
+
+    public <T extends UserData> T getLoginUser(Class<T> cls) {
+        try {
+            return cls.cast(getLoginUser());
+        }
+        catch(NullPointerException | ClassCastException e){
+            return null;
+        }
     }
 
     public int getUserId() {
